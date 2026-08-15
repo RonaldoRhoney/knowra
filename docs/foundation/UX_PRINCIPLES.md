@@ -23,7 +23,7 @@ Cada etapa deve ter transição visual suave para a próxima — o usuário nunc
 3. **Pergunta/Resposta** — campo de pergunta, resposta da IA clara, CTA "Transformar em desafio".
 4. **Desafio** — pergunta gerada pela IA, campo de resposta livre.
 5. **Avaliação/Recompensa** — nota de conhecimento demonstrado, breakdown do XP ganho (base + bônus), badge desbloqueada se houver, CTA para continuar.
-6. **Perfil** — nível, XP total, perguntas feitas, desafios respondidos, taxa de acerto, áreas em destaque.
+6. **Perfil** — nível, XP total, perguntas feitas, desafios respondidos, taxa de acerto, áreas em destaque. Também é onde o usuário edita seus próprios dados (nome, cidade, país, idade, gênero — implementado 2026-08-15 em `/perfil`), reaproveitando os mesmos campos opcionais do modal de completar cadastro.
 7. **Mapa de Conhecimento** (visualização radar/áreas) — evolução visual por área, comparando com média global quando fizer sentido.
 8. **Missões/Streak** — não é MVP crítico (Fase 4), mas a estrutura visual de streak (sequência de dias) já aparece desde o início por ser simples e altamente motivadora.
 

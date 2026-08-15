@@ -4,6 +4,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { Admin } from "./pages/Admin";
 import { Home } from "./pages/Home";
 import { Login } from "./pages/Login";
+import { Perfil } from "./pages/Perfil";
 
 export function App() {
   return (
@@ -16,6 +17,14 @@ export function App() {
             element={
               <ProtectedRoute>
                 <Home />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/perfil"
+            element={
+              <ProtectedRoute>
+                <Perfil />
               </ProtectedRoute>
             }
           />
