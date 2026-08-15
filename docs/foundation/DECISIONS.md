@@ -51,6 +51,24 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 **Ajuste necessário**: `Authentication → URL Configuration` no Supabase precisou de Site URL (`https://knowra.rhoneyinc.com`) e Redirect URLs (`http://localhost:5173/**`, `https://knowra.rhoneyinc.com/**`) explícitas — sem isso, o OAuth caía no `localhost:3000` padrão do Supabase (conexão recusada).
 **Status**: ✅ validado em produção — login com `rhoneyinc@gmail.com` via Google cria a conta, popula nome/avatar do Google e reconhece admin automaticamente.
 
+## 2026-08-15 — Fase 2: classificação de área via tool use, sem service_role
+
+**Decisão**: o backend chama a Anthropic com `tool_choice` forçado (`responder_e_classificar`) pra obter resposta + classificação de área em formato estruturado, e grava tudo via RPC `registrar_pergunta()` (security definer, mesmo padrão do `admin_list_profiles()` da Fase 1) — o backend nunca usa `service_role`, sempre repassa o token do próprio usuário autenticado.
+**Motivo**: structured output evita parsear texto livre pra extrair XP-relevant data no futuro (Fase 3), e mantém a decisão da Fase 1 de nunca ter uma chave que bypassa RLS circulando.
+**Impacto**: `registrar_pergunta()` também faz `upsert` de área por `slug` (reaproveita área existente), implementando a regra de "não duplicar nós quase iguais" do `KNOWLEDGE_MODEL.md`.
+
+## 2026-08-15 — Backend deployado como projeto Vercel próprio
+
+**Decisão**: `backend/` publicado como projeto Vercel separado (`knowra-api`, adaptado pra rodar como função serverless via `api/index.ts` + `vercel.json`), não junto do frontend.
+**Motivo**: mantém a separação já desenhada em `ARCHITECTURE.md` (frontend e backend como deploys independentes) e evita acoplar o ciclo de deploy de UI ao de API.
+**Status**: URL atual é `knowra-api-eta.vercel.app` (sem subdomínio RhoneyInc customizado ainda — API não é acessada diretamente por usuário final, só pelo frontend, então não é prioridade no padrão `novo-app-no-ar`; reavaliar se algum dia precisar de URL pública estável).
+
+## 2026-08-15 — Conta Anthropic sem crédito ainda
+
+**Decisão**: chave `ANTHROPIC_API_KEY` criada e configurada (backend local + Vercel), mas a chamada real à API retorna erro de saldo insuficiente — falta adicionar crédito em `console.anthropic.com/settings/billing`.
+**Impacto**: toda a Fase 2 (migration, backend, RPC, frontend) está implementada e deployada, mas o fluxo ponta a ponta ainda não foi validado com uma chamada de IA real — só a lógica de banco (via simulação de `auth.uid()` no psql) e a autenticação da chave (erro foi de billing, não de credencial inválida) foram confirmadas.
+**Status**: pendente ação do Ronaldo (adicionar crédito) antes de considerar a Fase 2 testada de ponta a ponta.
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).

@@ -35,15 +35,16 @@ Sem código. Produzir a documentação de fundação:
 
 **Critério de conclusão**: usuário consegue criar conta (e-mail/senha ou Google), logar e ver uma Home vazia com seu nome — sem ainda ter Core Loop funcional.
 
-## FASE 2 — Knowledge
+## FASE 2 — Knowledge ✅ implementada, teste ponta a ponta pendente
 
-* Campo "Pergunte qualquer coisa" funcional.
-* Resposta da IA (ver [AI_ENGINE.md](AI_ENGINE.md)), com classificação em área/tópico.
-* Histórico de perguntas do usuário.
-* Categorização (tabela `areas`, ver [DATA_MODEL.md](DATA_MODEL.md)).
-* Contexto básico passado à IA (histórico recente do usuário).
+* ✅ Campo "Pergunte qualquer coisa" funcional (`Home.tsx`).
+* ✅ Resposta da IA (ver [AI_ENGINE.md](AI_ENGINE.md)) via Claude Haiku, com classificação em área por `tool use` estruturado.
+* ✅ Histórico de perguntas do usuário (`HistoricoPerguntas.tsx`).
+* ✅ Categorização (tabela `areas`, ver [DATA_MODEL.md](DATA_MODEL.md)) — reaproveita área existente por slug.
+* ⏳ Contexto passado à IA hoje é só a lista de áreas já existentes (pra reaproveitar classificação) — contexto de nível/histórico do próprio usuário (ver `AI_ENGINE.md`) fica pra quando isso fizer diferença prática (Fase 3+, quando desafio/avaliação existirem).
+* ⏳ **Pendente**: conta Anthropic sem crédito ainda — fluxo implementado e deployado, mas não validado com uma chamada de IA real (ver [DECISIONS.md](DECISIONS.md)).
 
-**Critério de conclusão**: usuário pergunta algo, recebe resposta contextualizada, e consegue ver essa pergunta depois no histórico.
+**Critério de conclusão**: usuário pergunta algo, recebe resposta contextualizada, e consegue ver essa pergunta depois no histórico. *(Falta validar com crédito Anthropic ativo.)*
 
 ## FASE 3 — Game
 
