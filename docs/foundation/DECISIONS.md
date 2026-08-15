@@ -63,11 +63,10 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 **Motivo**: mantém a separação já desenhada em `ARCHITECTURE.md` (frontend e backend como deploys independentes) e evita acoplar o ciclo de deploy de UI ao de API.
 **Status**: URL atual é `knowra-api-eta.vercel.app` (sem subdomínio RhoneyInc customizado ainda — API não é acessada diretamente por usuário final, só pelo frontend, então não é prioridade no padrão `novo-app-no-ar`; reavaliar se algum dia precisar de URL pública estável).
 
-## 2026-08-15 — Conta Anthropic sem crédito ainda
+## 2026-08-15 — Fase 2 validada em produção
 
-**Decisão**: chave `ANTHROPIC_API_KEY` criada e configurada (backend local + Vercel), mas a chamada real à API retorna erro de saldo insuficiente — falta adicionar crédito em `console.anthropic.com/settings/billing`.
-**Impacto**: toda a Fase 2 (migration, backend, RPC, frontend) está implementada e deployada, mas o fluxo ponta a ponta ainda não foi validado com uma chamada de IA real — só a lógica de banco (via simulação de `auth.uid()` no psql) e a autenticação da chave (erro foi de billing, não de credencial inválida) foram confirmadas.
-**Status**: pendente ação do Ronaldo (adicionar crédito) antes de considerar a Fase 2 testada de ponta a ponta.
+**Decisão/registro**: após o Ronaldo adicionar crédito na conta Anthropic, o fluxo completo foi testado em `knowra.rhoneyinc.com` — pergunta real enviada, resposta da IA e classificação de área ("Apresentação do KnowRa") confirmadas gravadas na tabela `perguntas` via `psql`.
+**Status**: ✅ Fase 2 formalmente concluída.
 
 ## Como registrar novas decisões
 

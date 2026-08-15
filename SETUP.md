@@ -34,10 +34,6 @@ Se precisar recriar/rotacionar a credencial: `console.cloud.google.com/apis/cred
 
 O projeto Supabase novo usa o serviço de e-mail compartilhado deles por padrão, com limite baixo (poucos e-mails/hora) para envio de confirmação de cadastro. Isso foi confirmado testando o endpoint de signup diretamente (retornou `over_email_send_rate_limit` no segundo teste). Para uso real em produção, será necessário configurar um provedor de SMTP próprio em `Authentication → Settings → SMTP Settings` no Supabase — não bloqueia a Fase 1 (login social e testes pontuais funcionam), mas é um bloqueio real se muitos usuários tentarem criar conta por e-mail/senha ao mesmo tempo.
 
-## ⚠️ Conta Anthropic sem crédito
-
-A `ANTHROPIC_API_KEY` está configurada (local + Vercel), mas a conta ainda não tem crédito — chamadas a `/api/ask` retornam erro até adicionar saldo em [console.anthropic.com/settings/billing](https://console.anthropic.com/settings/billing). Sem isso, o campo "Pergunte qualquer coisa" no frontend não funciona (a lógica de banco/RPC já foi validada separadamente, só a chamada de IA em si depende do crédito).
-
 ## Deploy
 
 * **Frontend**: Vercel (`vercel --prod` dentro de `frontend/`), domínio `knowra.rhoneyinc.com`.
