@@ -30,9 +30,9 @@ Provider Google habilitado no Supabase Dashboard (`Authentication → Providers 
 
 Se precisar recriar/rotacionar a credencial: `console.cloud.google.com/apis/credentials?project=meupet-501512` → criar novo Client ID "Web application" → redirect URI `https://kgymvpxzbuojxxjpjmos.supabase.co/auth/v1/callback` → colar no Supabase.
 
-## ⚠️ Nota: rate limit de e-mail no cadastro por senha
+## ✅ Cadastro por e-mail/senha sem confirmação de e-mail
 
-O projeto Supabase novo usa o serviço de e-mail compartilhado deles por padrão, com limite baixo (poucos e-mails/hora) para envio de confirmação de cadastro. Isso foi confirmado testando o endpoint de signup diretamente (retornou `over_email_send_rate_limit` no segundo teste). Para uso real em produção, será necessário configurar um provedor de SMTP próprio em `Authentication → Settings → SMTP Settings` no Supabase — não bloqueia a Fase 1 (login social e testes pontuais funcionam), mas é um bloqueio real se muitos usuários tentarem criar conta por e-mail/senha ao mesmo tempo.
+O projeto Supabase usa o serviço de e-mail compartilhado deles por padrão, com limite baixo (poucos e-mails/hora) — isso chegou a travar um cadastro real (`ronaldorhoney@hotmail.com`, 2026-08-15): a conta era criada, mas o e-mail de confirmação nunca chegava por causa do rate limit, deixando o usuário sem conseguir logar. Corrigido desativando `Confirm email` em `Authentication → Sign In / Providers` — cadastro por e-mail/senha agora concede sessão na hora, sem depender de e-mail. Google OAuth continua sendo a opção recomendada/principal. Se confirmação de e-mail voltar a ser necessária no futuro (ex: exigência de compliance), configurar SMTP próprio (Resend/SendGrid) em `Authentication → Settings → SMTP Settings` antes de reativar.
 
 ## Deploy
 

@@ -99,6 +99,14 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 **Cidade/País autodeclarados vs. inferidos**: `profiles.cidade`/`profiles.pais` (o que o usuário digita no cadastro) são conceitualmente diferentes de `sessoes.pais`/`sessoes.regiao` (o que a geolocalização de IP infere a cada login) — os dois convivem no Painel ADM como métricas separadas, não devem ser fundidos num único conceito.
 **Status**: implementado, testado via simulação de `auth.uid()` no psql, publicado em produção.
 
+## 2026-08-15 — Confirmação de e-mail desativada (bug real encontrado em produção)
+
+**Contexto**: cadastro por e-mail/senha de um usuário real (`ronaldorhoney@hotmail.com`) falhou com erro genérico na tela. Investigado: a conta foi criada normalmente, mas o envio do e-mail de confirmação bateu no rate limit do serviço de e-mail compartilhado do Supabase (já registrado como risco conhecido desde a Fase 1) — a conta ficou presa em estado não confirmado, sem conseguir logar.
+**Correção imediata**: confirmado manualmente via SQL (`auth.users.email_confirmed_at`) pra desbloquear a conta existente.
+**Correção definitiva**: `Confirm email` desativado em `Authentication → Sign In / Providers` no Supabase Dashboard — cadastro por e-mail/senha agora concede sessão imediatamente, sem depender do envio de e-mail. Validado via `curl` direto no endpoint de signup (retornou `access_token` na hora).
+**Motivo da escolha**: Google OAuth já é a opção recomendada/principal (ver Fase 1) e já vem verificado pelo próprio Google; e-mail/senha é a alternativa secundária. Manter confirmação obrigatória sem SMTP próprio deixaria essa alternativa quebrada a qualquer volume de uso. Configurar SMTP próprio (Resend/SendGrid) fica como melhoria futura se a confirmação de e-mail voltar a ser necessária.
+**Status**: ✅ resolvido e validado em produção.
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).
