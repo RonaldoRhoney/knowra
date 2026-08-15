@@ -1,6 +1,7 @@
 import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { Footer } from "../components/Footer";
 import { supabase } from "../lib/supabaseClient";
 
 const TAMANHO_MAX_MB = 3;
@@ -97,7 +98,8 @@ export function Perfil() {
   }
 
   return (
-    <div className="min-h-screen px-4 py-8 max-w-md mx-auto">
+    <div>
+    <div className="px-4 py-8 max-w-md mx-auto">
       <header className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-xl font-bold">Perfil</h1>
@@ -228,6 +230,8 @@ export function Perfil() {
           <span className="text-knowra-accent font-medium">{profile.xp_total} XP</span>
         </div>
       </div>
+    </div>
+    <Footer />
     </div>
   );
 }

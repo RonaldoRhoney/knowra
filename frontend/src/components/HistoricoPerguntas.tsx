@@ -7,14 +7,20 @@ export function HistoricoPerguntas({ atualizarQuando }: { atualizarQuando: numbe
   const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
-    supabase
-      .from("perguntas")
-      .select("id, texto, resposta_ia, criado_em, areas(nome)")
-      .order("criado_em", { ascending: false })
-      .then(({ data }) => {
-        setPerguntas((data ?? []) as unknown as Pergunta[]);
-        setCarregando(false);
-      });
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) return;
+      // Filtro explícito: admin também vê perguntas de outros via RLS (intencional
+      // pro Painel ADM), então o histórico pessoal precisa restringir ao próprio usuário.
+      supabase
+        .from("perguntas")
+        .select("id, texto, resposta_ia, criado_em, areas(nome)")
+        .eq("usuario_id", session.user.id)
+        .order("criado_em", { ascending: false })
+        .then(({ data }) => {
+          setPerguntas((data ?? []) as unknown as Pergunta[]);
+          setCarregando(false);
+        });
+    });
   }, [atualizarQuando]);
 
   if (carregando) return <p className="text-sm text-knowra-text/40 mt-6">Carregando histórico...</p>;

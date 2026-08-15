@@ -6,13 +6,20 @@ export function BadgesVitrine({ atualizarQuando }: { atualizarQuando: number }) 
   const [codigos, setCodigos] = useState<string[]>([]);
 
   useEffect(() => {
-    supabase
-      .from("usuario_badges")
-      .select("badges(codigo)")
-      .then(({ data }) => {
-        const lista = (data ?? []).map((row: any) => row.badges?.codigo).filter(Boolean);
-        setCodigos(lista);
-      });
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) return;
+      // Filtro explícito: quem é admin também vê badges de outros usuários via RLS
+      // (é intencional, pro Painel ADM), então a vitrine da própria Home precisa
+      // restringir ao próprio usuário, não confiar só na policy.
+      supabase
+        .from("usuario_badges")
+        .select("badges(codigo)")
+        .eq("usuario_id", session.user.id)
+        .then(({ data }) => {
+          const lista = (data ?? []).map((row: any) => row.badges?.codigo).filter(Boolean);
+          setCodigos(lista);
+        });
+    });
   }, [atualizarQuando]);
 
   if (codigos.length === 0) return null;

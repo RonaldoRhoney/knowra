@@ -5,6 +5,8 @@ import { Admin } from "./pages/Admin";
 import { Home } from "./pages/Home";
 import { Login } from "./pages/Login";
 import { Perfil } from "./pages/Perfil";
+import { Privacidade } from "./pages/Privacidade";
+import { Termos } from "./pages/Termos";
 
 export function App() {
   return (
@@ -12,6 +14,8 @@ export function App() {
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/privacidade" element={<Privacidade />} />
+          <Route path="/termos" element={<Termos />} />
           <Route
             path="/"
             element={

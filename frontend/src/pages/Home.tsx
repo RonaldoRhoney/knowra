@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { BadgesVitrine } from "../components/BadgesVitrine";
 import { CompletarCadastroModal } from "../components/CompletarCadastroModal";
 import { DesafioCard } from "../components/DesafioCard";
+import { Footer } from "../components/Footer";
 import { HistoricoPerguntas } from "../components/HistoricoPerguntas";
 import { ProgressoUsuario } from "../components/ProgressoUsuario";
 import { useAuth } from "../contexts/AuthContext";
@@ -36,7 +37,8 @@ export function Home() {
   }
 
   return (
-    <div className="min-h-screen px-4 py-8 max-w-lg mx-auto">
+    <div className="min-h-screen flex flex-col">
+    <div className="px-4 py-8 max-w-lg mx-auto flex-1 w-full">
       <header className="flex items-center justify-between mb-4">
         <div>
           <h1 className="text-xl font-bold">KnowRa</h1>
@@ -104,6 +106,8 @@ export function Home() {
 
       <HistoricoPerguntas atualizarQuando={historicoVersao} />
       <CompletarCadastroModal />
+    </div>
+    <Footer />
     </div>
   );
 }

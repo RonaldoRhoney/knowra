@@ -26,6 +26,11 @@ export function ProgressoUsuario({ profile }: { profile: Profile }) {
             Nível {profile.nivel_global}
           </span>
           <span className="text-sm text-knowra-text/60">{atual?.titulo ?? "Curioso"}</span>
+          {proximo && (
+            <span className="text-xs text-knowra-text/30 flex items-center gap-1">
+              → <span className="text-knowra-accent/70">{proximo.titulo}</span>
+            </span>
+          )}
         </div>
         {profile.streak_atual > 0 && (
           <span className="text-sm flex items-center gap-1">
