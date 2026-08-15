@@ -30,15 +30,16 @@ export function Navigation() {
 
   return (
     <header className="border-b border-knowra-border bg-knowra-bg sticky top-0 z-40">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-6">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
         <Link to="/" className="text-lg font-bold shrink-0 tracking-tight leading-none">
           Know<span className="text-knowra-primary">Ra</span>
         </Link>
 
-        {/* Nav + ações agrupados como um único bloco encostado à direita —
-            evita o vão vazio que sobrava entre os links e o grupo de ações
-            quando cada um tinha seu próprio flex-1 independente. */}
-        <div className="hidden lg:flex items-center justify-end flex-1 gap-8 min-w-0">
+        {/* Nav colado à logo; só o grupo de ações (Painel ADM/Sair) é
+            empurrado pro canto direito via ml-auto — mantém o bloco
+            nav+ações como filho único do flex-1 pra não recriar o vão
+            vazio que existia antes entre eles. */}
+        <div className="hidden lg:flex items-center flex-1 gap-8 min-w-0 ml-8">
           <nav className="flex items-center gap-6 shrink-0">
             {LINKS.map((l) => (
               <Link key={l.to} to={l.to} className={linkClasse(l.to)}>
@@ -47,7 +48,7 @@ export function Navigation() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-5 shrink-0">
+          <div className="flex items-center gap-5 shrink-0 ml-auto">
             {profile && profile.streak_atual > 0 && (
               <span
                 className="text-sm text-knowra-text-secondary flex items-center gap-1.5 shrink-0"
