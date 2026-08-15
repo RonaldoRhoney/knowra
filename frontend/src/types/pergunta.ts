@@ -4,4 +4,6 @@ export interface Pergunta {
   resposta_ia: string | null;
   criado_em: string;
   areas: { nome: string } | null;
+  requer_verificacao: boolean;
+  observacao_verificacao: string | null;
 }

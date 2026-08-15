@@ -55,15 +55,16 @@ Sem código. Produzir a documentação de fundação:
 
 **Critério de conclusão**: ✅ Core Loop completo funciona ponta a ponta — pergunta → resposta → desafio → avaliação → XP → badge — testado em produção.
 
-## FASE 4 — Progression
+## FASE 4 — Progression ✅ concluída (2026-08-15)
 
-* Perfil completo (nível, XP, taxa de acerto, áreas em destaque).
-* Domínio por área (`progresso_area`, cálculo real a partir de desafios avaliados).
-* Streak (contagem de dias consecutivos) — já calculado no banco desde a Fase 3, falta só exibir na UI.
-* Missões diárias/semanais simples.
-* Mapa de Conhecimento (visualização, ex.: radar chart por área).
+* ✅ Perfil completo (nível, XP, taxa de acerto, perguntas feitas, áreas em destaque) — `/perfil`.
+* ✅ Domínio por área (`progresso_area`, média corrente de nota por área, calculada dentro de `avaliar_desafio`).
+* ✅ Streak (contagem de dias consecutivos) — já calculado desde a Fase 3, exibido na Home desde então.
+* ✅ Missões diárias simples (`missoes_hoje()`, calculadas ao vivo, não são tabela): pergunta hoje, desafio hoje, área nova hoje.
+* ✅ Mapa de Conhecimento (`/mapa`) — barra de domínio por área, ordenado do maior pro menor.
+* ⏳ Bônus de XP por "missão concluída" (+50%, citado em `GAME_RULES.md`) **não foi implementado** nesta fase — missões aqui são só informativas/motivacionais. Gap registrado, decisão de wire-up adiada (ver [DECISIONS.md](DECISIONS.md)).
 
-**Critério de conclusão**: usuário enxerga sua evolução de forma visual e consegue voltar por causa da streak/missões.
+**Critério de conclusão**: ✅ usuário enxerga sua evolução de forma visual (nível, XP, domínio por área, missões do dia) e tem motivo pra voltar.
 
 ---
 

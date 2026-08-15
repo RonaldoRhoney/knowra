@@ -8,6 +8,8 @@ export interface AskResponse {
   texto: string;
   resposta_ia: string;
   area_id: string | null;
+  requer_verificacao: boolean;
+  observacao_verificacao: string | null;
   criado_em: string;
 }
 

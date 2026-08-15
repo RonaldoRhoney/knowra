@@ -1,10 +1,21 @@
-import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { Footer } from "../components/Footer";
 import { supabase } from "../lib/supabaseClient";
 
 const TAMANHO_MAX_MB = 3;
+
+interface Resumo {
+  total_perguntas: number;
+  total_desafios_avaliados: number;
+  taxa_acerto: number;
+}
+
+interface AreaDestaque {
+  dominio_pct: number;
+  areas: { nome: string } | null;
+}
 
 const GENEROS = [
   { valor: "feminino", label: "Feminino" },
@@ -26,6 +37,24 @@ export function Perfil() {
   const [enviandoAvatar, setEnviandoAvatar] = useState(false);
   const [erroAvatar, setErroAvatar] = useState<string | null>(null);
   const inputAvatarRef = useRef<HTMLInputElement>(null);
+  const [resumo, setResumo] = useState<Resumo | null>(null);
+  const [areasDestaque, setAreasDestaque] = useState<AreaDestaque[]>([]);
+
+  useEffect(() => {
+    if (!session) return;
+    supabase.rpc("meu_resumo").then(({ data }) => {
+      if (data) setResumo(data as Resumo);
+    });
+    supabase
+      .from("progresso_area")
+      .select("dominio_pct, areas(nome)")
+      .eq("usuario_id", session.user.id)
+      .order("dominio_pct", { ascending: false })
+      .limit(3)
+      .then(({ data }) => {
+        setAreasDestaque((data ?? []) as unknown as AreaDestaque[]);
+      });
+  }, [session]);
 
   if (!profile) return null;
 
@@ -224,11 +253,44 @@ export function Perfil() {
       </form>
 
       <div className="bg-knowra-surface rounded-2xl p-5 mt-4">
-        <p className="text-xs text-knowra-text/50 mb-2">Progresso</p>
-        <div className="flex justify-between text-sm">
-          <span className="text-knowra-text/70">Nível {profile.nivel_global}</span>
-          <span className="text-knowra-accent font-medium">{profile.xp_total} XP</span>
+        <p className="text-xs text-knowra-text/50 mb-3">Progresso</p>
+        <div className="grid grid-cols-2 gap-3 text-sm">
+          <div>
+            <p className="text-knowra-text/40 text-xs">Nível</p>
+            <p className="font-medium">{profile.nivel_global}</p>
+          </div>
+          <div>
+            <p className="text-knowra-text/40 text-xs">XP total</p>
+            <p className="text-knowra-accent font-medium">{profile.xp_total}</p>
+          </div>
+          <div>
+            <p className="text-knowra-text/40 text-xs">Perguntas feitas</p>
+            <p className="font-medium">{resumo?.total_perguntas ?? "—"}</p>
+          </div>
+          <div>
+            <p className="text-knowra-text/40 text-xs">Taxa de acerto</p>
+            <p className="font-medium">
+              {resumo && resumo.total_desafios_avaliados > 0 ? `${resumo.taxa_acerto}%` : "—"}
+            </p>
+          </div>
         </div>
+
+        {areasDestaque.length > 0 && (
+          <div className="mt-4 pt-4 border-t border-white/10">
+            <p className="text-knowra-text/40 text-xs mb-2">Áreas em destaque</p>
+            <div className="flex flex-wrap gap-1.5">
+              {areasDestaque.map((a, i) => (
+                <span key={i} className="text-xs bg-white/5 rounded-full px-2.5 py-1">
+                  {a.areas?.nome} <span className="text-knowra-accent">{a.dominio_pct}%</span>
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <Link to="/mapa" className="text-xs text-knowra-accent hover:underline mt-4 inline-block">
+          Ver Mapa de Conhecimento completo →
+        </Link>
       </div>
     </div>
     <Footer />

@@ -6,6 +6,7 @@ import { DesafioCard } from "../components/DesafioCard";
 import { Footer } from "../components/Footer";
 import { HistoricoPerguntas } from "../components/HistoricoPerguntas";
 import { MensagemAcesso } from "../components/MensagemAcesso";
+import { MissoesDiarias } from "../components/MissoesDiarias";
 import { ProgressoUsuario } from "../components/ProgressoUsuario";
 import { SimuladorNivel } from "../components/SimuladorNivel";
 import { useAuth } from "../contexts/AuthContext";
@@ -69,6 +70,9 @@ export function Home() {
           <Link to="/como-usar" className="text-xs text-knowra-text/60 hover:text-knowra-text">
             Como usar
           </Link>
+          <Link to="/mapa" className="text-xs text-knowra-text/60 hover:text-knowra-text">
+            Mapa
+          </Link>
           <Link to="/perfil" className="text-xs text-knowra-text/60 hover:text-knowra-text">
             Perfil
           </Link>
@@ -91,6 +95,8 @@ export function Home() {
 
       {profileExibido && <ProgressoUsuario profile={profileExibido} />}
       <BadgesVitrine atualizarQuando={badgesVersao} />
+
+      <MissoesDiarias atualizarQuando={historicoVersao + badgesVersao} />
 
       {profile?.role === "admin" && (
         <SimuladorNivel nivelSimulado={nivelSimulado} onChange={setNivelSimulado} />
@@ -121,6 +127,15 @@ export function Home() {
       {resposta && (
         <div className="bg-knowra-surface rounded-2xl p-5 mt-4">
           <p className="text-sm text-knowra-text/90 whitespace-pre-wrap">{resposta.resposta_ia}</p>
+          {resposta.requer_verificacao && (
+            <div className="mt-3 pt-3 border-t border-white/10 flex items-start gap-2">
+              <span className="text-amber-400 text-sm shrink-0">⚠️</span>
+              <p className="text-xs text-knowra-text/50">
+                Vale conferir em uma fonte oficial antes de usar essa informação pra algo importante.
+                {resposta.observacao_verificacao && ` ${resposta.observacao_verificacao}`}
+              </p>
+            </div>
+          )}
         </div>
       )}
 

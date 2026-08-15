@@ -4,6 +4,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { Admin } from "./pages/Admin";
 import { ComoUsar } from "./pages/ComoUsar";
 import { Home } from "./pages/Home";
+import { MapaConhecimento } from "./pages/MapaConhecimento";
 import { Login } from "./pages/Login";
 import { Perfil } from "./pages/Perfil";
 import { Privacidade } from "./pages/Privacidade";
@@ -23,6 +24,14 @@ export function App() {
             element={
               <ProtectedRoute>
                 <Home />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/mapa"
+            element={
+              <ProtectedRoute>
+                <MapaConhecimento />
               </ProtectedRoute>
             }
           />

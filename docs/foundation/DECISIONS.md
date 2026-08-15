@@ -130,6 +130,13 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 **Por que não simular no banco**: alterar `profiles.xp_total`/`nivel_global` de verdade (mesmo que temporariamente) violaria a proteção de integridade de XP já estabelecida em `SECURITY.md` — states fictícios nunca devem tocar a fonte de verdade dos dados de progressão.
 **Escopo**: cobre nível/XP (o que foi pedido). Não simula badges conquistadas nem streak — o catálogo de badges (sempre as mesmas 5, estáticas) já aparece listado no painel do simulador pra referência, sem precisar simular "conquista".
 
+## 2026-08-15 — Fase 4 (Progression) implementada; bônus de missão adiado
+
+**Decisão**: Fase 4 implementada seguindo a ordem do roadmap (recomendação aceita pelo Ronaldo, não pulou direto pra Concursos). `progresso_area` calcula domínio como **média corrente de nota** por área (simples, sem "nível de área" separado — decisão consciente de não criar estrutura complexa antes de precisar, mesmo princípio já registrado em `DATA_MODEL.md`). Missões diárias (`missoes_hoje()`) são **calculadas ao vivo a cada chamada**, não uma tabela — três missões fixas (pergunta hoje, desafio hoje, área nova hoje), sem persistência de estado.
+**Gap identificado e não implementado agora**: `GAME_RULES.md` já documentava um bônus de XP de "+50% por missão concluída" desde a Fase 3, mas a fórmula em `avaliar_desafio()` nunca implementou esse bônus (só streak/área nova/perfeito). Optei por **não** conectar isso agora — trataria as missões como puramente informativas nesta fase, evitando aumentar o escopo do que já é uma fase grande. Registrado aqui pra não ser esquecido, não decidido silenciosamente.
+**Sinalização "requer verificação"**: implementada no mesmo lote — pedido do Ronaldo pra assuntos complexos terem uma indicação de checar fonte oficial. Decisão: **nunca gerar um link real via IA sem busca web** (risco de alucinação de citação); a IA sinaliza `requer_verificacao` + uma frase indicando que tipo de fonte checar, nunca uma URL. Busca web real (Anthropic web search tool) fica registrada como opção futura caso o Ronaldo queira link de verdade depois.
+**Diretriz de Concursos Públicos confirmada**: fonte de questões deve vir de APIs públicas legalmente disponíveis, nunca scraping/cópia sem licença — já registrado em `KNOWLEDGE_MODEL.md`.
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).
