@@ -79,11 +79,17 @@ Preparação arquitetural para o Competitive Mode, sem UI competitiva pública a
 
 **Critério de conclusão**: ✅ arquitetura suporta Rating sem nenhuma feature de ranking visível ainda.
 
-## FASE 6 — Rankings *(planejado)*
+## FASE 6 — Rankings ✅ concluída (2026-08-15)
 
-* Leaderboard geral, por área, por domínio (ver [GAME_RULES.md](GAME_RULES.md) §Ranking justo).
-* Comparativo do usuário (posição, percentual, comparação com média) na UI de perfil.
-* Privacidade do ranking (nickname, opt-out, perfil público/privado) — ver [SECURITY.md](SECURITY.md) §LGPD.
+* ✅ Migration em produção: `profiles.aparecer_no_ranking` (opt-in, default `false`) + `profiles.nickname`; RPCs `ranking_geral`/`ranking_por_area`/`meu_ranking` — RLS/grants conferidos (`anon` sem acesso, IDOR impossível pois tudo usa `auth.uid()`), rating/nome real/e-mail nunca expostos a outros usuários.
+* ✅ Leaderboard geral e por área (`/ranking`), mínimo de 5 desafios avaliados pra entrar em qualquer ranking — evita "1 acerto de sorte no topo" (ver [GAME_RULES.md](GAME_RULES.md) §Ranking justo).
+* ✅ Comparativo do usuário (posição, percentual "top X%", comparação com média da plataforma, geral e por área) — sempre visível ao próprio usuário, mesmo sem opt-in público, pois é dado agregado, não identidade.
+* ✅ Privacidade: opt-in explícito (nunca opt-out) pra aparecer publicamente + apelido opcional, configurável em `/perfil` — usuário nunca é obrigado a expor dado pessoal pra competir (ver [SECURITY.md](SECURITY.md) §LGPD).
+* ⏳ **Por domínio** dentro de área (ex: Tecnologia → Programação → Python) **não foi implementado** — ranking por área usa `progresso_area.dominio_pct` (mesma métrica provisória da Fase 4); domínio (subárea) fica pra quando a árvore de conhecimento tiver profundidade real em uso.
+* ⏳ **Perfil público/privado** (ver outro usuário) **não foi implementado** — só o próprio comparativo e o leaderboard agregado existem; visualizar o perfil de outro usuário fica fora de escopo até haver pedido real.
+* ⏳ Algoritmo definitivo de rating/ranking **continua não decidido** (mesma ressalva da Fase 5) — só a fundação estrutural (mínimo de avaliações, opt-in, sem farm por volume) precisava existir nesta fase.
+
+**Critério de conclusão**: ✅ usuário consegue ver sua posição no ranking geral e por área, comparar-se com a média da plataforma, e decidir se quer aparecer publicamente — testado com checklist de segurança (RLS ativo, `anon` sem acesso às RPCs/colunas novas, sem IDOR).
 
 ## FASE 7 — Concursos Públicos *(planejado)*
 
