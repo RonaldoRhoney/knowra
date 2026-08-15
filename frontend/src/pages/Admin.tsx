@@ -21,6 +21,12 @@ interface Stats {
   top_areas: Item[];
 }
 
+interface CacheStats {
+  total_respostas_unicas: number;
+  total_reaproveitamentos: number;
+  top_reaproveitadas: { pergunta_original: string; reaproveitada_count: number }[];
+}
+
 interface Demographics {
   dispositivos: Item[];
   paises: Item[];
@@ -38,6 +44,7 @@ export function Admin() {
   const [usuarios, setUsuarios] = useState<Profile[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [demografia, setDemografia] = useState<Demographics | null>(null);
+  const [cacheStats, setCacheStats] = useState<CacheStats | null>(null);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
 
@@ -46,13 +53,15 @@ export function Admin() {
       supabase.rpc("admin_list_profiles"),
       supabase.rpc("admin_stats"),
       supabase.rpc("admin_demographics"),
-    ]).then(([usuariosRes, statsRes, demografiaRes]) => {
-      if (usuariosRes.error || statsRes.error || demografiaRes.error) {
+      supabase.rpc("admin_cache_stats"),
+    ]).then(([usuariosRes, statsRes, demografiaRes, cacheRes]) => {
+      if (usuariosRes.error || statsRes.error || demografiaRes.error || cacheRes.error) {
         setErro("Não foi possível carregar os dados do painel.");
       } else {
         setUsuarios((usuariosRes.data ?? []) as Profile[]);
         setStats(statsRes.data as Stats);
         setDemografia(demografiaRes.data as Demographics);
+        setCacheStats(cacheRes.data as CacheStats);
       }
       setCarregando(false);
     });
@@ -93,6 +102,44 @@ export function Admin() {
           <MetricaCard icone="📆" label="Ano" valor={stats?.acessos_ano} carregando={carregando} fundo="bg-knowra-bg" />
           <MetricaCard icone="📈" label="Total" valor={stats?.total_acessos} carregando={carregando} fundo="bg-knowra-bg" />
         </div>
+      </section>
+
+      <section className="bg-knowra-surface rounded-2xl p-5 mb-6">
+        <div className="flex items-center justify-between mb-1">
+          <h2 className="text-sm font-semibold text-knowra-text/80">Cache de respostas (economia de IA)</h2>
+        </div>
+        <p className="text-xs text-knowra-text/40 mb-4">
+          Perguntas com o mesmo texto (ignorando acento/pontuação/caixa) reaproveitam a resposta já gerada.
+        </p>
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          <MetricaCard
+            icone="💾"
+            label="Respostas únicas em cache"
+            valor={cacheStats?.total_respostas_unicas}
+            carregando={carregando}
+            fundo="bg-knowra-bg"
+          />
+          <MetricaCard
+            icone="♻️"
+            label="Chamadas de IA economizadas"
+            valor={cacheStats?.total_reaproveitamentos}
+            carregando={carregando}
+            fundo="bg-knowra-bg"
+          />
+        </div>
+        {cacheStats && cacheStats.top_reaproveitadas.length > 0 && (
+          <div>
+            <p className="text-xs text-knowra-text/50 mb-2">Mais reaproveitadas</p>
+            <ul className="space-y-1.5">
+              {cacheStats.top_reaproveitadas.map((r, i) => (
+                <li key={i} className="flex items-center gap-2 text-xs">
+                  <span className="flex-1 truncate text-knowra-text/70">{r.pergunta_original}</span>
+                  <span className="text-knowra-accent font-medium shrink-0">{r.reaproveitada_count}×</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </section>
 
       {demografia && demografia.frequencia_14_dias.some((d) => d.total > 0) && (

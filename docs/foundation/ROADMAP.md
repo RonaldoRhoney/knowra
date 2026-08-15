@@ -127,6 +127,19 @@ Amigos, desafios entre usuários, eventos. Não iniciar código sem pedido expl�
 
 Ver [DECISIONS.md](DECISIONS.md) pro registro completo desse levantamento.
 
+## Sustentabilidade financeira *(em andamento, fora da numeração de fases)*
+
+Estratégia combinada com o Ronaldo em 2026-08-15 (ver [DECISIONS.md](DECISIONS.md) e [AI_ENGINE.md](AI_ENGINE.md) §Custo de IA e sustentabilidade financeira) — ordem de prioridade, maior retorno/menor risco primeiro:
+
+1. ✅ **Cache de respostas canônicas** — implementado. Reduz chamadas de IA repetidas sem exigir decisão de preço/plano.
+2. ⏳ Limite diário de interações de IA no plano gratuito.
+3. ⏳ Freemium / KnowRa Pro / Concursos Pro (planos pagos).
+4. ⏳ AI Router multi-provider (modelo barato pra tarefas simples, Anthropic pra onde a qualidade importa).
+5. ⏳ Pacotes de créditos avulsos.
+6. ⏳ B2B/EDU, publicidade controlada no plano gratuito.
+
+Não pular pra um item mais abaixo sem o anterior estar implementado ou explicitamente descartado — mesmo princípio de "MVP → validar → medir → melhorar → expandir" já aplicado ao resto do roadmap.
+
 ---
 
 Nenhuma fase 5+ tem data ou compromisso — só existem aqui pra Fases 1-4 (já em código) não precisarem de retrabalho estrutural quando essas fases chegarem. Não avançar pra Fase 5 sem aprovação explícita do Ronaldo, mesmo que a arquitetura já esteja pronta pra isso.

@@ -67,6 +67,14 @@ Usuário → Aplicação → AI Orchestrator → Provider Abstraction → Claude
 
 Quando isso importar de verdade (custo, disponibilidade, ou necessidade de um modelo diferente por tarefa), introduzir uma camada `AIProvider` com uma interface única (`responder`, `avaliar`, `gerarDesafio`) implementada por adapters por fornecedor — sem reescrever `askQuestion.ts` e futuros serviços, só trocar o adapter por trás. Não implementar essa abstração agora (over-engineering pro estágio atual), só não fechar a porta pra ela.
 
-## Custo de IA (planejado)
+## Custo de IA e sustentabilidade financeira
 
-Nem toda interação deve necessariamente usar o modelo mais caro disponível — avaliar no futuro: classificação com modelos menores (já é o caso, usamos Haiku), cache de respostas repetidas, roteamento de modelo por complexidade da tarefa, processamento assíncrono, limites/quotas por usuário. **Custo por usuário deve virar métrica de produto** (ver [SECURITY.md](SECURITY.md) §Observabilidade).
+> Atualização 2026-08-15 — ver [DECISIONS.md](DECISIONS.md). Princípio: IA gera valor (responder, classificar, gerar conteúdo original), banco/código executam regra determinística sempre que possível — nunca o contrário.
+
+**Cache de respostas canônicas — implementado.** Pergunta com o mesmo texto normalizado (acento/caixa/pontuação/espaço ignorados) reaproveita a resposta e classificação de área já geradas, sem nova chamada à Anthropic (`respostas_canonicas`, `buscar_resposta_canonica()`/`salvar_resposta_canonica()`, integrado em `askQuestion.ts`). É cache **exato**, não semântico — duas perguntas com o mesmo sentido mas fraseado diferente ("o que é fotossíntese" vs. "explica fotossíntese pra mim") não batem ainda. Cache semântico (embeddings + busca por similaridade) é a evolução natural quando o volume de perguntas justificar o investimento — não implementado agora. Métrica de reaproveitamento visível no Painel ADM (`admin_cache_stats()`).
+
+**Já em prática desde o MVP**: correção de Questões objetivas (Concursos, Fase 7) é 100% determinística no banco — comparação de string contra gabarito, zero IA por tentativa, mesmo que o banco de questões tenha sido gerado por IA (uma vez, offline, reutilizado por todos). Cálculo de XP/nível/rating/liga/streak/badges nunca usa IA — sempre código/banco.
+
+**Ainda não implementado, priorizado nesta ordem quando for a hora**: limite diário de interações de IA no plano gratuito; roteamento de modelo por complexidade da tarefa (modelo mais barato pra classificação/tarefas simples, mais caro só onde a qualidade importa); AI Router multi-provider (ver §Provider Abstraction abaixo) — nenhum desses tem prioridade sobre o cache, que tem o maior retorno com o menor risco de produto.
+
+**Custo por usuário deve virar métrica de produto** (ver [SECURITY.md](SECURITY.md) §Observabilidade).

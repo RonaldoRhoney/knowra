@@ -49,41 +49,87 @@ export interface AskResult {
   criado_em: string;
 }
 
+interface RespostaEstruturada {
+  resposta: string;
+  area_nome: string | null;
+  area_slug: string | null;
+  requer_verificacao: boolean;
+  observacao_verificacao: string | null;
+}
+
 export async function askQuestion(supabase: SupabaseClient, texto: string): Promise<AskResult> {
-  const { data: areasExistentes } = await supabase
-    .from("areas")
-    .select("nome, slug")
-    .order("criado_em", { ascending: false })
-    .limit(50);
+  // Cache de respostas canônicas: pergunta com o mesmo texto normalizado
+  // (acento/caixa/pontuação/espaço) reaproveita a resposta já gerada, sem
+  // nova chamada à Anthropic. Ver DECISIONS.md — prioridade #1 de custo.
+  const { data: cacheRows } = await supabase.rpc("buscar_resposta_canonica", { p_pergunta: texto });
+  const cache = cacheRows?.[0];
 
-  const listaAreas = (areasExistentes ?? []).map((a) => `${a.nome} (${a.slug})`).join(", ") || "nenhuma ainda";
+  let resultado: RespostaEstruturada;
 
-  const message = await anthropic.messages.create({
-    model: MODEL,
-    max_tokens: 1024,
-    system:
-      "Você é o mentor de conhecimento do KnowRa, uma plataforma que transforma curiosidade em aprendizado real. " +
-      "Responda com clareza, sem jargão técnico desnecessário, de forma que qualquer pessoa curiosa entenda. " +
-      "Ao classificar a área, reaproveite uma área já existente sempre que fizer sentido, em vez de criar uma nova quase igual. " +
-      "Você não tem acesso à internet — nunca cite uma URL específica, mesmo que pareça plausível, porque pode não existir. " +
-      `Áreas já existentes: ${listaAreas}.`,
-    tools: [RESPONDER_TOOL],
-    tool_choice: { type: "tool", name: "responder_e_classificar" },
-    messages: [{ role: "user", content: texto }],
-  });
+  if (cache?.encontrado) {
+    resultado = {
+      resposta: cache.resposta_ia,
+      area_nome: cache.area_nome,
+      area_slug: cache.area_slug,
+      requer_verificacao: cache.requer_verificacao ?? false,
+      observacao_verificacao: cache.observacao_verificacao,
+    };
+  } else {
+    const { data: areasExistentes } = await supabase
+      .from("areas")
+      .select("nome, slug")
+      .order("criado_em", { ascending: false })
+      .limit(50);
 
-  const toolUse = message.content.find((block: { type: string }) => block.type === "tool_use");
-  if (!toolUse || toolUse.type !== "tool_use") {
-    throw new Error("A IA não retornou uma resposta estruturada.");
+    const listaAreas = (areasExistentes ?? []).map((a) => `${a.nome} (${a.slug})`).join(", ") || "nenhuma ainda";
+
+    const message = await anthropic.messages.create({
+      model: MODEL,
+      max_tokens: 1024,
+      system:
+        "Você é o mentor de conhecimento do KnowRa, uma plataforma que transforma curiosidade em aprendizado real. " +
+        "Responda com clareza, sem jargão técnico desnecessário, de forma que qualquer pessoa curiosa entenda. " +
+        "Ao classificar a área, reaproveite uma área já existente sempre que fizer sentido, em vez de criar uma nova quase igual. " +
+        "Você não tem acesso à internet — nunca cite uma URL específica, mesmo que pareça plausível, porque pode não existir. " +
+        `Áreas já existentes: ${listaAreas}.`,
+      tools: [RESPONDER_TOOL],
+      tool_choice: { type: "tool", name: "responder_e_classificar" },
+      messages: [{ role: "user", content: texto }],
+    });
+
+    const toolUse = message.content.find((block: { type: string }) => block.type === "tool_use");
+    if (!toolUse || toolUse.type !== "tool_use") {
+      throw new Error("A IA não retornou uma resposta estruturada.");
+    }
+
+    const { resposta, area_nome, area_slug, requer_verificacao, observacao_verificacao } = toolUse.input as {
+      resposta: string;
+      area_nome: string;
+      area_slug: string;
+      requer_verificacao?: boolean;
+      observacao_verificacao?: string;
+    };
+
+    resultado = {
+      resposta,
+      area_nome,
+      area_slug,
+      requer_verificacao: requer_verificacao ?? false,
+      observacao_verificacao: observacao_verificacao ?? null,
+    };
+
+    // popula o cache pra próxima pergunta igual não precisar chamar a IA de novo
+    await supabase.rpc("salvar_resposta_canonica", {
+      p_pergunta: texto,
+      p_resposta_ia: resultado.resposta,
+      p_area_nome: resultado.area_nome,
+      p_area_slug: resultado.area_slug,
+      p_requer_verificacao: resultado.requer_verificacao,
+      p_observacao_verificacao: resultado.observacao_verificacao,
+    });
   }
 
-  const { resposta, area_nome, area_slug, requer_verificacao, observacao_verificacao } = toolUse.input as {
-    resposta: string;
-    area_nome: string;
-    area_slug: string;
-    requer_verificacao?: boolean;
-    observacao_verificacao?: string;
-  };
+  const { resposta, area_nome, area_slug, requer_verificacao, observacao_verificacao } = resultado;
 
   const { data: pergunta, error } = await supabase
     .rpc("registrar_pergunta", {

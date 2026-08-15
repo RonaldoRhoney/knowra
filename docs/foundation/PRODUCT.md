@@ -72,4 +72,8 @@ Além da pessoa curiosa descrita acima, o Competitive Mode/Concursos amplia o p�
 
 ## Fora de escopo (v0.1 / MVP)
 
-Rede social, ranking entre usuários, ligas, temporadas, módulo de concursos, missões diárias/semanais elaboradas, mapa de conhecimento avançado, app mobile nativo — tudo isso é **planejado na arquitetura desde a Foundation**, mas nada disso é implementado ainda. Ver [ROADMAP.md](ROADMAP.md) para a separação de fases MVP → Knowledge → Gamification → Competitive → Concursos → Rankings → Social.
+> Atualizado 2026-08-15 — a lista abaixo estava desatualizada (dizia que nada disso existia ainda).
+
+**Já implementado** (deixou de ser "fora de escopo"): ranking entre usuários, ligas, temporadas, módulo de Concursos Públicos, mapa de conhecimento — ver [ROADMAP.md](ROADMAP.md) Fases 4-8 pro detalhe de cada um.
+
+**Ainda fora de escopo**: rede social (amigos, desafios entre usuários, eventos — levantamento técnico feito, não implementado, ver ROADMAP.md §Fase 9), missões diárias/semanais elaboradas (hoje são só 3 missões informativas fixas, sem bônus de XP conectado), app mobile nativo, monetização (freemium/planos pagos — estratégia em desenho, ver [AI_ENGINE.md](AI_ENGINE.md) §Custo de IA e sustentabilidade financeira e [DECISIONS.md](DECISIONS.md)).
