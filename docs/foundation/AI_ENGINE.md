@@ -75,6 +75,10 @@ Quando isso importar de verdade (custo, disponibilidade, ou necessidade de um mo
 
 **Já em prática desde o MVP**: correção de Questões objetivas (Concursos, Fase 7) é 100% determinística no banco — comparação de string contra gabarito, zero IA por tentativa, mesmo que o banco de questões tenha sido gerado por IA (uma vez, offline, reutilizado por todos). Cálculo de XP/nível/rating/liga/streak/badges nunca usa IA — sempre código/banco.
 
-**Ainda não implementado, priorizado nesta ordem quando for a hora**: limite diário de interações de IA no plano gratuito; roteamento de modelo por complexidade da tarefa (modelo mais barato pra classificação/tarefas simples, mais caro só onde a qualidade importa); AI Router multi-provider (ver §Provider Abstraction abaixo) — nenhum desses tem prioridade sobre o cache, que tem o maior retorno com o menor risco de produto.
+**Limite diário de interações de IA — implementado.** 5/dia no plano gratuito, 30/dia no KnowRa Pro (`verificar_limite_ia()`), admin isento. Ver DECISIONS.md 2026-08-15.
+
+**KnowRa Pro — implementado.** Assinatura recorrente via Mercado Pago (`profiles.plano`, `assinaturas`, `backend/src/api/assinatura.ts`). Além do limite de IA maior, desbloqueia acesso completo a Concursos (free vê só as 10 primeiras questões de cada concurso, por ordem de geração — `questoes.ordem`). Ver DECISIONS.md 2026-08-15 e DATA_MODEL.md.
+
+**Ainda não implementado, priorizado nesta ordem quando for a hora**: roteamento de modelo por complexidade da tarefa (modelo mais barato pra classificação/tarefas simples, mais caro só onde a qualidade importa); AI Router multi-provider (ver §Provider Abstraction abaixo).
 
 **Custo por usuário deve virar métrica de produto** (ver [SECURITY.md](SECURITY.md) §Observabilidade).

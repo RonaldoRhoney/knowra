@@ -37,6 +37,7 @@ export function ResolverQuestoes({ modo }: { modo: "concurso" | "area" }) {
   const [carregando, setCarregando] = useState(true);
   const [tally, setTally] = useState({ acertos: 0, total: 0 });
   const [alternativaEscolhida, setAlternativaEscolhida] = useState<string | null>(null);
+  const [plano, setPlano] = useState<"free" | "pro" | null>(null);
 
   useEffect(() => {
     if (!session || !id) return;
@@ -57,6 +58,12 @@ export function ResolverQuestoes({ modo }: { modo: "concurso" | "area" }) {
       setQuestoes((questoesRes.data ?? []) as Questao[]);
       setCarregando(false);
     });
+
+    if (modo === "concurso") {
+      supabase.rpc("minha_assinatura").then(({ data }) => {
+        if (data) setPlano((data as { plano: "free" | "pro" }).plano);
+      });
+    }
   }, [session, id, modo]);
 
   const questaoAtual = questoes[indice];
@@ -178,6 +185,15 @@ export function ResolverQuestoes({ modo }: { modo: "concurso" | "area" }) {
                     <p className="text-sm text-knowra-text/70">
                       Fim das questões disponíveis por aqui. Você acertou {tally.acertos} de {tally.total}.
                     </p>
+                    {modo === "concurso" && plano === "free" && questoes.length === 10 && (
+                      <p className="text-xs text-knowra-warning mt-2">
+                        Essas foram as 10 questões grátis deste concurso.{" "}
+                        <Link to="/perfil" className="hover:underline">
+                          Assine o KnowRa Pro
+                        </Link>{" "}
+                        pra ver o resto.
+                      </p>
+                    )}
                     <Link
                       to="/concursos"
                       className="text-xs text-knowra-accent hover:underline mt-2 inline-block"

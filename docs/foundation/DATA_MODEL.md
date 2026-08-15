@@ -161,6 +161,12 @@ Um evento por sessão de login, usado só para observabilidade agregada (disposi
 
 Bucket `avatars` no Supabase Storage, público para leitura (avatar é imagem de perfil, precisa ser visível), com escrita restrita: cada usuário só pode subir/atualizar/apagar dentro da própria pasta (`{user_id}/avatar.{ext}`), via política de RLS em `storage.objects` checando `(storage.foldername(name))[1] = auth.uid()::text`. Limite de 3MB, só tipos de imagem comuns (`png`/`jpeg`/`webp`/`gif`). `profiles.avatar_url` já tinha grant de `UPDATE` direto pra `authenticated` desde a Fase 1 (skill de admin-padrão não se aplica aqui, é ajuste de perfil comum) — upload não precisou de RPC nova.
 
+## KnowRa Pro / assinaturas (implementado 2026-08-15)
+
+`profiles.plano` (`free`/`pro`, default `free`). Tabela `assinaturas` (`usuario_id`, `mp_preapproval_id`, `status`, `criado_em`/`atualizado_em`) — histórico de assinaturas do Mercado Pago por usuário, RLS restringe leitura ao dono/admin. Só o webhook do backend (via `DATABASE_URL`, nunca `service_role` — ver DECISIONS.md) grava `status`/`plano`; o usuário só cria a linha `pending` (`criar_assinatura_pendente()`) e registra o id do Mercado Pago (`registrar_mp_preapproval()`), ambas restritas a `auth.uid()` dono da linha.
+
+`questoes.ordem` (bigint, identity) — ordem estável de geração, usada pro teto gratuito de Concursos (`listar_questoes()`/`responder_questao()` liberam só as 10 primeiras por `ordem` pra quem não é Pro). Não existia antes; `criado_em` sozinho não bastava porque um lote inteiro gerado numa transação recebe o mesmo timestamp.
+
 ## Regras derivadas do modelo
 
 * `xp_total` e `nivel_global` em `profiles` são **derivados**, recalculados a partir de `desafios.xp_ganho` — não devem ser a fonte de verdade editável diretamente pelo frontend (ver [SECURITY.md](SECURITY.md), risco de manipulação de XP).

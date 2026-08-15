@@ -51,3 +51,7 @@ export type TipoAcesso = "primeiro_acesso" | "ausencia_longa" | "ausencia_media"
 export function registrarSessao(): Promise<{ ok: boolean; tipo: TipoAcesso }> {
   return apiPost<{ ok: boolean; tipo: TipoAcesso }>("/api/sessao");
 }
+
+export function criarAssinatura(): Promise<{ checkout_url: string }> {
+  return apiPost<{ checkout_url: string }>("/api/assinatura/criar");
+}

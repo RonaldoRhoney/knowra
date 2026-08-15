@@ -137,7 +137,7 @@ Estratégia combinada com o Ronaldo em 2026-08-15 (ver [DECISIONS.md](DECISIONS.
 
 1. ✅ **Cache de respostas canônicas** — implementado. Reduz chamadas de IA repetidas sem exigir decisão de preço/plano.
 2. ✅ **Limite diário de interações de IA** — implementado. 5 chamadas reais de IA por dia por usuário (cache hit não consome cota), admin isento. Número provisório — sem plano pago ainda pra comprar mais, isso é o item #3.
-3. ⏳ Freemium / KnowRa Pro / Concursos Pro (planos pagos).
+3. ✅ **KnowRa Pro (assinatura via Mercado Pago)** — implementado 2026-08-15. Desbloqueia limite de IA maior (30/dia vs. 5/dia free) e acesso completo a Concursos (free vê 10 questões por concurso, prática por disciplina continua livre). Ver DECISIONS.md. `MP_ACCESS_TOKEN` ainda não configurado em produção — checkout real ainda não testado ponta a ponta.
 4. ⏳ AI Router multi-provider (modelo barato pra tarefas simples, Anthropic pra onde a qualidade importa).
 5. ⏳ Pacotes de créditos avulsos.
 6. ⏳ B2B/EDU, publicidade controlada no plano gratuito.

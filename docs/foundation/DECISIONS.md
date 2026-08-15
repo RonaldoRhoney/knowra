@@ -213,6 +213,24 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 **Documentos atualizados nesta extensão**: `AUDIO_ENGINE.md` (novo), `PRODUCT.md`, `VISION.md`, `CORE_LOOP.md`, `GAME_RULES.md`, `UX_PRINCIPLES.md`, `ARCHITECTURE.md`, `DATA_MODEL.md`, `ROADMAP.md`, `DECISIONS.md` (este). `KNOWLEDGE_MODEL.md`, `AI_ENGINE.md` e `SECURITY.md` **não foram alterados** — nenhum deles tem impacto real do Audio Engine que justifique edição (áudio não gera conteúdo via IA nem introduz regra de segurança nova além das já existentes no projeto).
 **Status**: discovery completo, nenhuma implementação autorizada. Próximo passo depende de aprovação explícita do Ronaldo por etapa (ver `AUDIO_ENGINE.md` §Roadmap).
 
+## 2026-08-15 — KnowRa Pro: item #3 da sustentabilidade financeira, via Mercado Pago
+
+**Contexto**: depois de cache (#1) e limite diário de IA (#2), o Ronaldo aprovou avançar pro item #3 — plano pago. Escopo combinado: mais interações de IA por dia, acesso ampliado a Concursos, flag "sem anúncios" reservada pro item #6 (nenhum anúncio existe ainda). Provedor: Mercado Pago (mesmo padrão do MenuFlex). Modelo: assinatura recorrente (Preapproval API), não cobrança avulsa.
+
+**Gating de Concursos — decisão de design**: em vez de curadoria manual (marcar concurso por concurso como "Pro", o que exigiria trabalho contínuo do admin a cada concurso novo), o teto é por **quantidade de questões por concurso** — free vê até 10 questões (por ordem de geração, via coluna nova `questoes.ordem`), Pro vê todas. Prática por disciplina (`disciplinas_com_pratica`) continua sem teto pra todo mundo — é a porta de entrada gratuita do produto. Mesmo princípio já usado no limite diário de IA: quantidade, nunca conteúdo diferente por trás de um catálogo curado à parte.
+
+**Anti-bypass**: `responder_questao()` também aplica o teto (não só `listar_questoes()`) — sem isso, um usuário free poderia responder uma questão fora do teto chamando a RPC direto com um id não listado pra ele (IDOR de conteúdo). Testado em transação com rollback: free bloqueado na 11ª questão de um concurso de teste com 15, liberado depois de virar `pro`.
+
+**`catalogo_concursos()` passa a expor `questoes_gratis` junto de `total_questoes`** — sem isso a tela mostraria "37 questões disponíveis" pra quem só consegue responder 10, o que seria dado enganoso (proibido pelo `CLAUDE.md`).
+
+**`DATABASE_URL` usado em runtime pela primeira vez (não só offline)**: o webhook do Mercado Pago (`POST /api/assinatura/webhook`) é chamado pelo próprio Mercado Pago, sem token de usuário — não há como autenticar via `auth.uid()`/RLS normal. Única forma de gravar `profiles.plano`/`assinaturas.status` sem introduzir uma chave `service_role` (que a decisão de 2026-08-15 "RPC com security definer" já descartou) é reaproveitar a mesma credencial `DATABASE_URL` já usada em `gerar_questoes.ts`, agora também dentro de `backend/src/lib/dbAdmin.ts` chamada em runtime. **Motivo**: mantém a garantia de "nenhuma chave que bypassa RLS circulando via API key do Supabase" — o webhook nunca confia no corpo da notificação, sempre confirma o status buscando na API do Mercado Pago antes de gravar (mesmo princípio já usado no `mp-webhook.js` do MenuFlex).
+
+**Preço provisório**: R$ 19,90/mês, mesmo espírito do "5/dia" provisório do limite de IA — número inicial pra existir o produto, ajustável quando houver dado real de conversão/custo.
+
+**Bug encontrado e corrigido durante o teste**: a primeira versão de `listar_questoes()` tinha `select plano from public.profiles where id = auth.uid()` ambíguo — a função tem `id` como coluna de retorno (`returns table`), então o PL/pgSQL interpretou `id` como a variável de saída, não `profiles.id`. Corrigido qualificando `profiles.id = auth.uid()` em todas as funções novas que fazem essa checagem. Pego em teste real (`SET LOCAL ROLE authenticated` + simulação de `auth.uid()`), não em produção.
+
+**Status**: implementado (migration `0026_knowra_pro.sql`, backend `assinatura.ts`/`mercadoPago.ts`/`dbAdmin.ts`, frontend em `Perfil.tsx`/`Concursos.tsx`/`ResolverQuestoes.tsx`), testado via `psql` com RLS simulada, build limpo (`tsc` + `vite build` no frontend, `tsc` no backend). **Pendente**: `MP_ACCESS_TOKEN` real ainda não configurado no ambiente — checkout de verdade não foi testado ponta a ponta contra a API do Mercado Pago, só a lógica de banco/gating.
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).

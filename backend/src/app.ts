@@ -2,6 +2,7 @@ import "dotenv/config";
 import cors from "cors";
 import express from "express";
 import { askRouter } from "./api/ask.js";
+import { assinaturaRouter } from "./api/assinatura.js";
 import { desafiosRouter } from "./api/desafios.js";
 import { sessaoRouter } from "./api/sessao.js";
 
@@ -14,5 +15,6 @@ app.get("/health", (_req, res) => {
 });
 
 app.use("/api", askRouter);
+app.use("/api", assinaturaRouter);
 app.use("/api", desafiosRouter);
 app.use("/api", sessaoRouter);

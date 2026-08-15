@@ -13,6 +13,7 @@ interface Concurso {
   ano: number | null;
   cargo: string | null;
   total_questoes: number;
+  questoes_gratis: number;
 }
 
 interface Disciplina {
@@ -80,8 +81,9 @@ export function Concursos() {
                         {[c.orgao, c.banca, c.ano, c.cargo].filter(Boolean).join(" · ") || "—"}
                       </p>
                       <p className="text-xs text-knowra-accent mt-1.5">
-                        {c.total_questoes} questão{c.total_questoes !== 1 ? "ões" : ""} disponível
-                        {c.total_questoes !== 1 ? "eis" : ""}
+                        {c.total_questoes > c.questoes_gratis
+                          ? `${c.questoes_gratis} grátis de ${c.total_questoes} questões · resto no Pro`
+                          : `${c.total_questoes} questão${c.total_questoes !== 1 ? "ões" : ""} disponível${c.total_questoes !== 1 ? "eis" : ""}`}
                       </p>
                     </Link>
                   ))}

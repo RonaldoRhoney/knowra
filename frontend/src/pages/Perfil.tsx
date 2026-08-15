@@ -4,6 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { Footer } from "../components/Footer";
 import { Navigation } from "../components/Navigation";
 import { supabase } from "../lib/supabaseClient";
+import { criarAssinatura } from "../lib/api";
 
 const TAMANHO_MAX_MB = 3;
 
@@ -11,6 +12,11 @@ interface Resumo {
   total_perguntas: number;
   total_desafios_avaliados: number;
   taxa_acerto: number;
+}
+
+interface Assinatura {
+  plano: "free" | "pro";
+  status_assinatura: string | null;
 }
 
 interface AreaDestaque {
@@ -45,11 +51,17 @@ export function Perfil() {
   const [salvandoRanking, setSalvandoRanking] = useState(false);
   const [erroRanking, setErroRanking] = useState<string | null>(null);
   const [salvoRanking, setSalvoRanking] = useState(false);
+  const [assinatura, setAssinatura] = useState<Assinatura | null>(null);
+  const [iniciandoCheckout, setIniciandoCheckout] = useState(false);
+  const [erroAssinatura, setErroAssinatura] = useState<string | null>(null);
 
   useEffect(() => {
     if (!session) return;
     supabase.rpc("meu_resumo").then(({ data }) => {
       if (data) setResumo(data as Resumo);
+    });
+    supabase.rpc("minha_assinatura").then(({ data }) => {
+      if (data) setAssinatura(data as Assinatura);
     });
     supabase
       .from("progresso_area")
@@ -135,6 +147,18 @@ export function Perfil() {
     setSalvandoRanking(false);
   }
 
+  async function handleAssinar() {
+    setIniciandoCheckout(true);
+    setErroAssinatura(null);
+    try {
+      const { checkout_url } = await criarAssinatura();
+      window.location.href = checkout_url;
+    } catch {
+      setErroAssinatura("Não foi possível iniciar a assinatura agora. Tente novamente.");
+      setIniciandoCheckout(false);
+    }
+  }
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (nome.trim().length === 0) return;
@@ -205,6 +229,41 @@ export function Perfil() {
         </div>
       </div>
       <div className="mb-6">{erroAvatar && <p className="text-sm text-red-400">{erroAvatar}</p>}</div>
+
+      <div className="bg-knowra-surface rounded-2xl p-5 mb-4">
+        {assinatura?.plano === "pro" ? (
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-medium px-3 py-1.5 rounded-full bg-knowra-warning/15 text-knowra-warning border border-knowra-warning/30 shrink-0">
+              KnowRa Pro
+            </span>
+            <p className="text-sm text-knowra-text-secondary">Sua assinatura está ativa. Obrigado por apoiar o KnowRa!</p>
+          </div>
+        ) : (
+          <>
+            <div className="flex items-center justify-between mb-1">
+              <p className="text-sm font-medium">KnowRa Pro</p>
+              <span className="text-xs text-knowra-text/40">R$ 19,90/mês</span>
+            </div>
+            <p className="text-xs text-knowra-text-secondary mb-4">
+              Mais interações de IA por dia e acesso completo às questões de todos os concursos.
+            </p>
+            {erroAssinatura && <p className="text-sm text-red-400 mb-3">{erroAssinatura}</p>}
+            {assinatura?.status_assinatura === "pending" && (
+              <p className="text-xs text-knowra-text/50 mb-3">
+                Assinatura em processamento — pode levar alguns minutos até confirmarmos o pagamento.
+              </p>
+            )}
+            <button
+              type="button"
+              onClick={handleAssinar}
+              disabled={iniciandoCheckout}
+              className="w-full rounded-lg bg-knowra-warning text-knowra-bg py-2.5 text-sm font-semibold disabled:opacity-40"
+            >
+              {iniciandoCheckout ? "Abrindo checkout..." : "Assinar KnowRa Pro"}
+            </button>
+          </>
+        )}
+      </div>
 
       <form onSubmit={handleSubmit} className="bg-knowra-surface rounded-2xl p-5 space-y-3">
         <div>

@@ -44,6 +44,10 @@ Supabase Auth (e-mail/senha + Google OAuth) — ver [ARCHITECTURE.md](ARCHITECTU
 
 Superfícies a considerar quando o Competitive Mode for implementado: manipulação de requisição, alteração de XP/Rating direto no client, replay de respostas (reenviar a mesma resposta certa repetidamente), automação/bots, múltiplas contas, abuso de API, respostas compartilhadas entre usuários, exploração de falhas na fórmula de rating, comportamento estatisticamente anormal (ex: 100% de acerto em questões difíceis num tempo impossível). Não implementar detecção agora — só não desenhar o schema/API de um jeito que torne essas checagens impossíveis depois (ex: sempre calcular Rating no banco via RPC, nunca aceitar Rating vindo do client, mesmo padrão já usado pra XP).
 
+## Webhook do Mercado Pago (implementado 2026-08-15)
+
+`POST /api/assinatura/webhook` é o único endpoint do KnowRa sem `requireAuth` — o Mercado Pago não tem token de usuário pra apresentar. Duas proteções compensam isso: (1) o corpo da notificação nunca é confiável por si só — o handler sempre busca o status real na API do Mercado Pago (`buscarPreapproval`) antes de gravar qualquer coisa, então um POST forjado com `status: "authorized"` não convence nada sem uma preapproval de verdade existindo do lado do Mercado Pago; (2) a escrita em `profiles.plano`/`assinaturas.status` usa `DATABASE_URL` (não `service_role`), mesma credencial de `gerar_questoes.ts` — primeira vez usada em runtime (não só offline), ver DECISIONS.md 2026-08-15 pro motivo. Rate limiting nesse endpoint específico não foi implementado (mesma lacuna geral abaixo) — considerar se abuso for observado, já que hoje não seria bloqueado antes de tentar a API do Mercado Pago.
+
 ## Rate limiting (planejado)
 
 Hoje não há rate limit em `/api/ask` além do custo natural por chamada de IA. Quando o volume de usuários crescer (e principalmente com Competitive Mode, onde há incentivo a automação pra subir no ranking), avaliar rate limit por usuário/IP nos endpoints de IA e de avaliação — não implementar agora, mas registrar como item de segurança pendente, não esquecido.
