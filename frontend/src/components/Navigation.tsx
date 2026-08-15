@@ -30,7 +30,7 @@ export function Navigation() {
 
   return (
     <header className="border-b border-knowra-border bg-knowra-bg sticky top-0 z-40">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between lg:justify-start gap-2 lg:gap-8">
+      <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between lg:justify-start gap-2 lg:gap-6">
         <Link to="/" className="text-lg font-bold shrink-0 tracking-tight leading-none">
           Know<span className="text-knowra-primary">Ra</span>
         </Link>
@@ -40,8 +40,8 @@ export function Navigation() {
             seja entre Perfil e o ícone de sequência) proporcional à largura
             sobrando na tela. O bloco fica com respiração fixa e consistente,
             sem tentar preencher a largura do header. */}
-        <div className="hidden lg:flex items-center gap-8 min-w-0">
-          <nav className="flex items-center gap-6 shrink-0">
+        <div className="hidden lg:flex items-center gap-5 min-w-0">
+          <nav className="flex items-center gap-4 shrink-0">
             {LINKS.map((l) => (
               <Link key={l.to} to={l.to} className={linkClasse(l.to)}>
                 {l.label}
@@ -49,7 +49,7 @@ export function Navigation() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-5 shrink-0">
+          <div className="flex items-center gap-3 shrink-0">
             {profile && profile.streak_atual > 0 && (
               <span
                 className="text-sm text-knowra-text-secondary flex items-center gap-1.5 shrink-0"
