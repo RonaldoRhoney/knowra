@@ -1,60 +1,72 @@
 import { useEffect, useState } from "react";
-import { BADGES } from "../lib/badges";
 import { getNiveis, type Nivel } from "../lib/niveis";
+import type { Profile } from "../types/profile";
+import { ProgressoUsuario } from "./ProgressoUsuario";
 
-export function SimuladorNivel({
-  nivelSimulado,
-  onChange,
-}: {
-  nivelSimulado: number | null;
-  onChange: (nivel: number | null) => void;
-}) {
+/**
+ * Ferramenta de desenvolvimento — pré-visualiza o LevelCard em qualquer
+ * nível, com dado 100% fictício (nunca escreve no banco, nunca afeta
+ * nenhuma conta real). Vive só no Painel ADM, fora do fluxo normal do
+ * usuário (antes ficava dentro da Home, mesmo que gated por role).
+ */
+export function SimuladorNivel() {
   const [niveis, setNiveis] = useState<Nivel[]>([]);
+  const [nivelSelecionado, setNivelSelecionado] = useState(1);
 
   useEffect(() => {
     getNiveis().then(setNiveis);
   }, []);
 
+  const atual = niveis.find((n) => n.nivel === nivelSelecionado);
+  const proximo = niveis.find((n) => n.nivel === nivelSelecionado + 1);
+  const base = atual?.xp_necessario ?? 0;
+  const alvo = proximo?.xp_necessario ?? base;
+  const xpPreview = proximo ? base + Math.round((alvo - base) * 0.5) : base;
+
+  const perfilFicticio: Profile = {
+    id: "preview",
+    nome: "Preview",
+    avatar_url: null,
+    role: "user",
+    nivel_global: nivelSelecionado,
+    xp_total: xpPreview,
+    streak_atual: 3,
+    streak_recorde: 3,
+    rating: 1200,
+    criado_em: new Date().toISOString(),
+    cidade: null,
+    pais: null,
+    idade: null,
+    genero: null,
+    dados_demograficos_consentidos_em: null,
+    nickname: null,
+    aparecer_no_ranking: false,
+  };
+
   return (
-    <div className="bg-knowra-surface/50 border border-dashed border-knowra-primary/30 rounded-2xl p-4 mt-4">
-      <div className="flex items-center justify-between mb-2">
-        <p className="text-xs font-mono uppercase tracking-wide text-knowra-primary">
-          🔍 Modo ADM · Visualizar nível
-        </p>
-        {nivelSimulado !== null && (
-          <button onClick={() => onChange(null)} className="text-xs text-knowra-text/50 hover:text-knowra-text">
-            Sair da simulação
-          </button>
-        )}
-      </div>
-      <p className="text-xs text-knowra-text/40 mb-3">
-        Veja como a tela fica em qualquer nível — não altera seu XP real, é só visualização.
+    <div className="bg-knowra-bg border border-dashed border-knowra-primary/30 rounded-2xl p-4">
+      <p className="text-xs font-mono uppercase tracking-wide text-knowra-primary mb-1">
+        🔍 Preview de nível (ferramenta de desenvolvimento)
       </p>
-      <div className="flex flex-wrap gap-1.5 mb-3">
+      <p className="text-xs text-knowra-text-terciario mb-3">
+        Dado fictício, só pra visualizar o card em qualquer estágio — nunca afeta uma conta real.
+      </p>
+      <div className="flex flex-wrap gap-1.5 mb-4">
         {niveis.map((n) => (
           <button
             key={n.nivel}
-            onClick={() => onChange(n.nivel)}
+            onClick={() => setNivelSelecionado(n.nivel)}
             className={`text-xs px-2.5 py-1 rounded-full border ${
-              nivelSimulado === n.nivel
+              nivelSelecionado === n.nivel
                 ? "border-knowra-primary bg-knowra-primary/15 text-knowra-primary"
-                : "border-white/10 text-knowra-text/60"
+                : "border-knowra-border text-knowra-text-secondary"
             }`}
           >
             {n.nivel} · {n.titulo}
           </button>
         ))}
       </div>
-      <div>
-        <p className="text-xs text-knowra-text/50 mb-1.5">Catálogo de badges</p>
-        <div className="flex flex-wrap gap-1.5">
-          {Object.entries(BADGES).map(([codigo, b]) => (
-            <span key={codigo} title={b.nome} className="text-sm bg-white/5 rounded-full px-2 py-1">
-              {b.icone} <span className="text-[11px] text-knowra-text/60">{b.nome}</span>
-            </span>
-          ))}
-        </div>
-      </div>
+      {niveis.length > 0 && <ProgressoUsuario profile={perfilFicticio} />}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Navigation } from "../components/Navigation";
+import { SimuladorNivel } from "../components/SimuladorNivel";
 import { supabase } from "../lib/supabaseClient";
 import type { Profile } from "../types/profile";
 
@@ -47,6 +48,7 @@ export function Admin() {
   const [cacheStats, setCacheStats] = useState<CacheStats | null>(null);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
+  const [mostrarFerramentas, setMostrarFerramentas] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -195,6 +197,21 @@ export function Admin() {
               </li>
             ))}
           </ul>
+        )}
+      </section>
+
+      <section className="mt-6">
+        <button
+          type="button"
+          onClick={() => setMostrarFerramentas((v) => !v)}
+          className="text-xs text-knowra-text-terciario hover:text-knowra-text-secondary"
+        >
+          {mostrarFerramentas ? "▾" : "▸"} Ferramentas de desenvolvimento
+        </button>
+        {mostrarFerramentas && (
+          <div className="mt-3">
+            <SimuladorNivel />
+          </div>
         )}
       </section>
       </div>
