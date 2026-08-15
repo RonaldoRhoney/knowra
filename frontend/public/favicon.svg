@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" fill="none">
+  <rect width="192" height="192" rx="42" fill="#0B0F1A"/>
+  <rect width="192" height="192" rx="42" fill="url(#knowra-glow)" fill-opacity="0.4"/>
+  <line x1="96" y1="96" x2="96" y2="52" stroke="#7C3AED" stroke-width="3.5" stroke-linecap="round" stroke-opacity="0.6"/>
+  <line x1="96" y1="96" x2="134" y2="118" stroke="#7C3AED" stroke-width="3.5" stroke-linecap="round" stroke-opacity="0.6"/>
+  <line x1="96" y1="96" x2="58" y2="118" stroke="#7C3AED" stroke-width="3.5" stroke-linecap="round" stroke-opacity="0.6"/>
+  <line x1="96" y1="96" x2="128" y2="66" stroke="#38BDF8" stroke-width="3" stroke-linecap="round" stroke-opacity="0.45"/>
+  <circle cx="96" cy="96" r="17" fill="#38BDF8"/>
+  <circle cx="96" cy="52" r="7" fill="#7C3AED"/>
+  <circle cx="134" cy="118" r="7" fill="#7C3AED"/>
+  <circle cx="58" cy="118" r="7" fill="#7C3AED"/>
+  <circle cx="128" cy="66" r="5" fill="#38BDF8" fill-opacity="0.8"/>
+  <defs>
+    <radialGradient id="knowra-glow" cx="0" cy="0" r="1" gradientTransform="translate(96 96) rotate(90) scale(110)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7C3AED"/>
+      <stop offset="1" stop-color="#7C3AED" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+</svg>

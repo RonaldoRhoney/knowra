@@ -1,7 +1,9 @@
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { supabase } from "../lib/supabaseClient";
+
+const TAMANHO_MAX_MB = 3;
 
 const GENEROS = [
   { valor: "feminino", label: "Feminino" },
@@ -20,8 +22,57 @@ export function Perfil() {
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [salvo, setSalvo] = useState(false);
+  const [enviandoAvatar, setEnviandoAvatar] = useState(false);
+  const [erroAvatar, setErroAvatar] = useState<string | null>(null);
+  const inputAvatarRef = useRef<HTMLInputElement>(null);
 
   if (!profile) return null;
+
+  async function handleAvatarChange(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file || !session) return;
+
+    setErroAvatar(null);
+
+    if (!file.type.startsWith("image/")) {
+      setErroAvatar("Escolha um arquivo de imagem.");
+      return;
+    }
+    if (file.size > TAMANHO_MAX_MB * 1024 * 1024) {
+      setErroAvatar(`A imagem precisa ter até ${TAMANHO_MAX_MB}MB.`);
+      return;
+    }
+
+    setEnviandoAvatar(true);
+    const extensao = file.name.split(".").pop() ?? "jpg";
+    const caminho = `${session.user.id}/avatar.${extensao}`;
+
+    const { error: erroUpload } = await supabase.storage
+      .from("avatars")
+      .upload(caminho, file, { upsert: true, contentType: file.type });
+
+    if (erroUpload) {
+      setErroAvatar("Não foi possível enviar a foto agora. Tente novamente.");
+      setEnviandoAvatar(false);
+      return;
+    }
+
+    const { data } = supabase.storage.from("avatars").getPublicUrl(caminho);
+    const urlComCacheBust = `${data.publicUrl}?v=${Date.now()}`;
+
+    const { error: erroUpdate } = await supabase
+      .from("profiles")
+      .update({ avatar_url: urlComCacheBust })
+      .eq("id", session.user.id);
+
+    if (erroUpdate) {
+      setErroAvatar("Foto enviada, mas não foi possível atualizar o perfil. Tente novamente.");
+    } else {
+      await refreshProfile();
+    }
+    setEnviandoAvatar(false);
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -57,19 +108,45 @@ export function Perfil() {
         </Link>
       </header>
 
-      <div className="flex items-center gap-3 mb-6">
-        {profile.avatar_url ? (
-          <img src={profile.avatar_url} alt="" className="w-14 h-14 rounded-full object-cover" />
-        ) : (
-          <div className="w-14 h-14 rounded-full bg-knowra-primary/20 text-knowra-primary grid place-items-center text-xl font-semibold">
-            {(profile.nome ?? "?").charAt(0).toUpperCase()}
+      <div className="flex items-center gap-3 mb-2">
+        <button
+          type="button"
+          onClick={() => inputAvatarRef.current?.click()}
+          disabled={enviandoAvatar}
+          className="relative w-14 h-14 shrink-0 rounded-full group"
+          title="Trocar foto de perfil"
+        >
+          {profile.avatar_url ? (
+            <img src={profile.avatar_url} alt="" className="w-14 h-14 rounded-full object-cover" />
+          ) : (
+            <div className="w-14 h-14 rounded-full bg-knowra-primary/20 text-knowra-primary grid place-items-center text-xl font-semibold">
+              {(profile.nome ?? "?").charAt(0).toUpperCase()}
+            </div>
+          )}
+          <div className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity grid place-items-center text-[10px]">
+            {enviandoAvatar ? "..." : "Trocar"}
           </div>
-        )}
+        </button>
+        <input
+          ref={inputAvatarRef}
+          type="file"
+          accept="image/*"
+          onChange={handleAvatarChange}
+          className="hidden"
+        />
         <div>
           <p className="text-sm font-medium">{profile.nome ?? "Sem nome"}</p>
           <p className="text-xs text-knowra-text/40">{session?.user.email}</p>
+          <button
+            type="button"
+            onClick={() => inputAvatarRef.current?.click()}
+            className="text-xs text-knowra-accent hover:underline mt-0.5"
+          >
+            Trocar foto
+          </button>
         </div>
       </div>
+      <div className="mb-6">{erroAvatar && <p className="text-sm text-red-400">{erroAvatar}</p>}</div>
 
       <form onSubmit={handleSubmit} className="bg-knowra-surface rounded-2xl p-5 space-y-3">
         <div>

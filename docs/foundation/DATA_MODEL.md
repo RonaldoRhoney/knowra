@@ -136,6 +136,10 @@ Um evento por sessão de login, usado só para observabilidade agregada (disposi
 | `pais` / `regiao` | text, nullable | geolocalização best-effort por IP, calculada no backend — **o IP bruto nunca é persistido**, só o resultado da geolocalização |
 | `criado_em` | timestamptz | |
 
+## Storage — avatares (implementado 2026-08-15)
+
+Bucket `avatars` no Supabase Storage, público para leitura (avatar é imagem de perfil, precisa ser visível), com escrita restrita: cada usuário só pode subir/atualizar/apagar dentro da própria pasta (`{user_id}/avatar.{ext}`), via política de RLS em `storage.objects` checando `(storage.foldername(name))[1] = auth.uid()::text`. Limite de 3MB, só tipos de imagem comuns (`png`/`jpeg`/`webp`/`gif`). `profiles.avatar_url` já tinha grant de `UPDATE` direto pra `authenticated` desde a Fase 1 (skill de admin-padrão não se aplica aqui, é ajuste de perfil comum) — upload não precisou de RPC nova.
+
 ## Regras derivadas do modelo
 
 * `xp_total` e `nivel_global` em `profiles` são **derivados**, recalculados a partir de `desafios.xp_ganho` — não devem ser a fonte de verdade editável diretamente pelo frontend (ver [SECURITY.md](SECURITY.md), risco de manipulação de XP).
