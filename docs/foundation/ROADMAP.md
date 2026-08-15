@@ -113,9 +113,19 @@ Preparação arquitetural para o Competitive Mode, sem UI competitiva pública a
 
 **Critério de conclusão**: ✅ admin consegue iniciar e encerrar uma temporada, o encerramento congela ranking+liga+percentual de cada usuário elegível e distribui badge de liga, e o usuário consegue ver sua liga atual e o histórico de temporadas passadas — testado em produção com bloqueio de segurança confirmado (não-admin não consegue iniciar/encerrar).
 
-## FASE 9+ — Social *(futuro, fora de escopo por ora)*
+## FASE 9+ — Social *(futuro, fora de escopo por ora — levantamento técnico feito 2026-08-15)*
 
-Amigos, desafios entre usuários, eventos. Não iniciar sem pedido explícito e sem as fases anteriores validadas com uso real.
+Amigos, desafios entre usuários, eventos. Não iniciar código sem pedido explícito **e** sem as fases anteriores validadas com uso real — condição ainda não atingida em 2026-08-15 (uso de produção ainda muito baixo). Pedido explícito de avançar foi dado nesta data, mas a decisão foi planejar sem codificar, respeitando a segunda condição.
+
+**Restrição de design herdada de [VISION.md](VISION.md) §O que NÃO queremos nos tornar**: "uma rede social de conhecimento onde o foco vira competição/vaidade em vez de aprendizado" é um anti-goal explícito do produto — qualquer feature social aqui precisa reforçar aprendizado, nunca virar métrica de vaidade (contagem pública de seguidores, feed de comparação, pressão social vazia).
+
+**Decomposição dos três itens, com perguntas em aberto pro Ronaldo decidir antes de qualquer migration:**
+
+1. **Amigos** — "seguir" unidirecional (mais simples, mas mais parecido com rede social de vaidade) vs. amizade com aceite mútuo (mais alinhado ao anti-goal do VISION.md, sem contagem pública de seguidores). Não decidido.
+2. **Desafios entre usuários** — recomendação técnica: reaproveitar o banco de **Questões** (Fase 7, correção determinística, zero custo de IA por tentativa) em vez de abrir um novo tipo de desafio no Knowledge Mode (que envolveria IA/custo de novo). Não decidido.
+3. **Eventos** — item mais subespecificado do ROADMAP original; pode ser torneio temporário (Temporada só entre amigos), notificação de atividade, ou outra coisa. Precisa de definição de produto antes de qualquer desenho técnico.
+
+Ver [DECISIONS.md](DECISIONS.md) pro registro completo desse levantamento.
 
 ---
 

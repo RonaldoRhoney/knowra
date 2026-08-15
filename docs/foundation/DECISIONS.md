@@ -166,6 +166,13 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 **Testado**: usuário comum bloqueado tentando iniciar/encerrar temporada (RPC admin-only), segunda temporada ativa bloqueada pelo índice único, snapshot conferido em transação com rollback — nada de teste ficou em produção.
 **Status**: schema+RPCs+frontend (`/temporadas`, com controles de admin na mesma página) implementados e publicados.
 
+## 2026-08-15 — Fase 9 (Social): levantamento técnico, sem código
+
+**Contexto**: Ronaldo pediu explicitamente pra seguir pra Fase 9. `ROADMAP.md` já registrava uma trava dupla ("não iniciar sem pedido explícito e sem as fases anteriores validadas com uso real") — o pedido explícito veio, mas a validação com uso real ainda não (produção com pouquíssimo uso até agora). Sinalizei o conflito em vez de decidir silenciosamente (regra do `CLAUDE.md` §3); Ronaldo escolheu planejar sem codificar.
+**Restrição de design identificada**: `VISION.md` §O que NÃO queremos nos tornar já lista "rede social de conhecimento onde o foco vira competição/vaidade em vez de aprendizado" como anti-goal explícito — qualquer feature social precisa reforçar aprendizado, nunca virar métrica de vaidade pública.
+**Decisões técnicas em aberto** (nenhuma decidida ainda, registradas em `ROADMAP.md` §Fase 9): amizade bidirecional vs. seguir unidirecional; desafio entre usuários reaproveitando Questões (Fase 7, recomendado — zero custo de IA) vs. novo tipo de desafio no Knowledge Mode; definição do que é "evento".
+**Status**: nenhum schema, migration ou código escrito. Só documentação/planejamento.
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).
