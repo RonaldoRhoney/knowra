@@ -10,3 +10,4 @@ build/
 .expo/
 *.pem
 coverage/
+*.tsbuildinfo
