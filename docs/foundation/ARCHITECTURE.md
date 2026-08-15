@@ -95,3 +95,42 @@ knowra/
 ```
 
 Estrutura pode ser ajustada com justificativa técnica na hora da Fase 1 — não travar decisão de tooling específico (ex.: Next.js vs. Vite+React puro) antes de avaliar necessidade real de SSR.
+
+---
+
+## Engines conceituais (atualização 2026-08-15 — planejado, não implementado)
+
+> Ver [DECISIONS.md](DECISIONS.md). O objetivo é nomear as camadas de forma genérica desde já, pra Concursos Públicos (e outros domínios futuros: ENEM, vestibulares, certificações) serem **consumidores** dessas capacidades em vez de forçar um redesenho. Nada aqui exige mudar o código já escrito das Fases 1-3 — é sobre como as próximas camadas se encaixam por cima.
+
+```text
+User
+ ↓
+Knowledge Engine        (áreas, tópicos, perguntas — já implementado)
+ ↓
+Question Engine         (Questões estruturadas — planejado, ver KNOWLEDGE_MODEL.md)
+ ↓
+Assessment Engine       (avaliação — hoje é a lógica dentro de avaliar_desafio(), generalizar quando Questão existir)
+ ↓
+Progression Engine      (XP, nível, streak, badges — já implementado, hoje dentro das RPCs da Fase 3)
+ ↓
+Competition Engine      (Rating, Ranking, Seasons, Leagues — planejado)
+```
+
+Nomenclatura deliberadamente **não** usa "ConcursoEngine" nem qualquer nome atrelado a um domínio específico — evita que o núcleo fique rígido quando outro domínio (ENEM, certificação) for adicionado. O `Competition Engine` consome resultados do `Assessment`/`Progression Engine`, nunca calcula XP/Rating por conta própria.
+
+## Question Provider Layer (planejado)
+
+```text
+KnowRa → Question Engine → Provider Layer → Provider A / Provider B / banco próprio KnowRa / geração por IA
+```
+
+Cada provider (fonte de Questões) deve poder ter, quando implementado: configuração, autenticação, limite de requisições, custo, origem, licença, status, estratégia de sincronização, tratamento de erros — mesmo princípio de abstração por adapter já descrito em [AI_ENGINE.md](AI_ENGINE.md) §Provider Abstraction, mas para fontes de conteúdo em vez de modelos de IA. **Não implementar integrações reais agora** — só não acoplar o schema/código a um único fornecedor de questões quando o Question Engine for construído.
+
+## Onde o código atual se encaixa
+
+| Hoje (implementado) | Engine conceitual | Observação |
+|---|---|---|
+| `areas`, `perguntas` | Knowledge Engine | sem mudança necessária |
+| `desafios` (Fase 3) | Assessment Engine (caso Knowledge Mode) | fica como está; Competitive Mode ganha tabela própria, ver [KNOWLEDGE_MODEL.md](KNOWLEDGE_MODEL.md) |
+| RPCs `avaliar_desafio`/XP/nível/streak/badges | Progression Engine | lógica já centralizada no banco, reaproveitável |
+| — | Question Engine, Competition Engine, Provider Layer | não existem ainda, só desenhados aqui |

@@ -46,3 +46,27 @@ Seguir o padrão RhoneyInc: usar modelos Claude da Anthropic como provedor princ
 * Não deixar a avaliação (etapa mais sensível a XP) sem *structured output* — nota solta em texto livre é frágil para calcular XP de forma confiável.
 * Não expor prompts de sistema ou chaves de API no frontend — chamadas de IA são sempre server-side (ver [SECURITY.md](SECURITY.md) e [ARCHITECTURE.md](ARCHITECTURE.md)).
 * Não prometer "resposta perfeita sempre" — tratar erro/indisponibilidade da IA com mensagem humana (ver `CLAUDE.md` §Tratamento de erros no padrão dos produtos irmãos).
+
+---
+
+## Funções futuras da IA no Competitive Mode/Concursos (planejado)
+
+> Atualização 2026-08-15 — não implementar agora, só considerar na arquitetura. Ver [DECISIONS.md](DECISIONS.md).
+
+Além das três funções do MVP (responder, desafiar, avaliar), a IA poderá futuramente: explicar respostas e alternativas de Questões estruturadas, gerar Questões originais (identificadas como conteúdo gerado, nunca confundidas com Questão oficial de fonte externa — ver [KNOWLEDGE_MODEL.md](KNOWLEDGE_MODEL.md)), adaptar dificuldade dinamicamente, identificar assuntos fracos do usuário, criar simulados, gerar desafios personalizados, recomendar conteúdo, analisar desempenho, criar planos de estudo.
+
+**Regra**: a IA **não é fonte absoluta de verdade**, principalmente para legislação, concursos e assuntos técnicos. Toda Questão gerada por IA precisa de mecanismo de validação, versionamento e marcação clara de origem — nunca apresentada com a mesma autoridade de uma Questão oficial de banca sem essa marcação.
+
+## Provider Abstraction (planejado)
+
+Hoje o AI Engine chama a Anthropic diretamente (`backend/src/lib/anthropic.ts`) — aceitável para o MVP, mas a arquitetura de longo prazo não deve ficar acoplada a um único fornecedor:
+
+```text
+Usuário → Aplicação → AI Orchestrator → Provider Abstraction → Claude / OpenAI / outro provider
+```
+
+Quando isso importar de verdade (custo, disponibilidade, ou necessidade de um modelo diferente por tarefa), introduzir uma camada `AIProvider` com uma interface única (`responder`, `avaliar`, `gerarDesafio`) implementada por adapters por fornecedor — sem reescrever `askQuestion.ts` e futuros serviços, só trocar o adapter por trás. Não implementar essa abstração agora (over-engineering pro estágio atual), só não fechar a porta pra ela.
+
+## Custo de IA (planejado)
+
+Nem toda interação deve necessariamente usar o modelo mais caro disponível — avaliar no futuro: classificação com modelos menores (já é o caso, usamos Haiku), cache de respostas repetidas, roteamento de modelo por complexidade da tarefa, processamento assíncrono, limites/quotas por usuário. **Custo por usuário deve virar métrica de produto** (ver [SECURITY.md](SECURITY.md) §Observabilidade).

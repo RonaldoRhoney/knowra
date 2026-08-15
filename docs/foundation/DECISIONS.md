@@ -68,6 +68,21 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 **Decisão/registro**: após o Ronaldo adicionar crédito na conta Anthropic, o fluxo completo foi testado em `knowra.rhoneyinc.com` — pergunta real enviada, resposta da IA e classificação de área ("Apresentação do KnowRa") confirmadas gravadas na tabela `perguntas` via `psql`.
 **Status**: ✅ Fase 2 formalmente concluída.
 
+## 2026-08-15 — Atualização Oficial da Foundation: Competitive Mode, Concursos, Ranking
+
+**Contexto**: recebido `KnowRaV0.1/KNOWRA ATUALIZAÇÃO OFICIAL.md`, atualizando o briefing original com duas capacidades estratégicas futuras — Módulo de Concursos Públicos e Sistema de Ranking/Competição — a serem consideradas desde a Foundation, mas **não implementadas agora**.
+**Conflito identificado e resolvido com o Ronaldo**: o projeto já estava na Fase 3 (Gamification) em produção — migration de `desafios`/`badges`/`niveis`/XP já aplicada ao banco real, backend/frontend ainda não construídos. O documento novo pede explicitamente para não avançar código e voltar à Fase 0. Opções apresentadas: pausar Fase 3 e atualizar Foundation primeiro / terminar Fase 3 e documentar depois / fazer os dois em paralelo. **Ronaldo escolheu pausar a Fase 3** e atualizar toda a Foundation primeiro, seguindo a atualização oficial à risca.
+**Decisão**: os 8 documentos de fundação afetados (`PRODUCT.md`, `GAME_RULES.md`, `KNOWLEDGE_MODEL.md`, `AI_ENGINE.md`, `ARCHITECTURE.md`, `DATA_MODEL.md`, `SECURITY.md`, `ROADMAP.md`) foram atualizados com as seções exigidas na atualização oficial (§27 do documento). `DECISIONS.md` (este arquivo) registra o pivot. `VISION.md`, `CORE_LOOP.md` e `UX_PRINCIPLES.md` não precisaram de mudança estrutural — o Core Loop é explicitamente mantido ("não deve ser alterado sem justificativa explícita").
+**Impacto no código já escrito**: a migration `0004_game.sql` (níveis, badges, desafios, RPCs de XP) continua válida e compatível com a visão nova — não precisou de rollback, só não foi commitada/deployada até esta atualização de documentação ser aprovada. Os endpoints de backend e a UI de desafio da Fase 3, que ainda não tinham sido escritos, ficam pendentes de retomada.
+**Status**: Foundation atualizada, aguardando aprovação do Ronaldo pra retomar a Fase 3.
+
+## DEC-001 — Separação entre XP e Rating
+
+**Contexto**: XP representa progressão dentro do KnowRa (Knowledge Mode); Rating representará desempenho competitivo (Competitive Mode, planejado).
+**Decisão**: manter os dois sistemas independentes — nunca usar XP como critério de ranking competitivo, nunca misturar as duas métricas no mesmo campo/cálculo.
+**Motivo**: evitar que volume de atividade acumulado ao longo do tempo determine diretamente competência competitiva — um usuário com meses de XP acumulado não é necessariamente melhor competidor do que alguém mais recente com poucas tentativas de altíssima precisão. Regra classificada como **obrigatória** na atualização oficial da Foundation.
+**Consequência**: quando o Competitive Mode for implementado (Fase 5+), o sistema precisa de mecanismos de cálculo independentes para progressão (XP, já implementado) e competição (Rating, a definir) — ver [GAME_RULES.md](GAME_RULES.md) §Rating e [DATA_MODEL.md](DATA_MODEL.md).
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).

@@ -36,6 +36,27 @@ Como XP tem valor de progressão (afeta nível, badges, percepção de conquista
 
 Supabase Auth (e-mail/senha + Google OAuth) — ver [ARCHITECTURE.md](ARCHITECTURE.md). Nunca armazenar senha em texto puro (Supabase Auth já cobre isso nativamente, não reimplementar). Sessão via token gerenciado pelo SDK do Supabase, não implementar JWT customizado.
 
+---
+
+## Anti-cheat (planejado — Competitive Mode, atualização 2026-08-15)
+
+> Ver [DECISIONS.md](DECISIONS.md). Ranking/Rating amplia o risco de segurança em relação ao Knowledge Mode: lá, manipular o próprio XP só infla um número pessoal; num ranking competitivo, manipular Rating/posição afeta a percepção de justiça pra **todos os usuários**. Regra: nenhuma informação crítica de competição é confiável só porque veio do cliente — mesma régua já aplicada a XP (ver §Cuidado específico do KnowRa acima), estendida a Rating.
+
+Superfícies a considerar quando o Competitive Mode for implementado: manipulação de requisição, alteração de XP/Rating direto no client, replay de respostas (reenviar a mesma resposta certa repetidamente), automação/bots, múltiplas contas, abuso de API, respostas compartilhadas entre usuários, exploração de falhas na fórmula de rating, comportamento estatisticamente anormal (ex: 100% de acerto em questões difíceis num tempo impossível). Não implementar detecção agora — só não desenhar o schema/API de um jeito que torne essas checagens impossíveis depois (ex: sempre calcular Rating no banco via RPC, nunca aceitar Rating vindo do client, mesmo padrão já usado pra XP).
+
+## Rate limiting (planejado)
+
+Hoje não há rate limit em `/api/ask` além do custo natural por chamada de IA. Quando o volume de usuários crescer (e principalmente com Competitive Mode, onde há incentivo a automação pra subir no ranking), avaliar rate limit por usuário/IP nos endpoints de IA e de avaliação — não implementar agora, mas registrar como item de segurança pendente, não esquecido.
+
+## LGPD e privacidade (atualização 2026-08-15)
+
+O **perfil de conhecimento do usuário** (histórico de perguntas, respostas, domínio por área, desempenho, futuramente Rating/ranking/histórico competitivo) deve ser tratado como dado pessoal sensível do sistema, não só "dado de produto". Considerar desde já, mesmo sem implementar agora:
+
+* retenção — por quanto tempo histórico de perguntas/desafios fica guardado;
+* exclusão — usuário deve poder pedir exclusão da própria conta e dados associados (`ON DELETE CASCADE` já usado em `profiles`→demais tabelas ajuda, mas exclusão de conta via UI ainda não existe);
+* anonimização — caso dados agregados (ex: médias por área) precisem ser mantidos após exclusão de conta individual;
+* consentimento — principalmente relevante quando o perfil público/ranking for implementado (ver [GAME_RULES.md](GAME_RULES.md) §Privacidade do ranking) — usuário nunca é obrigado a expor dado pessoal pra competir.
+
 ## Antes de cada deploy de produção
 
 Rodar o checklist completo das 5 falhas (grep de segredo hardcoded, verificação de RLS via SQL, grep de `dangerouslySetInnerHTML`/`innerHTML`/`eval`, teste de IDOR manual em pelo menos os endpoints de `desafios` e `profiles`) e registrar o resultado na tabela de status da skill `vibe-coding-5-falhas`, mesmo padrão já aplicado no VoaRadar.

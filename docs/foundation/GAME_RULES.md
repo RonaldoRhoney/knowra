@@ -85,3 +85,51 @@ Não há perda de XP, nível ou streak por errar um desafio. O único efeito de 
 ## Streak
 
 Contagem de dias consecutivos com pelo menos um desafio avaliado (não basta perguntar — precisa fechar o loop). Quebra a sequência não perder XP acumulado, só zera o contador de streak e o bônus associado.
+
+---
+
+## Rating (planejado — Competitive Mode, não implementado)
+
+> Atualização de escopo 2026-08-15 — ver [DECISIONS.md](DECISIONS.md) DEC-001. Regra **obrigatória**: XP e Rating são sistemas independentes, nunca confundir um com o outro.
+
+**XP** representa progressão dentro do KnowRa — quanto o usuário evoluiu, cumulativo, nunca diminui. Determina nível, desbloqueios e conquistas (Knowledge Mode).
+
+**Rating** representa desempenho competitivo — quão bem o usuário se sai *em comparação com outros*, pode subir e descer, usado só em rankings/ligas/competição (Competitive Mode). Nunca usar XP como critério de ranking competitivo — um usuário com muito XP acumulado ao longo de meses não é necessariamente melhor competidor do que alguém mais recente com poucas tentativas, mas altíssima precisão.
+
+Ambos derivam do mesmo dado bruto (desafios avaliados), mas por fórmulas diferentes: XP recompensa volume-com-qualidade ao longo do tempo (nunca decresce); Rating recompensa desempenho relativo recente (pode subir e descer, tipicamente algo no estilo Elo/Glicko, a definir com uma amostra mínima de tentativas pra evitar rating inflado por poucas questões fáceis).
+
+## Ranking justo (planejado)
+
+O ranking **não pode** premiar simplesmente quem respondeu mais perguntas — mesmo princípio de "conhecimento real > farm" já aplicado ao XP, mas com critérios próprios de competição justa:
+
+* precisão, não só volume;
+* dificuldade das questões respondidas;
+* consistência ao longo do tempo;
+* desempenho recente pesa mais que desempenho antigo;
+* quantidade mínima de avaliações antes de aparecer no ranking (evita 1 acerto sorte = topo);
+* qualidade das respostas (não só certo/errado, quando aplicável);
+* eventualmente: tempo de resposta, força relativa dos "adversários"/questões enfrentadas.
+
+Algoritmo definitivo de rating **não é decidido nesta fase** — só a regra de que farm por volume não pode ganhar de desempenho consistente e difícil.
+
+**Dimensões de ranking previstas**: geral, por área (Tecnologia, Ciência, História...), por domínio dentro de área (Tecnologia → Programação → Python), e de concursos (geral, por concurso, por área/disciplina, por banca, por período/temporada).
+
+## Seasons — temporadas (planejado)
+
+Períodos competitivos com início/fim definidos (ex: "KnowRa — Temporada 01", 01/08 a 31/08). Ao final: ranking congela, recompensas/badges são distribuídas, posição percentual e histórico ficam registrados. Fora do MVP — arquitetura só precisa suportar no futuro (ver [DATA_MODEL.md](DATA_MODEL.md)), sem implementação agora.
+
+## Leagues — ligas (planejado)
+
+Progressão competitiva em camadas: Bronze → Prata → Ouro → Platina → Diamante → Mestre → Lenda. Não implementar ainda — só garantir que o modelo de dados e o futuro Competition Engine consigam suportar essa evolução sem redesenho.
+
+## Regras anti-farming (Competitive Mode)
+
+Além de "pergunta = XP está proibido" (já vale pro Knowledge Mode), no Competitive Mode a régua é ainda mais estrita porque envolve comparação entre pessoas: nenhuma métrica de ranking pode ser inflada por repetição de questões fáceis, múltiplas contas, ou automação — ver [SECURITY.md](SECURITY.md) §Anti-cheat.
+
+## Comparativo do usuário (planejado)
+
+O perfil deve poder mostrar, de forma motivadora e nunca humilhante: posição no ranking, percentual ("você está entre os 8% melhores"), comparação global e por área/concurso (meu desempenho vs. média da plataforma). Nunca transformar isso numa experiência negativa — reforça o princípio de UX "simples por fora, sofisticada por dentro" (ver [UX_PRINCIPLES.md](UX_PRINCIPLES.md)).
+
+## Privacidade do ranking (planejado)
+
+Desde a arquitetura: nome público vs. nickname vs. avatar, opção de aparecer ou não em rankings, perfil público vs. privado. O usuário nunca é obrigado a expor dados pessoais pra participar do Competitive Mode — ver [SECURITY.md](SECURITY.md) §LGPD.

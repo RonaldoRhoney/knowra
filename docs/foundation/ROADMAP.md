@@ -45,29 +45,61 @@ Sem código. Produzir a documentação de fundação:
 
 **Critério de conclusão**: ✅ usuário pergunta algo, recebe resposta contextualizada, e consegue ver essa pergunta depois no histórico — testado em produção com pergunta real, resposta da IA e classificação de área gravadas corretamente no banco.
 
-## FASE 3 — Game
+## FASE 3 — Gamification ⏸️ pausada (código escrito, deploy pendente de aprovação)
 
-* Geração de desafio a partir da resposta.
-* Fluxo de avaliação (resposta livre → nota + feedback da IA).
-* Cálculo de XP (fórmula completa, ver [GAME_RULES.md](GAME_RULES.md)).
-* Níveis (tabela fixa de XP necessário).
-* Badges básicas (as listadas em [GAME_RULES.md](GAME_RULES.md)).
+* ✅ Migration aplicada em produção: `niveis`, `badges`, `usuario_badges`, `desafios`, RPCs `criar_desafio`/`avaliar_desafio`/`conceder_badge` — RLS conferido, XP/nível/streak/badge calculados 100% no banco (nunca no client).
+* ✅ Cálculo de XP validado por simulação direta no Postgres (dificuldade × nota × bônus streak/área nova/perfeito).
+* ⏸️ **Pausado em 2026-08-15** antes de construir os endpoints do backend e a UI do frontend — chegou a atualização oficial da Foundation (Competitive Mode/Rating/Concursos) meio a esta fase, e a decisão foi terminar a atualização de documentação antes de continuar o código (ver [DECISIONS.md](DECISIONS.md)).
+* Pendente: geração de desafio via IA + endpoint, fluxo de avaliação (resposta livre → nota + feedback da IA) + endpoint, UI de desafio/avaliação/XP ganho no frontend.
 
-**Critério de conclusão**: Core Loop completo funciona ponta a ponta — pergunta → resposta → desafio → avaliação → XP → badge, quando aplicável.
+**Critério de conclusão**: Core Loop completo funciona ponta a ponta — pergunta → resposta → desafio → avaliação → XP → badge, quando aplicável. *(Banco pronto e testado; falta backend + frontend.)*
 
 ## FASE 4 — Progression
 
 * Perfil completo (nível, XP, taxa de acerto, áreas em destaque).
 * Domínio por área (`progresso_area`, cálculo real a partir de desafios avaliados).
-* Streak (contagem de dias consecutivos).
+* Streak (contagem de dias consecutivos) — já calculado no banco desde a Fase 3, falta só exibir na UI.
 * Missões diárias/semanais simples.
 * Mapa de Conhecimento (visualização, ex.: radar chart por área).
 
 **Critério de conclusão**: usuário enxerga sua evolução de forma visual e consegue voltar por causa da streak/missões.
 
-## FASE 5+ — Social (futuro, fora de escopo por ora)
+---
 
-Amigos, rankings, desafios entre usuários, eventos. Não iniciar sem pedido explícito e sem as fases anteriores validadas com uso real.
+## FASE 5 — Competitive Foundation *(planejado, atualização 2026-08-15)*
+
+Preparação arquitetural para o Competitive Mode, sem UI competitiva ainda visível ao usuário:
+
+* Introduzir **Rating** como conceito separado de XP (ver [GAME_RULES.md](GAME_RULES.md) §Rating) — coluna(s) em `profiles`/tabela própria, calculado só no banco.
+* Generalizar o Assessment Engine (hoje `avaliar_desafio`) pra eventualmente suportar avaliação de `Question` além de `Pergunta` ad-hoc, sem quebrar o fluxo do Knowledge Mode.
+* Fundação de anti-cheat básico (ver [SECURITY.md](SECURITY.md) §Anti-cheat).
+
+**Critério de conclusão**: arquitetura suporta Rating sem nenhuma feature de ranking visível ainda — puramente preparação.
+
+## FASE 6 — Rankings *(planejado)*
+
+* Leaderboard geral, por área, por domínio (ver [GAME_RULES.md](GAME_RULES.md) §Ranking justo).
+* Comparativo do usuário (posição, percentual, comparação com média) na UI de perfil.
+* Privacidade do ranking (nickname, opt-out, perfil público/privado) — ver [SECURITY.md](SECURITY.md) §LGPD.
+
+## FASE 7 — Concursos Públicos *(planejado)*
+
+* `Question`/`QuestionProvider` reais (ver [DATA_MODEL.md](DATA_MODEL.md) e [ARCHITECTURE.md](ARCHITECTURE.md) §Provider Layer).
+* Estrutura de Concurso/Cargo/Banca/Disciplina/Assunto.
+* Ranking de concursos (geral, por concurso, disciplina, banca, período).
+
+## FASE 8 — Seasons & Leagues *(planejado)*
+
+* Temporadas com início/fim, ranking congelado ao final, recompensas.
+* Ligas (Bronze → Lenda) — ver [GAME_RULES.md](GAME_RULES.md).
+
+## FASE 9+ — Social *(futuro, fora de escopo por ora)*
+
+Amigos, desafios entre usuários, eventos. Não iniciar sem pedido explícito e sem as fases anteriores validadas com uso real.
+
+---
+
+Nenhuma fase 5+ tem data ou compromisso — só existem aqui pra Fases 1-4 (já em código) não precisarem de retrabalho estrutural quando essas fases chegarem. Não avançar pra Fase 5 sem aprovação explícita do Ronaldo, mesmo que a arquitetura já esteja pronta pra isso.
 
 ## Publicação
 
