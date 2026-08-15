@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AdminRoute, ProtectedRoute } from "./components/ProtectedRoute";
 import { AuthProvider } from "./contexts/AuthContext";
 import { Admin } from "./pages/Admin";
+import { ComoUsar } from "./pages/ComoUsar";
 import { Home } from "./pages/Home";
 import { Login } from "./pages/Login";
 import { Perfil } from "./pages/Perfil";
@@ -14,6 +15,7 @@ export function App() {
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/como-usar" element={<ComoUsar />} />
           <Route path="/privacidade" element={<Privacidade />} />
           <Route path="/termos" element={<Termos />} />
           <Route

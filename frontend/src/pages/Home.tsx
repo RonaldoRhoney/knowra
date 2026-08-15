@@ -46,6 +46,9 @@ export function Home() {
           <p className="text-sm text-knowra-text/60">Olá, {profile?.nome ?? "explorador"}!</p>
         </div>
         <div className="flex items-center gap-3">
+          <Link to="/como-usar" className="text-xs text-knowra-text/60 hover:text-knowra-text">
+            Como usar
+          </Link>
           <Link to="/perfil" className="text-xs text-knowra-text/60 hover:text-knowra-text">
             Perfil
           </Link>

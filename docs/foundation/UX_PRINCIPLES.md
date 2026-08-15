@@ -26,6 +26,7 @@ Cada etapa deve ter transição visual suave para a próxima — o usuário nunc
 6. **Perfil** — nível, XP total, perguntas feitas, desafios respondidos, taxa de acerto, áreas em destaque. Também é onde o usuário edita seus próprios dados (nome, cidade, país, idade, gênero — implementado 2026-08-15 em `/perfil`), reaproveitando os mesmos campos opcionais do modal de completar cadastro.
 7. **Mapa de Conhecimento** (visualização radar/áreas) — evolução visual por área, comparando com média global quando fizer sentido.
 8. **Missões/Streak** — não é MVP crítico (Fase 4), mas a estrutura visual de streak (sequência de dias) já aparece desde o início por ser simples e altamente motivadora.
+9. **Como usar** (`/como-usar`, implementado 2026-08-15) — passo a passo visual do Core Loop (perguntar → resposta → desafio → XP/nível → progresso), cada passo com uma mini reprodução da tela real ao lado do texto explicativo, não só texto solto. Acessível de dentro do app (Home/rodapé) e também pra quem ainda não logou (link "Como funciona?" na tela de login).
 
 ## Estados obrigatórios em cada tela relevante
 

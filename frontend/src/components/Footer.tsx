@@ -57,6 +57,9 @@ export function Footer() {
             <Link to="/" className="block text-sm text-knowra-text/60 hover:text-knowra-text mb-2.5">
               Início
             </Link>
+            <Link to="/como-usar" className="block text-sm text-knowra-text/60 hover:text-knowra-text mb-2.5">
+              Como usar
+            </Link>
             <Link to="/perfil" className="block text-sm text-knowra-text/60 hover:text-knowra-text mb-2.5">
               Perfil
             </Link>

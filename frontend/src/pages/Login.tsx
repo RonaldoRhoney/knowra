@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 export function Login() {
@@ -28,6 +28,9 @@ export function Login() {
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold">KnowRa</h1>
           <p className="text-sm text-knowra-text/60 mt-2">Transforme sua curiosidade em conhecimento.</p>
+          <Link to="/como-usar" className="text-xs text-knowra-accent hover:underline mt-2 inline-block">
+            Como funciona?
+          </Link>
         </div>
 
         <button
