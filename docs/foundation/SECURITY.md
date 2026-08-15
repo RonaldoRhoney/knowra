@@ -48,6 +48,12 @@ Superfícies a considerar quando o Competitive Mode for implementado: manipulaç
 
 Hoje não há rate limit em `/api/ask` além do custo natural por chamada de IA. Quando o volume de usuários crescer (e principalmente com Competitive Mode, onde há incentivo a automação pra subir no ranking), avaliar rate limit por usuário/IP nos endpoints de IA e de avaliação — não implementar agora, mas registrar como item de segurança pendente, não esquecido.
 
+## LGPD e privacidade — dados demográficos e de sessão (implementado 2026-08-15)
+
+Primeira coleta real de dado pessoal sensível do produto: faixa etária e gênero, sempre **opcionais**, com opção explícita "prefiro não informar", e sem qualquer bloqueio de funcionalidade caso o usuário recuse (card dispensável, RPC `atualizar_demografia` só roda com ação explícita do usuário). `profiles.dados_demograficos_consentidos_em` registra o momento do consentimento — sem isso marcado, o app pergunta de novo na próxima sessão (uma vez por sessão de navegador, não a cada carregamento de tela).
+
+Dispositivo/país/região (tabela `sessoes`) são coletados a cada login para observabilidade agregada — **o IP bruto do usuário nunca é armazenado**, só o resultado já processado da geolocalização (país/região). Geolocalização feita via `ip-api.com` (best-effort — timeout de 2.5s, falha nunca bloqueia login, resultado fica `null`/`null` se a chamada falhar). Nenhuma linha de `sessoes` é exposta individualmente ao client, só agregada via `admin_demographics()` (RPC restrita a admin).
+
 ## LGPD e privacidade (atualização 2026-08-15)
 
 O **perfil de conhecimento do usuário** (histórico de perguntas, respostas, domínio por área, desempenho, futuramente Rating/ranking/histórico competitivo) deve ser tratado como dado pessoal sensível do sistema, não só "dado de produto". Considerar desde já, mesmo sem implementar agora:

@@ -3,31 +3,53 @@ import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import type { Profile } from "../types/profile";
 
+interface Item {
+  nome: string;
+  total: number;
+}
+
 interface Stats {
   total_usuarios: number;
   total_perguntas: number;
   total_desafios_avaliados: number;
   xp_distribuido: number;
-  top_areas: { nome: string; total: number }[];
+  top_areas: Item[];
 }
+
+interface Demographics {
+  dispositivos: Item[];
+  paises: Item[];
+  regioes: Item[];
+  faixas_etarias: Item[];
+  generos: Item[];
+  frequencia_14_dias: { data: string; total: number }[];
+}
+
+const LABEL_DISPOSITIVO: Record<string, string> = { mobile: "Celular", tablet: "Tablet", desktop: "Desktop" };
+const LABEL_GENERO: Record<string, string> = { feminino: "Feminino", masculino: "Masculino", nao_binario: "Não-binário" };
 
 export function Admin() {
   const [usuarios, setUsuarios] = useState<Profile[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
+  const [demografia, setDemografia] = useState<Demographics | null>(null);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
 
   useEffect(() => {
-    Promise.all([supabase.rpc("admin_list_profiles"), supabase.rpc("admin_stats")]).then(
-      ([usuariosRes, statsRes]) => {
-        if (usuariosRes.error || statsRes.error) setErro("Não foi possível carregar os dados do painel.");
-        else {
-          setUsuarios((usuariosRes.data ?? []) as Profile[]);
-          setStats(statsRes.data as Stats);
-        }
-        setCarregando(false);
-      },
-    );
+    Promise.all([
+      supabase.rpc("admin_list_profiles"),
+      supabase.rpc("admin_stats"),
+      supabase.rpc("admin_demographics"),
+    ]).then(([usuariosRes, statsRes, demografiaRes]) => {
+      if (usuariosRes.error || statsRes.error || demografiaRes.error) {
+        setErro("Não foi possível carregar os dados do painel.");
+      } else {
+        setUsuarios((usuariosRes.data ?? []) as Profile[]);
+        setStats(statsRes.data as Stats);
+        setDemografia(demografiaRes.data as Demographics);
+      }
+      setCarregando(false);
+    });
   }, []);
 
   return (
@@ -56,10 +78,27 @@ export function Admin() {
         <MetricaCard icone="⚡" label="XP distribuído" valor={stats?.xp_distribuido} carregando={carregando} />
       </section>
 
+      {demografia && demografia.frequencia_14_dias.some((d) => d.total > 0) && (
+        <section className="bg-knowra-surface rounded-2xl p-5 mb-6">
+          <h2 className="text-sm font-semibold text-knowra-text/80 mb-4">Frequência de uso (14 dias)</h2>
+          <FrequenciaChart dados={demografia.frequencia_14_dias} />
+        </section>
+      )}
+
       {stats && stats.top_areas.length > 0 && (
         <section className="bg-knowra-surface rounded-2xl p-5 mb-6">
           <h2 className="text-sm font-semibold text-knowra-text/80 mb-4">Áreas mais exploradas</h2>
-          <TopAreas areas={stats.top_areas} />
+          <BarList itens={stats.top_areas} />
+        </section>
+      )}
+
+      {demografia && (
+        <section className="grid sm:grid-cols-2 gap-3 mb-6">
+          <PainelBarList titulo="Dispositivos" itens={demografia.dispositivos} labels={LABEL_DISPOSITIVO} />
+          <PainelBarList titulo="Países" itens={demografia.paises} />
+          <PainelBarList titulo="Regiões" itens={demografia.regioes} />
+          <PainelBarList titulo="Faixa etária" itens={demografia.faixas_etarias} />
+          <PainelBarList titulo="Gênero" itens={demografia.generos} labels={LABEL_GENERO} />
         </section>
       )}
 
@@ -99,22 +138,56 @@ export function Admin() {
   );
 }
 
-function TopAreas({ areas }: { areas: { nome: string; total: number }[] }) {
-  const max = Math.max(...areas.map((a) => a.total));
+function PainelBarList({ titulo, itens, labels }: { titulo: string; itens: Item[]; labels?: Record<string, string> }) {
+  if (itens.length === 0) {
+    return (
+      <div className="bg-knowra-surface rounded-2xl p-5">
+        <h2 className="text-sm font-semibold text-knowra-text/80 mb-1">{titulo}</h2>
+        <p className="text-xs text-knowra-text/40">Sem dado suficiente ainda.</p>
+      </div>
+    );
+  }
+  return (
+    <div className="bg-knowra-surface rounded-2xl p-5">
+      <h2 className="text-sm font-semibold text-knowra-text/80 mb-4">{titulo}</h2>
+      <BarList itens={itens} labels={labels} />
+    </div>
+  );
+}
+
+function BarList({ itens, labels }: { itens: Item[]; labels?: Record<string, string> }) {
+  const max = Math.max(...itens.map((i) => i.total));
   return (
     <div className="space-y-2.5">
-      {areas.map((a) => (
-        <div key={a.nome} className="flex items-center gap-3">
-          <span className="text-xs text-knowra-text/60 w-36 shrink-0 truncate" title={a.nome}>
-            {a.nome}
+      {itens.map((item) => (
+        <div key={item.nome} className="flex items-center gap-3">
+          <span className="text-xs text-knowra-text/60 w-28 shrink-0 truncate" title={labels?.[item.nome] ?? item.nome}>
+            {labels?.[item.nome] ?? item.nome}
           </span>
           <div className="flex-1 h-2 rounded-full bg-knowra-bg overflow-hidden">
             <div
               className="h-full rounded-full bg-knowra-accent transition-all duration-500"
-              style={{ width: `${(a.total / max) * 100}%` }}
+              style={{ width: `${(item.total / max) * 100}%` }}
             />
           </div>
-          <span className="text-xs text-knowra-text/40 w-4 text-right shrink-0">{a.total}</span>
+          <span className="text-xs text-knowra-text/40 w-4 text-right shrink-0">{item.total}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function FrequenciaChart({ dados }: { dados: { data: string; total: number }[] }) {
+  const max = Math.max(1, ...dados.map((d) => d.total));
+  return (
+    <div className="flex items-end gap-1.5 h-24">
+      {dados.map((d) => (
+        <div key={d.data} className="flex-1 flex flex-col items-center gap-1 group relative">
+          <div
+            className="w-full rounded-t-sm bg-knowra-accent transition-all duration-500 min-h-[2px]"
+            style={{ height: `${(d.total / max) * 100}%` }}
+            title={`${new Date(d.data + "T00:00:00").toLocaleDateString("pt-BR")}: ${d.total}`}
+          />
         </div>
       ))}
     </div>

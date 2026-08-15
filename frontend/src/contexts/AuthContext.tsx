@@ -1,7 +1,10 @@
 import type { Session } from "@supabase/supabase-js";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { registrarSessao } from "../lib/api";
 import { supabase } from "../lib/supabaseClient";
 import type { Profile } from "../types/profile";
+
+const CHAVE_SESSAO_REGISTRADA = "knowra_sessao_registrada";
 
 interface AuthContextValue {
   session: Session | null;
@@ -26,10 +29,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setProfile(data as Profile | null);
   }
 
+  function registrarSessaoUmaVez() {
+    if (sessionStorage.getItem(CHAVE_SESSAO_REGISTRADA)) return;
+    sessionStorage.setItem(CHAVE_SESSAO_REGISTRADA, "1");
+    registrarSessao().catch(() => {
+      sessionStorage.removeItem(CHAVE_SESSAO_REGISTRADA);
+    });
+  }
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
-      if (data.session) loadProfile(data.session.user.id);
+      if (data.session) {
+        loadProfile(data.session.user.id);
+        registrarSessaoUmaVez();
+      }
       setLoading(false);
     });
 
@@ -37,6 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(newSession);
       if (newSession) {
         loadProfile(newSession.user.id);
+        registrarSessaoUmaVez();
       } else {
         setProfile(null);
       }

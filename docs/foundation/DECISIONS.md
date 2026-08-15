@@ -83,6 +83,14 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 **Motivo**: evitar que volume de atividade acumulado ao longo do tempo determine diretamente competência competitiva — um usuário com meses de XP acumulado não é necessariamente melhor competidor do que alguém mais recente com poucas tentativas de altíssima precisão. Regra classificada como **obrigatória** na atualização oficial da Foundation.
 **Consequência**: quando o Competitive Mode for implementado (Fase 5+), o sistema precisa de mecanismos de cálculo independentes para progressão (XP, já implementado) e competição (Rating, a definir) — ver [GAME_RULES.md](GAME_RULES.md) §Rating e [DATA_MODEL.md](DATA_MODEL.md).
 
+## 2026-08-15 — Painel ADM: demografia e sessão, geolocalização via ip-api.com (free tier)
+
+**Contexto**: pedido do Ronaldo pra Painel ADM mostrar dispositivo, região, país, faixa etária, gênero e frequência de uso, em gráficos.
+**Decisão**: dispositivo/país/região vêm de uma tabela nova `sessoes`, populada a cada login via endpoint `/api/sessao` (parse de User-Agent + geolocalização de IP, sem guardar o IP bruto). Faixa etária/gênero são opcionais, coletados via card de consentimento explícito na Home (nunca obrigatório, nunca bloqueia o produto). Ver [DATA_MODEL.md](DATA_MODEL.md) e [SECURITY.md](SECURITY.md) §LGPD.
+**Bug encontrado e corrigido**: a primeira versão de `admin_demographics()` tinha uma coluna `dia` ambígua na query de frequência (alias de `generate_series` colidindo com alias da subquery) — corrigido em `0007_fix_admin_demographics.sql`, testado antes e depois da correção via simulação de `auth.uid()` no psql.
+**⚠️ Atenção pra reavaliar**: geolocalização usa `ip-api.com`, cujo tier gratuito **proíbe uso comercial** nos termos de serviço. Isso é aceitável enquanto o KnowRa não cobra nada, mas **precisa ser revisto antes de qualquer monetização** (ver conversa sobre modelo freemium) — trocar por um provedor pago/com licença comercial (ex: ipapi.co pago, MaxMind GeoIP2) nesse momento.
+**Status**: implementado e testado (RPCs validadas via psql, build limpo, deploy em produção).
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).

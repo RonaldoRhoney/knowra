@@ -43,3 +43,7 @@ export function gerarDesafio(perguntaId: string): Promise<Desafio> {
 export function avaliarDesafio(desafioId: string, resposta: string): Promise<ResultadoAvaliacao> {
   return apiPost<ResultadoAvaliacao>(`/api/desafios/${desafioId}/avaliar`, { resposta });
 }
+
+export function registrarSessao(): Promise<{ ok: boolean }> {
+  return apiPost<{ ok: boolean }>("/api/sessao");
+}

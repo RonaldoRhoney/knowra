@@ -111,6 +111,30 @@ areas 1─N areas (auto-relação, parent_id)
 
 **Não assumir que todo conceito acima vira tabela** — vários são agregados, views ou colunas dentro de tabelas já existentes. Essa decisão é tomada na hora de cada Fase futura implementar, com o schema real na frente (skill `verificar-premissas`), não especulativamente agora.
 
+---
+
+## Analytics/demografia (implementado 2026-08-15)
+
+### `profiles` — colunas adicionais
+
+| Coluna | Tipo | Notas |
+|---|---|---|
+| `faixa_etaria` | text, nullable | opcional, com `prefiro_nao_informar` como opção explícita — nunca obrigatório |
+| `genero` | text, nullable | idem |
+| `dados_demograficos_consentidos_em` | timestamptz, nullable | marca quando o usuário deu consentimento explícito (mesmo que a resposta tenha sido "prefiro não informar") — usado pra nunca perguntar de novo |
+
+### `sessoes`
+
+Um evento por sessão de login, usado só para observabilidade agregada (dispositivo/país/região) — nunca exposto por linha individual ao client, só via `admin_demographics()`.
+
+| Coluna | Tipo | Notas |
+|---|---|---|
+| `id` | uuid | PK |
+| `usuario_id` | uuid (FK → `profiles.id`) | |
+| `dispositivo` | text | `mobile` \| `tablet` \| `desktop`, derivado de User-Agent no backend |
+| `pais` / `regiao` | text, nullable | geolocalização best-effort por IP, calculada no backend — **o IP bruto nunca é persistido**, só o resultado da geolocalização |
+| `criado_em` | timestamptz | |
+
 ## Regras derivadas do modelo
 
 * `xp_total` e `nivel_global` em `profiles` são **derivados**, recalculados a partir de `desafios.xp_ganho` — não devem ser a fonte de verdade editável diretamente pelo frontend (ver [SECURITY.md](SECURITY.md), risco de manipulação de XP).
