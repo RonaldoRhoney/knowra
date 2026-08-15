@@ -179,6 +179,7 @@ function PainelBarList({ titulo, itens, labels }: { titulo: string; itens: Item[
 const PALETA_CATEGORICA = ["#38BDF8", "#7C3AED", "#34D399", "#FBBF24", "#E879F9", "#FB923C"];
 
 function Donut({ itens, labels }: { itens: Item[]; labels?: Record<string, string> }) {
+  const [emFoco, setEmFoco] = useState<number | null>(null);
   const total = itens.reduce((soma, i) => soma + i.total, 0);
   const raio = 40;
   const circunferencia = 2 * Math.PI * raio;
@@ -187,31 +188,62 @@ function Donut({ itens, labels }: { itens: Item[]; labels?: Record<string, strin
 
   return (
     <div className="flex items-center gap-5">
-      <svg viewBox="0 0 100 100" className="w-24 h-24 shrink-0 -rotate-90">
-        {itens.map((item, i) => {
-          const fracao = total > 0 ? item.total / total : 0;
-          const arcoDeg = Math.max(fracao * 360 - gapDeg, 0);
-          const arcoLen = (arcoDeg / 360) * circunferencia;
-          const dashoffset = -((anguloAcumulado / 360) * circunferencia);
-          anguloAcumulado += fracao * 360;
-          return (
-            <circle
-              key={item.nome}
-              cx="50"
-              cy="50"
-              r={raio}
-              fill="none"
-              stroke={PALETA_CATEGORICA[i % PALETA_CATEGORICA.length]}
-              strokeWidth="16"
-              strokeDasharray={`${arcoLen} ${circunferencia}`}
-              strokeDashoffset={dashoffset}
-            />
-          );
-        })}
-      </svg>
+      <div className="relative w-24 h-24 shrink-0">
+        <svg viewBox="0 0 100 100" className="w-24 h-24 -rotate-90">
+          {itens.map((item, i) => {
+            const fracao = total > 0 ? item.total / total : 0;
+            const arcoDeg = Math.max(fracao * 360 - gapDeg, 0);
+            const arcoLen = (arcoDeg / 360) * circunferencia;
+            const dashoffset = -((anguloAcumulado / 360) * circunferencia);
+            anguloAcumulado += fracao * 360;
+            const focado = emFoco === i;
+            const apagado = emFoco !== null && !focado;
+            return (
+              <circle
+                key={item.nome}
+                cx="50"
+                cy="50"
+                r={raio}
+                fill="none"
+                stroke={PALETA_CATEGORICA[i % PALETA_CATEGORICA.length]}
+                strokeWidth={focado ? "18" : "16"}
+                strokeDasharray={`${arcoLen} ${circunferencia}`}
+                strokeDashoffset={dashoffset}
+                opacity={apagado ? 0.35 : 1}
+                className="transition-all duration-150 cursor-pointer"
+                onMouseEnter={() => setEmFoco(i)}
+                onMouseLeave={() => setEmFoco(null)}
+              >
+                <title>
+                  {`${labels?.[item.nome] ?? item.nome}: ${item.total} (${
+                    total > 0 ? Math.round((item.total / total) * 100) : 0
+                  }%)`}
+                </title>
+              </circle>
+            );
+          })}
+        </svg>
+        <div className="absolute inset-0 grid place-items-center pointer-events-none">
+          <div className="text-center">
+            <p className="text-lg font-bold leading-none">
+              {emFoco !== null ? itens[emFoco].total : total}
+            </p>
+            <p className="text-[10px] text-knowra-text/40 mt-0.5">
+              {emFoco !== null ? "selecionado" : "total"}
+            </p>
+          </div>
+        </div>
+      </div>
       <div className="flex-1 min-w-0 space-y-1.5">
         {itens.map((item, i) => (
-          <div key={item.nome} className="flex items-center gap-2 text-xs">
+          <div
+            key={item.nome}
+            className={`flex items-center gap-2 text-xs cursor-pointer transition-opacity ${
+              emFoco !== null && emFoco !== i ? "opacity-40" : ""
+            }`}
+            onMouseEnter={() => setEmFoco(i)}
+            onMouseLeave={() => setEmFoco(null)}
+          >
             <span
               className="w-2.5 h-2.5 rounded-full shrink-0"
               style={{ backgroundColor: PALETA_CATEGORICA[i % PALETA_CATEGORICA.length] }}
