@@ -30,12 +30,12 @@ export function Navigation() {
 
   return (
     <header className="border-b border-knowra-border bg-knowra-bg sticky top-0 z-40">
-      <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between gap-4">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-6">
         <Link to="/" className="text-lg font-bold shrink-0 tracking-tight">
           Know<span className="text-knowra-primary">Ra</span>
         </Link>
 
-        <nav className="hidden lg:flex items-center gap-5 flex-1">
+        <nav className="hidden lg:flex items-center gap-6 flex-1">
           {LINKS.map((l) => (
             <Link key={l.to} to={l.to} className={linkClasse(l.to)}>
               {l.label}
@@ -43,23 +43,28 @@ export function Navigation() {
           ))}
         </nav>
 
-        <div className="hidden lg:flex items-center gap-4 shrink-0">
+        <div className="hidden lg:flex items-center gap-5 shrink-0">
           {profile && profile.streak_atual > 0 && (
-            <span className="text-sm text-knowra-text-secondary flex items-center gap-1" title="Sequência atual">
-              🔥 <span className="font-semibold text-knowra-text">{profile.streak_atual}</span>
+            <span
+              className="text-sm text-knowra-text-secondary flex items-center gap-1.5 shrink-0"
+              title="Sequência atual"
+            >
+              <span aria-hidden>🔥</span>
+              <span className="font-semibold text-knowra-text">{profile.streak_atual}</span>
             </span>
           )}
           {profile?.role === "admin" && (
             <Link
               to="/admin"
-              className="text-xs font-medium px-2.5 py-1 rounded-full bg-knowra-warning/15 text-knowra-warning border border-knowra-warning/30"
+              className="text-xs font-medium px-3 py-1.5 rounded-full bg-knowra-warning/15 text-knowra-warning border border-knowra-warning/30 whitespace-nowrap shrink-0"
             >
               Painel ADM
             </Link>
           )}
+          <span className="w-px h-5 bg-knowra-border shrink-0" aria-hidden />
           <button
             onClick={signOut}
-            className="text-sm text-knowra-text-secondary hover:text-knowra-text transition-colors"
+            className="text-sm text-knowra-text-secondary hover:text-knowra-text transition-colors shrink-0"
           >
             Sair
           </button>
