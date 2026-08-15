@@ -1,6 +1,9 @@
 import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
+import { BadgesVitrine } from "../components/BadgesVitrine";
+import { DesafioCard } from "../components/DesafioCard";
 import { HistoricoPerguntas } from "../components/HistoricoPerguntas";
+import { ProgressoUsuario } from "../components/ProgressoUsuario";
 import { useAuth } from "../contexts/AuthContext";
 import { askQuestion, type AskResponse } from "../lib/api";
 
@@ -11,6 +14,7 @@ export function Home() {
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [historicoVersao, setHistoricoVersao] = useState(0);
+  const [badgesVersao, setBadgesVersao] = useState(0);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -32,12 +36,10 @@ export function Home() {
 
   return (
     <div className="min-h-screen px-4 py-8 max-w-lg mx-auto">
-      <header className="flex items-center justify-between mb-8">
+      <header className="flex items-center justify-between mb-4">
         <div>
           <h1 className="text-xl font-bold">KnowRa</h1>
-          <p className="text-sm text-knowra-text/60">
-            Olá, {profile?.nome ?? "explorador"}! Nível {profile?.nivel_global ?? 1}
-          </p>
+          <p className="text-sm text-knowra-text/60">Olá, {profile?.nome ?? "explorador"}!</p>
         </div>
         <div className="flex items-center gap-3">
           {profile?.role === "admin" && (
@@ -51,7 +53,10 @@ export function Home() {
         </div>
       </header>
 
-      <form onSubmit={handleSubmit} className="bg-knowra-surface rounded-2xl p-4">
+      {profile && <ProgressoUsuario profile={profile} />}
+      <BadgesVitrine atualizarQuando={badgesVersao} />
+
+      <form onSubmit={handleSubmit} className="bg-knowra-surface rounded-2xl p-4 mt-4">
         <textarea
           value={pergunta}
           onChange={(e) => setPergunta(e.target.value)}
@@ -76,10 +81,15 @@ export function Home() {
       {resposta && (
         <div className="bg-knowra-surface rounded-2xl p-5 mt-4">
           <p className="text-sm text-knowra-text/90 whitespace-pre-wrap">{resposta.resposta_ia}</p>
-          <p className="text-xs text-knowra-text/40 mt-4">
-            Você acabou de aprender algo novo. O desafio pra testar seu conhecimento chega na Fase 3.
-          </p>
         </div>
+      )}
+
+      {resposta && (
+        <DesafioCard
+          key={resposta.id}
+          perguntaId={resposta.id}
+          onAvaliado={() => setBadgesVersao((v) => v + 1)}
+        />
       )}
 
       {!resposta && !erro && (

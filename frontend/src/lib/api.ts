@@ -1,4 +1,5 @@
 import { supabase } from "./supabaseClient";
+import type { Desafio, ResultadoAvaliacao } from "../types/desafio";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -10,23 +11,35 @@ export interface AskResponse {
   criado_em: string;
 }
 
-export async function askQuestion(texto: string): Promise<AskResponse> {
+async function apiPost<T>(path: string, body?: unknown): Promise<T> {
   const {
     data: { session },
   } = await supabase.auth.getSession();
 
   if (!session) throw new Error("Sessão expirada. Faça login novamente.");
 
-  const res = await fetch(`${API_URL}/api/ask`, {
+  const res = await fetch(`${API_URL}${path}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${session.access_token}`,
     },
-    body: JSON.stringify({ texto }),
+    body: body ? JSON.stringify(body) : undefined,
   });
 
   const data = await res.json();
-  if (!res.ok) throw new Error(data.error ?? "Não foi possível processar sua pergunta agora.");
-  return data as AskResponse;
+  if (!res.ok) throw new Error(data.error ?? "Algo deu errado. Tente novamente.");
+  return data as T;
+}
+
+export function askQuestion(texto: string): Promise<AskResponse> {
+  return apiPost<AskResponse>("/api/ask", { texto });
+}
+
+export function gerarDesafio(perguntaId: string): Promise<Desafio> {
+  return apiPost<Desafio>(`/api/perguntas/${perguntaId}/desafio`);
+}
+
+export function avaliarDesafio(desafioId: string, resposta: string): Promise<ResultadoAvaliacao> {
+  return apiPost<ResultadoAvaliacao>(`/api/desafios/${desafioId}/avaliar`, { resposta });
 }

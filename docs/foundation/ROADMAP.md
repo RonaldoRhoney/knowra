@@ -45,14 +45,15 @@ Sem código. Produzir a documentação de fundação:
 
 **Critério de conclusão**: ✅ usuário pergunta algo, recebe resposta contextualizada, e consegue ver essa pergunta depois no histórico — testado em produção com pergunta real, resposta da IA e classificação de área gravadas corretamente no banco.
 
-## FASE 3 — Gamification ⏸️ pausada (código escrito, deploy pendente de aprovação)
+## FASE 3 — Gamification ✅ concluída (2026-08-15)
 
-* ✅ Migration aplicada em produção: `niveis`, `badges`, `usuario_badges`, `desafios`, RPCs `criar_desafio`/`avaliar_desafio`/`conceder_badge` — RLS conferido, XP/nível/streak/badge calculados 100% no banco (nunca no client).
-* ✅ Cálculo de XP validado por simulação direta no Postgres (dificuldade × nota × bônus streak/área nova/perfeito).
-* ⏸️ **Pausado em 2026-08-15** antes de construir os endpoints do backend e a UI do frontend — chegou a atualização oficial da Foundation (Competitive Mode/Rating/Concursos) meio a esta fase, e a decisão foi terminar a atualização de documentação antes de continuar o código (ver [DECISIONS.md](DECISIONS.md)).
-* Pendente: geração de desafio via IA + endpoint, fluxo de avaliação (resposta livre → nota + feedback da IA) + endpoint, UI de desafio/avaliação/XP ganho no frontend.
+* ✅ Migration em produção: `niveis`, `badges`, `usuario_badges`, `desafios`, RPCs `criar_desafio`/`avaliar_desafio`/`conceder_badge` — RLS conferido, XP/nível/streak/badge calculados 100% no banco.
+* ✅ Backend: geração de desafio via IA (`gerarDesafio`) e avaliação (`avaliarDesafio`), endpoints `/api/perguntas/:id/desafio` e `/api/desafios/:id/avaliar`.
+* ✅ Frontend: fluxo completo — "quer testar seu conhecimento?" → enunciado com chip de dificuldade → resposta livre → resultado com nota (gauge circular), feedback, XP ganho, celebração de subida de nível, badges novas.
+* ✅ Polimento visual pós-feedback do Ronaldo ("muito simples e sem poder atrativo"): barra de XP com progresso até o próximo nível, streak em destaque, vitrine de badges conquistadas — Home deixou de ser texto plano.
+* ✅ Painel ADM atualizado com métricas reais (perguntas, desafios avaliados, XP distribuído — antes placeholder "chega na Fase 2/3") e visualização de áreas mais exploradas.
 
-**Critério de conclusão**: Core Loop completo funciona ponta a ponta — pergunta → resposta → desafio → avaliação → XP → badge, quando aplicável. *(Banco pronto e testado; falta backend + frontend.)*
+**Critério de conclusão**: ✅ Core Loop completo funciona ponta a ponta — pergunta → resposta → desafio → avaliação → XP → badge — testado em produção.
 
 ## FASE 4 — Progression
 
