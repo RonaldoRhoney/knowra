@@ -24,17 +24,11 @@ PGPASSWORD='<senha-do-banco>' psql "postgresql://postgres@db.<project-ref>.supab
 
 Rode em ordem numérica. Cada migration já inclui `ENABLE ROW LEVEL SECURITY` e os `GRANT`/`REVOKE` corretos — nunca aplicar uma tabela nova sem isso (ver [docs/foundation/SECURITY.md](docs/foundation/SECURITY.md)).
 
-## ⚠️ Login social com Google — configuração manual pendente
+## ✅ Login social com Google — configurado
 
-O código já está pronto (`signInWithOAuth({ provider: "google" })` em `frontend/src/contexts/AuthContext.tsx`), mas **falta uma etapa manual que só pode ser feita no navegador**, fora do alcance do Claude Code:
+Provider Google habilitado no Supabase Dashboard (`Authentication → Providers → Google`), usando um Client ID/Secret criado no mesmo projeto Google Cloud do MeuPet (`meupet-501512`, projeto guarda-chuva de OAuth da RhoneyInc — não é um projeto por produto). `Authentication → URL Configuration` tem Site URL `https://knowra.rhoneyinc.com` e Redirect URLs `http://localhost:5173/**` + `https://knowra.rhoneyinc.com/**`. Validado em produção em 2026-08-15 (ver [DECISIONS.md](docs/foundation/DECISIONS.md)).
 
-1. No [Google Cloud Console](https://console.cloud.google.com/), criar (ou reaproveitar, se já existir um projeto OAuth da RhoneyInc) um **OAuth Client ID** do tipo "Web application".
-2. Nas **Authorized redirect URIs**, adicionar a URL de callback do Supabase — está em `Supabase Dashboard → Authentication → Providers → Google` (o próprio Supabase mostra a URL exata a copiar, formato `https://<project-ref>.supabase.co/auth/v1/callback`).
-3. Copiar o **Client ID** e o **Client Secret** gerados no Google Cloud.
-4. No Supabase Dashboard do projeto KnowRa: `Authentication → Providers → Google` → habilitar → colar Client ID e Client Secret → salvar.
-5. Em **Authentication → URL Configuration**, garantir que `https://knowra.rhoneyinc.com` (e `http://localhost:5173` para dev) estão na lista de **Redirect URLs** permitidas.
-
-Até essa etapa ser feita, o botão "Continuar com Google" aparece na tela de login mas retorna erro do Supabase (provider não habilitado). O login por e-mail/senha já funciona sem essa configuração.
+Se precisar recriar/rotacionar a credencial: `console.cloud.google.com/apis/credentials?project=meupet-501512` → criar novo Client ID "Web application" → redirect URI `https://kgymvpxzbuojxxjpjmos.supabase.co/auth/v1/callback` → colar no Supabase.
 
 ## ⚠️ Nota: rate limit de e-mail no cadastro por senha
 

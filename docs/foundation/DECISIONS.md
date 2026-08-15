@@ -44,11 +44,12 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 **Motivo**: login, Home e Painel ADM da Fase 1 falam direto com Supabase (Auth + RPC) — nenhuma feature atual depende do backend Node/Express, que existe só como esqueleto pronto para o AI Engine da Fase 2 (chamadas de IA nunca podem ser client-side, ver [AI_ENGINE.md](AI_ENGINE.md)).
 **Impacto**: nenhum — quando a Fase 2 precisar do backend rodando, ele será publicado (Vercel serverless, mesmo padrão usado no MeuPet para o backend de push notifications).
 
-## 2026-08-15 — Login social Google: código pronto, ativação manual pendente
+## 2026-08-15 — Login social Google: configurado e validado em produção
 
-**Decisão**: o fluxo `signInWithOAuth({ provider: "google" })` já está implementado no frontend, mas a ativação do provider Google no Supabase Dashboard (Client ID/Secret do Google Cloud Console) é uma etapa manual que só pode ser feita pelo Ronaldo no navegador — documentada em [`SETUP.md`](../../SETUP.md).
-**Motivo**: criação de credenciais OAuth no Google Cloud Console não é acessível via código/CLI sem acesso à conta Google do usuário.
-**Status**: pendente — login por e-mail/senha já funciona; login Google retorna erro até a configuração manual ser concluída.
+**Decisão**: o fluxo `signInWithOAuth({ provider: "google" })` já estava implementado no frontend; a ativação (Google Cloud Console + Supabase Dashboard) foi concluída pelo Ronaldo, guiada passo a passo. Reaproveitado o mesmo projeto Google Cloud do MeuPet (`meupet-501512`) — é o projeto "guarda-chuva" de OAuth da RhoneyInc, não um projeto por produto — com um novo Client ID ("KnowRa Supabase") específico para o redirect do Supabase do KnowRa.
+**Motivo**: criação de credenciais OAuth no Google Cloud Console não é acessível via código/CLI, exigiu ação manual no navegador.
+**Ajuste necessário**: `Authentication → URL Configuration` no Supabase precisou de Site URL (`https://knowra.rhoneyinc.com`) e Redirect URLs (`http://localhost:5173/**`, `https://knowra.rhoneyinc.com/**`) explícitas — sem isso, o OAuth caía no `localhost:3000` padrão do Supabase (conexão recusada).
+**Status**: ✅ validado em produção — login com `rhoneyinc@gmail.com` via Google cria a conta, popula nome/avatar do Google e reconhece admin automaticamente.
 
 ## Como registrar novas decisões
 
