@@ -13,6 +13,8 @@ interface Stats {
   total_perguntas: number;
   total_desafios_avaliados: number;
   xp_distribuido: number;
+  total_acessos: number;
+  acessos_hoje: number;
   top_areas: Item[];
 }
 
@@ -77,6 +79,8 @@ export function Admin() {
           carregando={carregando}
         />
         <MetricaCard icone="⚡" label="XP distribuído" valor={stats?.xp_distribuido} carregando={carregando} />
+        <MetricaCard icone="📈" label="Acessos totais" valor={stats?.total_acessos} carregando={carregando} />
+        <MetricaCard icone="🕐" label="Acessos hoje" valor={stats?.acessos_hoje} carregando={carregando} />
       </section>
 
       {demografia && demografia.frequencia_14_dias.some((d) => d.total > 0) && (
