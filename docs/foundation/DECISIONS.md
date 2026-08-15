@@ -91,6 +91,14 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 **⚠️ Atenção pra reavaliar**: geolocalização usa `ip-api.com`, cujo tier gratuito **proíbe uso comercial** nos termos de serviço. Isso é aceitável enquanto o KnowRa não cobra nada, mas **precisa ser revisto antes de qualquer monetização** (ver conversa sobre modelo freemium) — trocar por um provedor pago/com licença comercial (ex: ipapi.co pago, MaxMind GeoIP2) nesse momento.
 **Status**: implementado e testado (RPCs validadas via psql, build limpo, deploy em produção).
 
+## 2026-08-15 — Modal "Complete seu cadastro" pós-login (Nome, Cidade, País, Idade, Gênero)
+
+**Contexto**: pedido do Ronaldo pra alertar o usuário após login com Google a completar o cadastro com Nome, Cidade, Idade (opcional), País e Gênero.
+**Decisão**: modal em destaque (não um card discreto) aparece uma vez por sessão de navegador até o usuário efetivamente salvar — só **Nome** é obrigatório pra salvar (já vem preenchido do Google, então na prática nunca bloqueia); Cidade, País, Idade e Gênero continuam 100% opcionais, mantendo a regra de LGPD já estabelecida (nunca obrigar dado sensível). RPC `completar_cadastro()` substitui `atualizar_demografia()`.
+**Idade substitui faixa etária**: campo de faixa fixa (`<18`/`18-24`/...) foi removido do schema — agora coleta idade exata (opcional), e o Painel ADM calcula o bucket a partir dela. Mais simples pro usuário preencher e mais útil pro admin (permite média real, não só faixa).
+**Cidade/País autodeclarados vs. inferidos**: `profiles.cidade`/`profiles.pais` (o que o usuário digita no cadastro) são conceitualmente diferentes de `sessoes.pais`/`sessoes.regiao` (o que a geolocalização de IP infere a cada login) — os dois convivem no Painel ADM como métricas separadas, não devem ser fundidos num único conceito.
+**Status**: implementado, testado via simulação de `auth.uid()` no psql, publicado em produção.
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).

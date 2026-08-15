@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { BadgesVitrine } from "../components/BadgesVitrine";
-import { DemografiaCard } from "../components/DemografiaCard";
+import { CompletarCadastroModal } from "../components/CompletarCadastroModal";
 import { DesafioCard } from "../components/DesafioCard";
 import { HistoricoPerguntas } from "../components/HistoricoPerguntas";
 import { ProgressoUsuario } from "../components/ProgressoUsuario";
@@ -100,7 +100,7 @@ export function Home() {
       )}
 
       <HistoricoPerguntas atualizarQuando={historicoVersao} />
-      <DemografiaCard />
+      <CompletarCadastroModal />
     </div>
   );
 }

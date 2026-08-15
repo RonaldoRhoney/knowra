@@ -119,9 +119,10 @@ areas 1─N areas (auto-relação, parent_id)
 
 | Coluna | Tipo | Notas |
 |---|---|---|
-| `faixa_etaria` | text, nullable | opcional, com `prefiro_nao_informar` como opção explícita — nunca obrigatório |
-| `genero` | text, nullable | idem |
-| `dados_demograficos_consentidos_em` | timestamptz, nullable | marca quando o usuário deu consentimento explícito (mesmo que a resposta tenha sido "prefiro não informar") — usado pra nunca perguntar de novo |
+| `idade` | int, nullable | opcional, 1-120. Substituiu o campo de faixa etária fixa (`<18`/`18-24`/...) — o Painel ADM calcula o bucket a partir da idade exata, não pede mais a faixa diretamente |
+| `cidade` / `pais` | text, nullable | autodeclarados pelo usuário no cadastro — distintos de `sessoes.pais`/`sessoes.regiao`, que são inferidos por geolocalização de IP a cada login |
+| `genero` | text, nullable | opcional, com `prefiro_nao_informar` como opção explícita — nunca obrigatório |
+| `dados_demograficos_consentidos_em` | timestamptz, nullable | marca quando o usuário completou o cadastro (RPC `completar_cadastro`) — usado pra nunca perguntar de novo |
 
 ### `sessoes`
 

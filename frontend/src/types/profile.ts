@@ -8,7 +8,9 @@ export interface Profile {
   streak_atual: number;
   streak_recorde: number;
   criado_em: string;
-  faixa_etaria: string | null;
+  cidade: string | null;
+  pais: string | null;
+  idade: number | null;
   genero: string | null;
   dados_demograficos_consentidos_em: string | null;
 }

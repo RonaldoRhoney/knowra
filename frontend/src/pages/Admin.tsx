@@ -20,6 +20,7 @@ interface Demographics {
   dispositivos: Item[];
   paises: Item[];
   regioes: Item[];
+  cidades: Item[];
   faixas_etarias: Item[];
   generos: Item[];
   frequencia_14_dias: { data: string; total: number }[];
@@ -97,6 +98,7 @@ export function Admin() {
           <PainelBarList titulo="Dispositivos" itens={demografia.dispositivos} labels={LABEL_DISPOSITIVO} />
           <PainelBarList titulo="Países" itens={demografia.paises} />
           <PainelBarList titulo="Regiões" itens={demografia.regioes} />
+          <PainelBarList titulo="Cidades" itens={demografia.cidades} />
           <PainelBarList titulo="Faixa etária" itens={demografia.faixas_etarias} />
           <PainelBarList titulo="Gênero" itens={demografia.generos} labels={LABEL_GENERO} />
         </section>
