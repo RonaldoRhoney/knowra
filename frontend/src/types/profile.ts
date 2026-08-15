@@ -7,6 +7,7 @@ export interface Profile {
   xp_total: number;
   streak_atual: number;
   streak_recorde: number;
+  rating: number;
   criado_em: string;
   cidade: string | null;
   pais: string | null;

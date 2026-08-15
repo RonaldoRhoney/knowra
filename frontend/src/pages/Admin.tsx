@@ -127,7 +127,8 @@ export function Admin() {
                     )}
                   </div>
                   <p className="text-xs text-knowra-text/40">
-                    Nível {u.nivel_global} · desde {new Date(u.criado_em).toLocaleDateString("pt-BR")}
+                    Nível {u.nivel_global} · Rating {u.rating} · desde{" "}
+                    {new Date(u.criado_em).toLocaleDateString("pt-BR")}
                   </p>
                 </div>
                 <span className="text-sm font-semibold text-knowra-accent shrink-0">{u.xp_total} XP</span>

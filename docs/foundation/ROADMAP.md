@@ -68,15 +68,16 @@ Sem código. Produzir a documentação de fundação:
 
 ---
 
-## FASE 5 — Competitive Foundation *(planejado, atualização 2026-08-15)*
+## FASE 5 — Competitive Foundation ✅ concluída (2026-08-15)
 
-Preparação arquitetural para o Competitive Mode, sem UI competitiva ainda visível ao usuário:
+Preparação arquitetural para o Competitive Mode, sem UI competitiva pública ainda:
 
-* Introduzir **Rating** como conceito separado de XP (ver [GAME_RULES.md](GAME_RULES.md) §Rating) — coluna(s) em `profiles`/tabela própria, calculado só no banco.
-* Generalizar o Assessment Engine (hoje `avaliar_desafio`) pra eventualmente suportar avaliação de `Question` além de `Pergunta` ad-hoc, sem quebrar o fluxo do Knowledge Mode.
-* Fundação de anti-cheat básico (ver [SECURITY.md](SECURITY.md) §Anti-cheat).
+* ✅ **Rating** (`profiles.rating`, default 1200) separado de XP (DEC-001) — calculado dentro de `avaliar_desafio()`, fórmula v1 baseada em desempenho relativo à nota 50, escalada por dificuldade. Algoritmo **não é definitivo** (ver [GAME_RULES.md](GAME_RULES.md) §Rating) — só a separação estrutural precisava existir nesta fase.
+* ✅ Fundação de anti-cheat: `avaliar_desafio()` agora rejeita avaliação enviada em menos de 3 segundos após a criação do desafio (testado — bloqueia envio instantâneo, não bloqueia uso normal).
+* ✅ Rating visível **só no Painel ADM** (interno, ao lado de nível/XP na lista de usuários) — nenhum ranking público, nenhuma UI competitiva exposta ao usuário comum, conforme o critério de conclusão.
+* ⏳ Generalizar o Assessment Engine pra `Question` (Concursos) **não foi feito** — decisão consciente de adiar até a Fase 7 existir de verdade, pra não generalizar código especulativamente sem o caso de uso real na frente (mesmo princípio de `DATA_MODEL.md`).
 
-**Critério de conclusão**: arquitetura suporta Rating sem nenhuma feature de ranking visível ainda — puramente preparação.
+**Critério de conclusão**: ✅ arquitetura suporta Rating sem nenhuma feature de ranking visível ainda.
 
 ## FASE 6 — Rankings *(planejado)*
 

@@ -137,6 +137,13 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 **Sinalização "requer verificação"**: implementada no mesmo lote — pedido do Ronaldo pra assuntos complexos terem uma indicação de checar fonte oficial. Decisão: **nunca gerar um link real via IA sem busca web** (risco de alucinação de citação); a IA sinaliza `requer_verificacao` + uma frase indicando que tipo de fonte checar, nunca uma URL. Busca web real (Anthropic web search tool) fica registrada como opção futura caso o Ronaldo queira link de verdade depois.
 **Diretriz de Concursos Públicos confirmada**: fonte de questões deve vir de APIs públicas legalmente disponíveis, nunca scraping/cópia sem licença — já registrado em `KNOWLEDGE_MODEL.md`.
 
+## 2026-08-15 — Fase 5 (Competitive Foundation): Rating + anti-cheat básico
+
+**Decisão**: `profiles.rating` (default 1200, estilo Elo) implementado e calculado dentro de `avaliar_desafio()` — nunca no client, nunca a partir de XP. Fórmula v1: `delta = round((nota - 50) / 50 * 8 * peso_dificuldade)`, piso em 0. **Não é o algoritmo final** — GAME_RULES.md já registra que critérios como consistência, amostra mínima e desempenho recente ficam pra quando o ranking (Fase 6) existir de verdade; esta fase só precisava da separação estrutural entre XP e Rating existir e ser calculada corretamente.
+**Anti-cheat básico**: `avaliar_desafio()` rejeita avaliação enviada em menos de 3 segundos após a criação do desafio — testado em transação única (sem esse controle, um bot poderia criar+avaliar instantaneamente). Validado: bloqueia o caso instantâneo, não interfere no uso humano normal (nenhuma pessoa lê e responde um desafio em menos de 3s).
+**Visibilidade**: Rating aparece **só no Painel ADM** por enquanto (ao lado de nível/XP na lista de usuários) — sem ranking público, sem badge/UI competitiva pro usuário comum, conforme o critério de conclusão da fase ("preparação, não feature visível").
+**Adiado conscientemente**: generalizar o Assessment Engine pra suportar `Question` (Concursos) — ficaria especulativo sem o caso de uso real da Fase 7 na frente; revisitar quando essa fase começar de verdade.
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).
