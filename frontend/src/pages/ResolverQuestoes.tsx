@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Footer } from "../components/Footer";
+import { Navigation } from "../components/Navigation";
 import { useAuth } from "../contexts/AuthContext";
 import { supabase } from "../lib/supabaseClient";
 
@@ -88,16 +89,17 @@ export function ResolverQuestoes({ modo }: { modo: "concurso" | "area" }) {
 
   return (
     <div>
+      <Navigation />
       <div className="px-4 py-8 max-w-lg mx-auto">
         <header className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-xl font-bold">{titulo || "Questões"}</h1>
-            <p className="text-sm text-knowra-text/60">
+            <h1 className="text-h2">{titulo || "Questões"}</h1>
+            <p className="text-sm text-knowra-text-secondary mt-0.5">
               {modo === "concurso" ? "Treino de concurso" : "Prática livre por disciplina"}
             </p>
           </div>
-          <Link to="/concursos" className="text-xs text-knowra-text/60 hover:text-knowra-text">
-            Voltar
+          <Link to="/concursos" className="text-xs text-knowra-text-secondary hover:text-knowra-text shrink-0">
+            ← Catálogo
           </Link>
         </header>
 

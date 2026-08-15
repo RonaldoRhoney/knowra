@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { Footer } from "../components/Footer";
+import { Navigation } from "../components/Navigation";
 import { useAuth } from "../contexts/AuthContext";
 import { supabase } from "../lib/supabaseClient";
 
@@ -114,16 +114,12 @@ export function Ranking() {
 
   return (
     <div>
+      <Navigation />
       <div className="px-4 py-8 max-w-lg mx-auto">
-        <header className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-xl font-bold">Ranking</h1>
-            <p className="text-sm text-knowra-text/60">Como você se compara na plataforma</p>
-          </div>
-          <Link to="/" className="text-xs text-knowra-text/60 hover:text-knowra-text">
-            Voltar
-          </Link>
-        </header>
+        <div className="mb-6">
+          <h1 className="text-h2">Ranking</h1>
+          <p className="text-sm text-knowra-text-secondary mt-0.5">Como você se compara na plataforma</p>
+        </div>
 
         {meuRanking && (
           <section className="bg-knowra-surface rounded-2xl p-5 mb-6">

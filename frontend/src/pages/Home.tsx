@@ -1,5 +1,4 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { Link } from "react-router-dom";
 import { BadgesVitrine } from "../components/BadgesVitrine";
 import { CompletarCadastroModal } from "../components/CompletarCadastroModal";
 import { DesafioCard } from "../components/DesafioCard";
@@ -7,6 +6,7 @@ import { Footer } from "../components/Footer";
 import { HistoricoPerguntas } from "../components/HistoricoPerguntas";
 import { MensagemAcesso } from "../components/MensagemAcesso";
 import { MissoesDiarias } from "../components/MissoesDiarias";
+import { Navigation } from "../components/Navigation";
 import { ProgressoUsuario } from "../components/ProgressoUsuario";
 import { SimuladorNivel } from "../components/SimuladorNivel";
 import { useAuth } from "../contexts/AuthContext";
@@ -14,7 +14,7 @@ import { askQuestion, type AskResponse } from "../lib/api";
 import { getNiveis } from "../lib/niveis";
 
 export function Home() {
-  const { profile, signOut } = useAuth();
+  const { profile } = useAuth();
   const [pergunta, setPergunta] = useState("");
   const [resposta, setResposta] = useState<AskResponse | null>(null);
   const [carregando, setCarregando] = useState(false);
@@ -60,41 +60,12 @@ export function Home() {
 
   return (
     <div className="min-h-screen flex flex-col">
+    <Navigation />
     <div className="px-4 py-8 max-w-lg mx-auto flex-1 w-full">
-      <header className="flex items-center justify-between mb-4">
-        <div>
-          <h1 className="text-xl font-bold">KnowRa</h1>
-          <p className="text-sm text-knowra-text/60">Olá, {profile?.nome ?? "explorador"}!</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link to="/como-usar" className="text-xs text-knowra-text/60 hover:text-knowra-text">
-            Como usar
-          </Link>
-          <Link to="/mapa" className="text-xs text-knowra-text/60 hover:text-knowra-text">
-            Mapa
-          </Link>
-          <Link to="/ranking" className="text-xs text-knowra-text/60 hover:text-knowra-text">
-            Ranking
-          </Link>
-          <Link to="/concursos" className="text-xs text-knowra-text/60 hover:text-knowra-text">
-            Concursos
-          </Link>
-          <Link to="/temporadas" className="text-xs text-knowra-text/60 hover:text-knowra-text">
-            Temporadas
-          </Link>
-          <Link to="/perfil" className="text-xs text-knowra-text/60 hover:text-knowra-text">
-            Perfil
-          </Link>
-          {profile?.role === "admin" && (
-            <Link to="/admin" className="text-xs text-knowra-accent hover:underline">
-              Painel ADM
-            </Link>
-          )}
-          <button onClick={signOut} className="text-xs text-knowra-text/60 hover:text-knowra-text">
-            Sair
-          </button>
-        </div>
-      </header>
+      <div className="mb-5">
+        <h1 className="text-h2">Olá, {profile?.nome ?? "explorador"} 👋</h1>
+        <p className="text-sm text-knowra-text-secondary mt-0.5">Continue sua jornada de conhecimento.</p>
+      </div>
 
       {nivelSimulado !== null && (
         <div className="bg-knowra-primary text-white text-xs font-medium text-center py-1.5 rounded-lg mb-3">

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { Footer } from "../components/Footer";
+import { Navigation } from "../components/Navigation";
 import { supabase } from "../lib/supabaseClient";
 
 interface Progresso {
@@ -31,16 +31,14 @@ export function MapaConhecimento() {
 
   return (
     <div>
+      <Navigation />
       <div className="px-4 py-8 max-w-lg mx-auto">
-        <header className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-xl font-bold">Mapa de Conhecimento</h1>
-            <p className="text-sm text-knowra-text/60">Seu domínio por área, baseado nos desafios avaliados</p>
-          </div>
-          <Link to="/" className="text-xs text-knowra-text/60 hover:text-knowra-text">
-            Voltar
-          </Link>
-        </header>
+        <div className="mb-8">
+          <h1 className="text-h2">Mapa de Conhecimento</h1>
+          <p className="text-sm text-knowra-text-secondary mt-0.5">
+            Seu domínio por área, baseado nos desafios avaliados
+          </p>
+        </div>
 
         {carregando && <p className="text-sm text-knowra-text/40">Carregando...</p>}
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Navigation } from "../components/Navigation";
 import { supabase } from "../lib/supabaseClient";
 import type { Profile } from "../types/profile";
 
@@ -68,16 +68,13 @@ export function Admin() {
   }, []);
 
   return (
-    <div className="min-h-screen px-4 py-8 max-w-3xl mx-auto">
-      <header className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-xl font-bold">Painel ADM</h1>
-          <p className="text-sm text-knowra-text/60">KnowRa</p>
-        </div>
-        <Link to="/" className="text-xs text-knowra-text/60 hover:text-knowra-text">
-          Voltar
-        </Link>
-      </header>
+    <div className="min-h-screen">
+      <Navigation />
+      <div className="px-4 py-8 max-w-3xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-h2">Painel ADM</h1>
+        <p className="text-sm text-knowra-text-secondary mt-0.5">KnowRa</p>
+      </div>
 
       {erro && <p className="text-sm text-red-400 mb-4">{erro}</p>}
 
@@ -200,6 +197,7 @@ export function Admin() {
           </ul>
         )}
       </section>
+      </div>
     </div>
   );
 }

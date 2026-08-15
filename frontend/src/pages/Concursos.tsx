@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Footer } from "../components/Footer";
+import { Navigation } from "../components/Navigation";
 import { useAuth } from "../contexts/AuthContext";
 import { supabase } from "../lib/supabaseClient";
 
@@ -39,16 +40,12 @@ export function Concursos() {
 
   return (
     <div>
+      <Navigation />
       <div className="px-4 py-8 max-w-lg mx-auto">
-        <header className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-xl font-bold">Concursos</h1>
-            <p className="text-sm text-knowra-text/60">Pratique com questões objetivas</p>
-          </div>
-          <Link to="/" className="text-xs text-knowra-text/60 hover:text-knowra-text">
-            Voltar
-          </Link>
-        </header>
+        <div className="mb-4">
+          <h1 className="text-h2">Concursos</h1>
+          <p className="text-sm text-knowra-text-secondary mt-0.5">Pratique com questões objetivas</p>
+        </div>
 
         <div className="bg-knowra-accent/10 border border-knowra-accent/20 rounded-xl px-4 py-3 mb-6">
           <p className="text-xs text-knowra-text/70">

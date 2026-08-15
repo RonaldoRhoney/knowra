@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "r
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { Footer } from "../components/Footer";
+import { Navigation } from "../components/Navigation";
 import { supabase } from "../lib/supabaseClient";
 
 const TAMANHO_MAX_MB = 3;
@@ -158,16 +159,12 @@ export function Perfil() {
 
   return (
     <div>
+    <Navigation />
     <div className="px-4 py-8 max-w-md mx-auto">
-      <header className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-xl font-bold">Perfil</h1>
-          <p className="text-sm text-knowra-text/60">Gerencie suas informações</p>
-        </div>
-        <Link to="/" className="text-xs text-knowra-text/60 hover:text-knowra-text">
-          Voltar
-        </Link>
-      </header>
+      <div className="mb-8">
+        <h1 className="text-h2">Perfil</h1>
+        <p className="text-sm text-knowra-text-secondary mt-0.5">Gerencie suas informações</p>
+      </div>
 
       <div className="flex items-center gap-3 mb-2">
         <button
