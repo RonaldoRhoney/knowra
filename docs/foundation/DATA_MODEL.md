@@ -89,24 +89,33 @@ areas 1─N areas (auto-relação, parent_id)
 
 ---
 
-## Entidades futuras (planejado — Competitive Mode/Concursos, atualização 2026-08-15)
+## Concursos Públicos (implementado — Fase 7a, 2026-08-15)
 
-> Ver [DECISIONS.md](DECISIONS.md). Conceitual, não é migration — não criar essas tabelas agora. Listado aqui pra próxima Fase que tocar nisso não precisar redesenhar do zero, e pra deixar claro que nem todo conceito abaixo vira tabela (alguns são agregados/value objects).
+> Ver [DECISIONS.md](DECISIONS.md) e [KNOWLEDGE_MODEL.md](KNOWLEDGE_MODEL.md) §Pergunta vs Questão vs Desafio. `Question`/`ChallengeAttempt`/`Contest`/`Subject`, antes listados como "futuros" abaixo, agora existem como schema real.
+
+| Conceito | Tabela real | Notas |
+|---|---|---|
+| `Contest` | `concursos` | `nome`, `orgao`, `banca`, `ano`, `cargo` (atributo simples — vira entidade própria só quando houver necessidade real de reutilização/filtro) |
+| `Subject` | reaproveita `areas` | `questoes.area_id` referencia a mesma árvore de conhecimento — nenhuma tabela `disciplinas` criada |
+| `Question` | `questoes` | enunciado, alternativas (jsonb), gabarito, explicação, dificuldade, `origem` (`text` com `CHECK` já extensível pra `ia_knowra`/`provider_licensed`/`manual`/`import_licensed`), `review_status` (`generated`→`pending_review`→`approved`→`published`), metadados de auditoria (`generation_model`, `prompt_version`, `generated_at`) |
+| `ChallengeAttempt` | `tentativas_questao` | paralela a `desafios`, nunca reaproveita — toda tentativa é gravada, `valida_para_progresso` marca só a primeira por questão/usuário |
+| `Answer` / `Evaluation` | colunas em `tentativas_questao` (`alternativa_escolhida`, `correta`) | mesmo padrão já validado em `desafios` |
+| — | `progresso_concurso` | mesmo molde de `progresso_area`, fonte de dado separada — só `responder_questao()` escreve aqui |
+
+`QuestionProvider` (integração real com fonte externa) **ainda não existe** — MVP usa só `ia_knowra` como origem, schema já preparado pra não exigir redesenho quando um provider real for integrado (ver [ARCHITECTURE.md](ARCHITECTURE.md) §Provider Layer).
+
+## Entidades futuras (planejado — Competitive Mode, atualização 2026-08-15)
+
+> Ver [DECISIONS.md](DECISIONS.md). Conceitual, não é migration — não criar essas tabelas agora.
 
 | Conceito | Tipo provável | Relação com o que já existe |
 |---|---|---|
-| `Question` | tabela nova | Item reutilizável e estruturado — ver [KNOWLEDGE_MODEL.md](KNOWLEDGE_MODEL.md) §Pergunta vs Questão vs Desafio. Campos: enunciado, alternativas (quando aplicável), gabarito, explicação, dificuldade, `area_id` (reaproveita `areas`), origem |
 | `QuestionProvider` | tabela nova | Fonte de Questões (config, auth, limite, custo, status) — ver [ARCHITECTURE.md](ARCHITECTURE.md) §Provider Layer |
-| `QuestionSource` | pode ser colunas em `Question` em vez de tabela separada | origem/fornecedor/licença/concurso/cargo/ano/banca/disciplina/assunto/identificador externo — avaliar na hora se justifica tabela própria ou é metadata de `Question` |
-| `ChallengeAttempt` | tabela nova, paralela a `desafios` | tentativa de responder uma `Question` (Competitive Mode) — não reaproveita `desafios` (que fica exclusivo do Knowledge Mode), ver justificativa em [KNOWLEDGE_MODEL.md](KNOWLEDGE_MODEL.md) |
-| `Answer` / `Evaluation` | provavelmente colunas em `ChallengeAttempt`, não tabelas — mesmo padrão já usado em `desafios` (resposta_usuario/nota/feedback_ia na mesma linha) | reaproveitar o padrão já validado nas Fases 2-3 |
 | `XPTransaction` | avaliar: hoje XP é só um contador (`profiles.xp_total` incrementado por RPC) — um ledger append-only (`XPTransaction`) dá auditabilidade/anti-cheat melhor, mas é mais caro de manter. Decisão adiada — reavaliar quando Rating precisar do mesmo tipo de rastro | hoje: `desafios.xp_ganho` já funciona como um registro histórico por linha, parcialmente cobre a necessidade |
-| `Rating` | provavelmente coluna(s) em `profiles` (`rating_geral`) + tabela `rating_por_area`/`rating_por_concurso` no mesmo molde de `progresso_area` | nunca no mesmo campo de `xp_total` — ver [GAME_RULES.md](GAME_RULES.md) §Rating |
-| `Leaderboard` / `Ranking` | view/query materializada sobre `Rating`, não tabela própria na maioria dos casos | |
+| `Rating` | `profiles.rating` (Fase 5) já implementado pro Knowledge Mode; `rating_por_area`/`rating_por_concurso` dedicados ainda não existem | ranking hoje (Fase 6/7a) usa `dominio_pct`/rating diretamente, não um Rating dedicado por escopo — ver [GAME_RULES.md](GAME_RULES.md) §Rating |
+| `Leaderboard` / `Ranking` | RPCs (`ranking_geral`/`ranking_por_area`/`ranking_por_concurso`) já implementadas — não é view/tabela própria | |
 | `Season` | tabela nova | período com início/fim, congela ranking ao final |
 | `League` | tabela nova ou enum fixo (Bronze→Lenda) + coluna em `profiles`/rating por temporada | avaliar complexidade real na hora |
-| `Contest` / `Exam` | tabela nova | "Concurso" conceitual (federal/estadual/municipal, cargo, banca) |
-| `Subject` | provavelmente reaproveita `areas` (mesma hierarquia Área→Subárea→Tópico) em vez de criar conceito paralelo | evitar duplicar a árvore de conhecimento pra "Disciplina de concurso" quando `areas` já modela hierarquia |
 | `AIInteraction` | tabela de log/observabilidade, não domínio de negócio | custo/latência por chamada de IA, ver [SECURITY.md](SECURITY.md) §Observabilidade |
 
 **Não assumir que todo conceito acima vira tabela** — vários são agregados, views ou colunas dentro de tabelas já existentes. Essa decisão é tomada na hora de cada Fase futura implementar, com o schema real na frente (skill `verificar-premissas`), não especulativamente agora.

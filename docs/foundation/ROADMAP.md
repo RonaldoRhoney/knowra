@@ -91,11 +91,16 @@ Preparação arquitetural para o Competitive Mode, sem UI competitiva pública a
 
 **Critério de conclusão**: ✅ usuário consegue ver sua posição no ranking geral e por área, comparar-se com a média da plataforma, e decidir se quer aparecer publicamente — testado com checklist de segurança (RLS ativo, `anon` sem acesso às RPCs/colunas novas, sem IDOR).
 
-## FASE 7 — Concursos Públicos *(planejado)*
+## FASE 7 — Concursos Públicos *(em andamento — 7a concluída, 2026-08-15)*
 
-* `Question`/`QuestionProvider` reais (ver [DATA_MODEL.md](DATA_MODEL.md) e [ARCHITECTURE.md](ARCHITECTURE.md) §Provider Layer).
-* Estrutura de Concurso/Cargo/Banca/Disciplina/Assunto.
-* Ranking de concursos (geral, por concurso, disciplina, banca, período).
+* ✅ **7a — Question Engine mínimo**: migration em produção (`concursos`, `questoes`, `tentativas_questao`, `progresso_concurso`) + RPCs (`listar_questoes`, `responder_questao`, `revisar_questao`, `ranking_por_concurso`) — revisão técnica completa aprovada antes da aplicação, checklist de segurança rodado, repetição/progresso testados em transação. Detalhe completo em [DECISIONS.md](DECISIONS.md) e [DATA_MODEL.md](DATA_MODEL.md) §Concursos Públicos.
+* ✅ Correção 100% no banco, zero chamada de IA no caminho de resposta do usuário — decisão estratégica de custo.
+* ✅ `Subject` reaproveita `areas` (Disciplina/Assunto), `Contest`/`ChallengeAttempt` implementados como `concursos`/`tentativas_questao`.
+* ⏳ **7b — próximos passos, ainda não implementados**: frontend (`/concursos` — catálogo, resolução de questões, resultado com explicação, progresso), script de geração de questões em lote (offline, IA + revisão manual antes de publicar), extensão de `meu_ranking()` com bloco `por_concurso`.
+* ⏳ `QuestionProvider` real (integração com fonte externa licenciada) **não implementado** — MVP usa só questões geradas por IA (`origem = 'ia_knowra'`), schema já extensível pra quando/se isso for integrado (ver [ARCHITECTURE.md](ARCHITECTURE.md) §Provider Layer). Nenhuma integração externa sem validar licença/termos de uso antes.
+* ⏳ `Cargo` como entidade própria, simulados cronometrados, ranking por período/banca — fora de escopo até haver dado real que justifique.
+
+**Critério de conclusão (7b)**: usuário consegue escolher um concurso, responder questões objetivas, ver o resultado com explicação imediatamente (sem espera de IA), acompanhar progresso por concurso, e (opcionalmente) aparecer no ranking daquele concurso — tudo com o banco de questões pré-gerado e revisado, nunca gerado ao vivo por tentativa.
 
 ## FASE 8 — Seasons & Leagues *(planejado)*
 
