@@ -20,9 +20,22 @@ interface LinhaArea {
   total_desafios: number;
 }
 
+interface LinhaConcurso {
+  posicao: number;
+  nickname: string;
+  avatar_url: string | null;
+  dominio_pct: number;
+  total_questoes_validas: number;
+}
+
 interface AreaDisponivel {
   area_id: string;
   areas: { nome: string } | null;
+}
+
+interface ConcursoDisponivel {
+  concurso_id: string;
+  concursos: { nome: string } | null;
 }
 
 interface MeuRanking {
@@ -39,14 +52,25 @@ interface MeuRanking {
     posicao: number;
     total_participantes: number;
   }[];
+  por_concurso: {
+    concurso_id: string;
+    concurso_nome: string;
+    dominio_pct: number;
+    posicao: number;
+    total_participantes: number;
+  }[];
 }
+
+const PREFIXO_CONCURSO = "concurso:";
 
 export function Ranking() {
   const { session } = useAuth();
   const [aba, setAba] = useState<string>("geral");
   const [areasDisponiveis, setAreasDisponiveis] = useState<AreaDisponivel[]>([]);
+  const [concursosDisponiveis, setConcursosDisponiveis] = useState<ConcursoDisponivel[]>([]);
   const [linhasGeral, setLinhasGeral] = useState<LinhaGeral[]>([]);
   const [linhasArea, setLinhasArea] = useState<LinhaArea[]>([]);
+  const [linhasConcurso, setLinhasConcurso] = useState<LinhaConcurso[]>([]);
   const [meuRanking, setMeuRanking] = useState<MeuRanking | null>(null);
   const [carregando, setCarregando] = useState(true);
 
@@ -60,16 +84,29 @@ export function Ranking() {
         .select("area_id, areas(nome)")
         .eq("usuario_id", session.user.id)
         .order("dominio_pct", { ascending: false }),
-    ]).then(([geralRes, meuRes, areasRes]) => {
+      supabase
+        .from("progresso_concurso")
+        .select("concurso_id, concursos(nome)")
+        .eq("usuario_id", session.user.id)
+        .order("dominio_pct", { ascending: false }),
+    ]).then(([geralRes, meuRes, areasRes, concursosRes]) => {
       setLinhasGeral((geralRes.data ?? []) as LinhaGeral[]);
       if (meuRes.data) setMeuRanking(meuRes.data as MeuRanking);
       setAreasDisponiveis((areasRes.data ?? []) as unknown as AreaDisponivel[]);
+      setConcursosDisponiveis((concursosRes.data ?? []) as unknown as ConcursoDisponivel[]);
       setCarregando(false);
     });
   }, [session]);
 
   useEffect(() => {
     if (aba === "geral") return;
+    if (aba.startsWith(PREFIXO_CONCURSO)) {
+      const concursoId = aba.slice(PREFIXO_CONCURSO.length);
+      supabase.rpc("ranking_por_concurso", { p_concurso_id: concursoId, p_limite: 50 }).then(({ data }) => {
+        setLinhasConcurso((data ?? []) as LinhaConcurso[]);
+      });
+      return;
+    }
     supabase.rpc("ranking_por_area", { p_area_id: aba, p_limite: 50 }).then(({ data }) => {
       setLinhasArea((data ?? []) as LinhaArea[]);
     });
@@ -143,6 +180,19 @@ export function Ranking() {
               {a.areas?.nome ?? "Área"}
             </button>
           ))}
+          {concursosDisponiveis.map((c) => (
+            <button
+              key={c.concurso_id}
+              onClick={() => setAba(`${PREFIXO_CONCURSO}${c.concurso_id}`)}
+              className={`shrink-0 text-xs px-3 py-1.5 rounded-full border ${
+                aba === `${PREFIXO_CONCURSO}${c.concurso_id}`
+                  ? "border-knowra-primary bg-knowra-primary/15 text-knowra-primary"
+                  : "border-white/10 text-knowra-text/60"
+              }`}
+            >
+              {c.concursos?.nome ?? "Concurso"}
+            </button>
+          ))}
         </div>
 
         {carregando && <p className="text-sm text-knowra-text/40">Carregando...</p>}
@@ -155,7 +205,15 @@ export function Ranking() {
           />
         )}
 
-        {!carregando && aba !== "geral" && (
+        {!carregando && aba.startsWith(PREFIXO_CONCURSO) && (
+          <ListaRanking
+            linhas={linhasConcurso}
+            valorLabel={(l) => `${l.dominio_pct}%`}
+            vazio="Ninguém no ranking desse concurso ainda."
+          />
+        )}
+
+        {!carregando && aba !== "geral" && !aba.startsWith(PREFIXO_CONCURSO) && (
           <ListaRanking
             linhas={linhasArea}
             valorLabel={(l) => `${l.dominio_pct}%`}

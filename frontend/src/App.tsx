@@ -8,6 +8,8 @@ import { MapaConhecimento } from "./pages/MapaConhecimento";
 import { Login } from "./pages/Login";
 import { Perfil } from "./pages/Perfil";
 import { Ranking } from "./pages/Ranking";
+import { Concursos } from "./pages/Concursos";
+import { ResolverQuestoes } from "./pages/ResolverQuestoes";
 import { Privacidade } from "./pages/Privacidade";
 import { Termos } from "./pages/Termos";
 
@@ -49,6 +51,30 @@ export function App() {
             element={
               <ProtectedRoute>
                 <Ranking />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/concursos"
+            element={
+              <ProtectedRoute>
+                <Concursos />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/concursos/:id"
+            element={
+              <ProtectedRoute>
+                <ResolverQuestoes modo="concurso" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/praticar/:id"
+            element={
+              <ProtectedRoute>
+                <ResolverQuestoes modo="area" />
               </ProtectedRoute>
             }
           />

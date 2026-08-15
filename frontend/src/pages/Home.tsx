@@ -76,6 +76,9 @@ export function Home() {
           <Link to="/ranking" className="text-xs text-knowra-text/60 hover:text-knowra-text">
             Ranking
           </Link>
+          <Link to="/concursos" className="text-xs text-knowra-text/60 hover:text-knowra-text">
+            Concursos
+          </Link>
           <Link to="/perfil" className="text-xs text-knowra-text/60 hover:text-knowra-text">
             Perfil
           </Link>
