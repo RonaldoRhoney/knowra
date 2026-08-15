@@ -14,4 +14,6 @@ export interface Profile {
   idade: number | null;
   genero: string | null;
   dados_demograficos_consentidos_em: string | null;
+  nickname: string | null;
+  aparecer_no_ranking: boolean;
 }

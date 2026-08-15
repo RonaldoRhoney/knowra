@@ -73,6 +73,9 @@ export function Home() {
           <Link to="/mapa" className="text-xs text-knowra-text/60 hover:text-knowra-text">
             Mapa
           </Link>
+          <Link to="/ranking" className="text-xs text-knowra-text/60 hover:text-knowra-text">
+            Ranking
+          </Link>
           <Link to="/perfil" className="text-xs text-knowra-text/60 hover:text-knowra-text">
             Perfil
           </Link>

@@ -39,6 +39,11 @@ export function Perfil() {
   const inputAvatarRef = useRef<HTMLInputElement>(null);
   const [resumo, setResumo] = useState<Resumo | null>(null);
   const [areasDestaque, setAreasDestaque] = useState<AreaDestaque[]>([]);
+  const [nickname, setNickname] = useState(profile?.nickname ?? "");
+  const [aparecerNoRanking, setAparecerNoRanking] = useState(profile?.aparecer_no_ranking ?? false);
+  const [salvandoRanking, setSalvandoRanking] = useState(false);
+  const [erroRanking, setErroRanking] = useState<string | null>(null);
+  const [salvoRanking, setSalvoRanking] = useState(false);
 
   useEffect(() => {
     if (!session) return;
@@ -102,6 +107,31 @@ export function Perfil() {
       await refreshProfile();
     }
     setEnviandoAvatar(false);
+  }
+
+  async function handleSalvarRanking() {
+    if (!session) return;
+    if (nickname.trim().length > 0 && nickname.trim().length < 2) {
+      setErroRanking("O apelido precisa ter pelo menos 2 caracteres.");
+      return;
+    }
+    setSalvandoRanking(true);
+    setErroRanking(null);
+    setSalvoRanking(false);
+    const { error } = await supabase
+      .from("profiles")
+      .update({
+        nickname: nickname.trim() || null,
+        aparecer_no_ranking: aparecerNoRanking,
+      })
+      .eq("id", session.user.id);
+    if (error) {
+      setErroRanking("Não foi possível salvar agora. Tente novamente.");
+    } else {
+      await refreshProfile();
+      setSalvoRanking(true);
+    }
+    setSalvandoRanking(false);
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -291,6 +321,61 @@ export function Perfil() {
         <Link to="/mapa" className="text-xs text-knowra-accent hover:underline mt-4 inline-block">
           Ver Mapa de Conhecimento completo →
         </Link>
+      </div>
+
+      <div className="bg-knowra-surface rounded-2xl p-5 mt-4">
+        <div className="flex items-center justify-between mb-1">
+          <p className="text-sm font-medium">Ranking</p>
+          <Link to="/ranking" className="text-xs text-knowra-accent hover:underline">
+            Ver ranking →
+          </Link>
+        </div>
+        <p className="text-xs text-knowra-text/50 mb-4">
+          Você escolhe se quer aparecer publicamente. Nunca é obrigatório pra competir — sua
+          posição fica visível só pra você mesmo assim.
+        </p>
+
+        <div>
+          <label className="text-xs text-knowra-text/50 mb-1 block">Apelido no ranking</label>
+          <input
+            value={nickname}
+            onChange={(e) => setNickname(e.target.value)}
+            placeholder="Como você quer aparecer publicamente"
+            maxLength={24}
+            className="w-full rounded-lg bg-knowra-bg border border-white/10 px-3 py-2 text-sm outline-none focus:border-knowra-primary"
+          />
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setAparecerNoRanking((v) => !v)}
+          className="flex items-center justify-between w-full mt-3"
+        >
+          <span className="text-sm">Aparecer no ranking público</span>
+          <span
+            className={`w-10 h-5 rounded-full relative transition-colors ${
+              aparecerNoRanking ? "bg-knowra-primary" : "bg-white/10"
+            }`}
+          >
+            <span
+              className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all ${
+                aparecerNoRanking ? "left-5" : "left-0.5"
+              }`}
+            />
+          </span>
+        </button>
+
+        {erroRanking && <p className="text-sm text-red-400 mt-3">{erroRanking}</p>}
+        {salvoRanking && <p className="text-sm text-emerald-400 mt-3">Preferências salvas.</p>}
+
+        <button
+          type="button"
+          onClick={handleSalvarRanking}
+          disabled={salvandoRanking}
+          className="w-full rounded-lg bg-knowra-bg border border-white/10 py-2 text-sm font-medium mt-3 disabled:opacity-40"
+        >
+          {salvandoRanking ? "Salvando..." : "Salvar preferências"}
+        </button>
       </div>
     </div>
     <Footer />

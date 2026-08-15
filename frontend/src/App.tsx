@@ -7,6 +7,7 @@ import { Home } from "./pages/Home";
 import { MapaConhecimento } from "./pages/MapaConhecimento";
 import { Login } from "./pages/Login";
 import { Perfil } from "./pages/Perfil";
+import { Ranking } from "./pages/Ranking";
 import { Privacidade } from "./pages/Privacidade";
 import { Termos } from "./pages/Termos";
 
@@ -40,6 +41,14 @@ export function App() {
             element={
               <ProtectedRoute>
                 <Perfil />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/ranking"
+            element={
+              <ProtectedRoute>
+                <Ranking />
               </ProtectedRoute>
             }
           />
