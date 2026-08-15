@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { anthropic, MODEL } from "../../lib/anthropic.js";
+import { verificarLimiteIA } from "../../lib/limiteIA.js";
 
 const AVALIAR_TOOL = {
   name: "avaliar_resposta",
@@ -49,6 +50,8 @@ export async function avaliarDesafio(
   if (desafio.avaliado_em) {
     throw new Error("Este desafio já foi avaliado.");
   }
+
+  await verificarLimiteIA(supabase);
 
   const message = await anthropic.messages.create({
     model: MODEL,

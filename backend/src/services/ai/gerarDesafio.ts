@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { anthropic, MODEL } from "../../lib/anthropic.js";
+import { verificarLimiteIA } from "../../lib/limiteIA.js";
 
 const GERAR_DESAFIO_TOOL = {
   name: "gerar_desafio",
@@ -39,6 +40,8 @@ export async function gerarDesafio(supabase: SupabaseClient, perguntaId: string)
   if (erroPergunta || !pergunta) {
     throw new Error("Pergunta não encontrada.");
   }
+
+  await verificarLimiteIA(supabase);
 
   const message = await anthropic.messages.create({
     model: MODEL,

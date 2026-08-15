@@ -2,6 +2,7 @@ import { Router } from "express";
 import type { AuthedRequest } from "../middleware/auth.js";
 import { requireAuth } from "../middleware/auth.js";
 import { askQuestion } from "../services/ai/askQuestion.js";
+import { LimiteIAError } from "../lib/limiteIA.js";
 
 export const askRouter = Router();
 
@@ -17,6 +18,10 @@ askRouter.post("/ask", requireAuth, async (req: AuthedRequest, res) => {
     const resultado = await askQuestion(req.supabase!, texto);
     res.json(resultado);
   } catch (err) {
+    if (err instanceof LimiteIAError) {
+      res.status(429).json({ error: err.message });
+      return;
+    }
     console.error("Erro em /api/ask:", err);
     res.status(500).json({ error: "Não foi possível processar sua pergunta agora. Tente novamente." });
   }

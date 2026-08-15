@@ -132,7 +132,7 @@ Ver [DECISIONS.md](DECISIONS.md) pro registro completo desse levantamento.
 Estratégia combinada com o Ronaldo em 2026-08-15 (ver [DECISIONS.md](DECISIONS.md) e [AI_ENGINE.md](AI_ENGINE.md) §Custo de IA e sustentabilidade financeira) — ordem de prioridade, maior retorno/menor risco primeiro:
 
 1. ✅ **Cache de respostas canônicas** — implementado. Reduz chamadas de IA repetidas sem exigir decisão de preço/plano.
-2. ⏳ Limite diário de interações de IA no plano gratuito.
+2. ✅ **Limite diário de interações de IA** — implementado. 5 chamadas reais de IA por dia por usuário (cache hit não consome cota), admin isento. Número provisório — sem plano pago ainda pra comprar mais, isso é o item #3.
 3. ⏳ Freemium / KnowRa Pro / Concursos Pro (planos pagos).
 4. ⏳ AI Router multi-provider (modelo barato pra tarefas simples, Anthropic pra onde a qualidade importa).
 5. ⏳ Pacotes de créditos avulsos.

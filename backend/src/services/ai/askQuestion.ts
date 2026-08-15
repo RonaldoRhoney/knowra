@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { anthropic, MODEL } from "../../lib/anthropic.js";
+import { verificarLimiteIA } from "../../lib/limiteIA.js";
 
 const RESPONDER_TOOL = {
   name: "responder_e_classificar",
@@ -75,6 +76,10 @@ export async function askQuestion(supabase: SupabaseClient, texto: string): Prom
       observacao_verificacao: cache.observacao_verificacao,
     };
   } else {
+    // Cache miss: essa é uma chamada real de IA — conta contra o limite
+    // diário do usuário (cache hit acima nunca chega aqui).
+    await verificarLimiteIA(supabase);
+
     const { data: areasExistentes } = await supabase
       .from("areas")
       .select("nome, slug")

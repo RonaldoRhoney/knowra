@@ -183,6 +183,14 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 **Métrica**: `admin_cache_stats()` (admin-only) expõe respostas únicas em cache, total de chamadas de IA economizadas, e as perguntas mais reaproveitadas — visível no Painel ADM.
 **Não implementado ainda, ordem de prioridade combinada**: limite diário de IA no free → freemium/planos pagos → AI Router multi-provider → pacotes de créditos → B2B/EDU → ads. Ver [ROADMAP.md](ROADMAP.md) e [AI_ENGINE.md](AI_ENGINE.md) §Custo de IA e sustentabilidade financeira.
 
+## 2026-08-15 — Sustentabilidade financeira: limite diário de IA (prioridade #2)
+
+**Decisão**: `verificar_limite_ia()` (security definer, `auth.uid()`-based) checa e incrementa atomicamente `ia_uso_diario` (usuario_id, dia, chamadas) — 5 chamadas reais de IA por dia (número provisório, mesmo usado como exemplo pelo próprio Ronaldo na proposta original), admin isento. **Cache hit nunca consome a cota** — só chamadas que realmente chegam à Anthropic contam, mantendo o incentivo alinhado com o cache de respostas canônicas (item #1).
+**Onde a checagem entra**: `askQuestion.ts` (só no branch de cache miss, antes da chamada à Anthropic), `gerarDesafio.ts` e `avaliarDesafio.ts` (sempre, já que não têm cache) — mesmo padrão de "checar antes de gastar", nunca depois.
+**Erro tratado com classe própria** (`LimiteIAError`) nas 3 rotas da API, retornando HTTP 429 com mensagem amigável — reaproveitado pelo tratamento de erro genérico que o frontend já tinha (`err.message` do catch), **zero mudança de frontend necessária**.
+**Testado**: 5 chamadas liberadas incrementando corretamente, 6ª bloqueada sem incrementar, leitura sem consumir (`meu_uso_ia()`), admin ilimitado — tudo em transação com rollback.
+**Não implementado ainda**: nenhum plano pago pra comprar mais cota (item #3 da fila) — por ora o limite é igual pra todo mundo.
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).
