@@ -127,6 +127,10 @@ Amigos, desafios entre usuários, eventos. Não iniciar código sem pedido expl�
 
 Ver [DECISIONS.md](DECISIONS.md) pro registro completo desse levantamento.
 
+## Audio Engine *(discovery apenas, 2026-08-15 — fora da numeração de fases)*
+
+Levantamento técnico completo em [AUDIO_ENGINE.md](AUDIO_ENGINE.md) — identidade sonora própria (música ambiente + efeitos de gamificação). **Nenhuma linha de código, biblioteca, tabela ou asset de áudio existe ainda.** Roadmap próprio (Etapas A a G, independente da numeração de Fases do produto) documentado lá — cada etapa exige aprovação explícita separada antes de virar implementação, mesma regra de todo o resto deste roadmap.
+
 ## Sustentabilidade financeira *(em andamento, fora da numeração de fases)*
 
 Estratégia combinada com o Ronaldo em 2026-08-15 (ver [DECISIONS.md](DECISIONS.md) e [AI_ENGINE.md](AI_ENGINE.md) §Custo de IA e sustentabilidade financeira) — ordem de prioridade, maior retorno/menor risco primeiro:

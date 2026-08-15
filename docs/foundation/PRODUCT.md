@@ -51,6 +51,10 @@ KnowRa terá futuramente uma área especializada de **Concursos Públicos** (car
 
 KnowRa continua **não sendo** uma "plataforma de concursos" — concursos é um domínio dentro do produto, o produto em si é maior que isso (ver seção "O que é" acima).
 
+## Camada futura: Audio Engine (discovery, 2026-08-15 — não implementado)
+
+KnowRa terá futuramente uma identidade sonora própria (música ambiente + efeitos de gamificação), documentada em [AUDIO_ENGINE.md](AUDIO_ENGINE.md). Áudio é uma camada de **imersão**, sempre opcional e nunca condição pra usar o produto — nunca vira "app de música" nem gera XP/Rating/progresso por si só (ver [GAME_RULES.md](GAME_RULES.md) §Audio Feedback).
+
 ## Comportamentos que queremos incentivar
 
 * Curiosidade genuína (perguntar sobre qualquer assunto, sem medo de "pergunta boba").

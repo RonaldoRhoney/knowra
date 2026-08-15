@@ -126,6 +126,28 @@ KnowRa → Question Engine → Provider Layer → Provider A / Provider B / banc
 
 Cada provider (fonte de Questões) deve poder ter, quando implementado: configuração, autenticação, limite de requisições, custo, origem, licença, status, estratégia de sincronização, tratamento de erros — mesmo princípio de abstração por adapter já descrito em [AI_ENGINE.md](AI_ENGINE.md) §Provider Abstraction, mas para fontes de conteúdo em vez de modelos de IA. **Não implementar integrações reais agora** — só não acoplar o schema/código a um único fornecedor de questões quando o Question Engine for construído.
 
+## Audio Engine (discovery, ver [AUDIO_ENGINE.md](AUDIO_ENGINE.md) — não implementado)
+
+Camada independente dos engines de domínio acima (não é Knowledge/Assessment/Progression/Competition — é uma camada de apresentação que *escuta* eventos deles):
+
+```text
+Application
+    │
+    ▼
+Audio Context / Provider (React Context, global, acima do roteamento)
+    │
+    ▼
+Audio Engine
+    ├── Music Manager
+    ├── SFX Manager
+    ├── Volume Manager
+    ├── Track Manager
+    ├── Preference Manager
+    └── Provider Layer (mesmo princípio do Question Provider Layer acima)
+```
+
+Detalhe completo, incluindo por que Music e SFX nunca compartilham estado, em `AUDIO_ENGINE.md` §Arquitetura.
+
 ## Onde o código atual se encaixa
 
 | Hoje (implementado) | Engine conceitual | Observação |

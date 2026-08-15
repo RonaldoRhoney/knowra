@@ -21,6 +21,7 @@ Ser a principal plataforma de evolução intelectual do mundo.
 * Uma rede social de conhecimento onde o foco vira competição/vaidade em vez de aprendizado.
 * Um produto que recompensa volume (muitas perguntas) em vez de profundidade (conhecimento real demonstrado).
 * Um "Frankenstein de funcionalidades" — cada fase só avança depois de validar a anterior. Ver regra em [ROADMAP.md](ROADMAP.md).
+* Um app com estética de cassino/jogo mobile infantil — inclui a futura camada sonora: identidade sonora inteligente e elegante, nunca arcade (ver [AUDIO_ENGINE.md](AUDIO_ENGINE.md), discovery apenas).
 
 ## Princípios fundamentais (inegociáveis)
 

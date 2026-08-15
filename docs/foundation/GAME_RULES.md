@@ -133,3 +133,7 @@ O perfil deve poder mostrar, de forma motivadora e nunca humilhante: posição n
 ## Privacidade do ranking (planejado)
 
 Desde a arquitetura: nome público vs. nickname vs. avatar, opção de aparecer ou não em rankings, perfil público vs. privado. O usuário nunca é obrigado a expor dados pessoais pra participar do Competitive Mode — ver [SECURITY.md](SECURITY.md) §LGPD.
+
+## Audio Feedback (discovery, ver [AUDIO_ENGINE.md](AUDIO_ENGINE.md) — não implementado)
+
+Eventos de progressão (XP ganho, badge desbloqueada, level up, missão concluída, streak mantido) poderão futuramente disparar um efeito sonoro curto — mas a régua é dura e não-negociável: **áudio nunca gera XP, nunca altera Rating, nunca influencia progressão ou posição em ranking**. É camada de apresentação/experiência, sempre consequência de uma regra de negócio já decidida no banco, nunca fonte dela.

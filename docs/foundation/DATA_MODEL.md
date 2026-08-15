@@ -128,6 +128,8 @@ Recompensa reaproveita `badges`/`conceder_badge()` já existentes — 7 badges n
 | `Leaderboard` / `Ranking` | RPCs (`ranking_geral`/`ranking_por_area`/`ranking_por_concurso`/`ranking_temporada`) já implementadas — não é view/tabela própria | |
 | `AIInteraction` | tabela de log/observabilidade, não domínio de negócio | custo/latência por chamada de IA, ver [SECURITY.md](SECURITY.md) §Observabilidade |
 
+**Audio Engine** (discovery, 2026-08-15): `AudioAsset`, `AudioCategory`, `AudioProvider`, `AudioLicense`, `AudioPlaylist`, `UserAudioPreference` — modelo conceitual completo, com decisão de tipo provável por conceito, documentado em [AUDIO_ENGINE.md](AUDIO_ENGINE.md) §Data Model (não duplicado aqui pra não ter duas fontes de verdade divergentes).
+
 **Não assumir que todo conceito acima vira tabela** — vários são agregados, views ou colunas dentro de tabelas já existentes. Essa decisão é tomada na hora de cada Fase futura implementar, com o schema real na frente (skill `verificar-premissas`), não especulativamente agora.
 
 ---

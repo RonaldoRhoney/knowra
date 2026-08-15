@@ -191,6 +191,28 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 **Testado**: 5 chamadas liberadas incrementando corretamente, 6ª bloqueada sem incrementar, leitura sem consumir (`meu_uso_ia()`), admin ilimitado — tudo em transação com rollback.
 **Não implementado ainda**: nenhum plano pago pra comprar mais cota (item #3 da fila) — por ora o limite é igual pra todo mundo.
 
+## 2026-08-15 — Audio Engine: discovery completo, extensão da Fase 0
+
+**Contexto**: Ronaldo pediu uma extensão oficial da Fase 0/Foundation especificamente pra planejar uma futura identidade sonora do KnowRa (música ambiente + efeitos de gamificação) — explicitamente **discovery only**: analisar, modelar, documentar, validar, propor. Nenhum código, biblioteca, tabela, storage ou arquivo de áudio deveria ser criado nesta etapa, e nenhum foi. Documento completo em [AUDIO_ENGINE.md](AUDIO_ENGINE.md).
+
+### DEC-AUDIO-001 — Separação entre Music e SFX
+**Decisão**: música ambiente (contínua) e efeitos sonoros (curtos, por evento) são canais arquiteturalmente independentes — managers separados, sem estado compartilhado. **Motivo**: permite volume, comportamento e prioridade independentes por canal; é o que torna possível um SFX tocar por cima da música sem interrompê-la.
+
+### DEC-AUDIO-002 — Áudio é sempre opcional
+**Decisão**: nenhuma funcionalidade do KnowRa depende de reprodução de áudio pra funcionar ou ser compreendida. Toda informação que um som comunicaria tem equivalente visual/textual já existente como fonte primária. **Motivo**: acessibilidade (nem todo usuário ouve/quer ouvir som) e robustez (áudio pode falhar — bloqueio de autoplay, provider fora do ar — sem quebrar o produto).
+
+### DEC-AUDIO-003 — Provider Abstraction desde o desenho
+**Decisão**: nenhuma integração futura de áudio pode acoplar o KnowRa inteiro a um único fornecedor — mesmo princípio já aplicado à IA (`AI_ENGINE.md`) e a Questões (`ARCHITECTURE.md` §Provider Layer). **Motivo**: permite trocar/adicionar fornecedor sem reescrever o Music/SFX Manager; reduz risco de disponibilidade e de mudança de API de terceiro.
+
+### DEC-AUDIO-004 — Metadados de licença obrigatórios antes de catalogar
+**Decisão**: todo `AudioAsset` de fonte externa precisa de metadados de origem/licença (fonte, licença, exige atribuição, permite uso comercial, permite modificação, permite redistribuição) validados **antes** de entrar no catálogo oficial. "Está disponível na internet" e "é Creative Commons" nunca são, por si só, sinônimo de "podemos usar" — cada licença tem termos próprios que precisam ser lidos e conferidos contra o uso pretendido. **Motivo**: risco jurídico é o maior risco real deste domínio; mesma régua rigorosa já registrada pra Questões de Concursos (`KNOWLEDGE_MODEL.md` §Origem e licenciamento).
+
+### DEC-AUDIO-005 — Recomendação de MVP: catálogo próprio pequeno, não provider externo
+**Decisão**: quando/se o Audio Engine avançar pra implementação, recomenda-se um catálogo próprio pequeno (poucas faixas, poucos SFX, licença verificada manualmente ou conteúdo original) em vez de integrar um provider externo de música desde o início. **Motivo**: previsibilidade de custo, controle de licença, independência de disponibilidade de terceiro — mesmo raciocínio que já levou a não integrar um `QuestionProvider` real na Fase 7 antes de haver necessidade comprovada. **Status**: recomendação registrada, não é decisão de implementação — nada foi construído.
+
+**Documentos atualizados nesta extensão**: `AUDIO_ENGINE.md` (novo), `PRODUCT.md`, `VISION.md`, `CORE_LOOP.md`, `GAME_RULES.md`, `UX_PRINCIPLES.md`, `ARCHITECTURE.md`, `DATA_MODEL.md`, `ROADMAP.md`, `DECISIONS.md` (este). `KNOWLEDGE_MODEL.md`, `AI_ENGINE.md` e `SECURITY.md` **não foram alterados** — nenhum deles tem impacto real do Audio Engine que justifique edição (áudio não gera conteúdo via IA nem introduz regra de segurança nova além das já existentes no projeto).
+**Status**: discovery completo, nenhuma implementação autorizada. Próximo passo depende de aprovação explícita do Ronaldo por etapa (ver `AUDIO_ENGINE.md` §Roadmap).
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).

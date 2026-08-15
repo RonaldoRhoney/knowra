@@ -38,6 +38,15 @@ Cada etapa deve ter transição visual suave para a próxima — o usuário nunc
 
 Deve coletar **interesses iniciais** (áreas de curiosidade) de forma leve — não um formulário longo. O objetivo é dar à IA um primeiro contexto, não fazer o usuário "configurar" o produto antes de usá-lo. Onboarding não pode ser bloqueante: pular deve ser possível, o sistema aprende com o uso real de qualquer forma.
 
+## Princípios de áudio (discovery, ver [AUDIO_ENGINE.md](AUDIO_ENGINE.md) — não implementado)
+
+* **Opcional** — toda experiência funciona sem áudio.
+* **Controle do usuário** — o usuário decide se/quanto ouve, nunca o sistema assume.
+* **Contextual** — som tem propósito ligado ao momento, não é ruído de fundo genérico.
+* **Não-intrusivo** — nunca interrompe o aprendizado sem necessidade.
+* **Acessível** — informação crítica nunca depende só de som (ver `AUDIO_ENGINE.md` §Acessibilidade).
+* **Consistente** — a linguagem sonora segue a mesma identidade em todo o produto, nunca varia de forma incoerente entre telas.
+
 ## Identidade RhoneyInc
 
 * Marca RhoneyInc aparece de forma elegante (ex.: rodapé, tela de login), sem competir visualmente com a identidade própria do KnowRa.
