@@ -15,7 +15,7 @@ askRouter.post("/ask", requireAuth, async (req: AuthedRequest, res) => {
   }
 
   try {
-    const resultado = await askQuestion(req.supabase!, texto);
+    const resultado = await askQuestion(req.supabase!, texto, req.userId!);
     res.json(resultado);
   } catch (err) {
     if (err instanceof LimiteIAError) {

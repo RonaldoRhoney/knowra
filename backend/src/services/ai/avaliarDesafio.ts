@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { anthropic, MODEL } from "../../lib/anthropic.js";
 import { verificarLimiteIA } from "../../lib/limiteIA.js";
+import { rpcComoUsuario } from "../../lib/dbAdmin.js";
 
 const AVALIAR_TOOL = {
   name: "avaliar_resposta",
@@ -37,6 +38,7 @@ export async function avaliarDesafio(
   supabase: SupabaseClient,
   desafioId: string,
   respostaUsuario: string,
+  usuarioId: string,
 ): Promise<ResultadoAvaliacao> {
   const { data: desafio, error: erroDesafio } = await supabase
     .from("desafios")
@@ -78,16 +80,18 @@ export async function avaliarDesafio(
   const { nota, feedback } = toolUse.input as { nota: number; feedback: string };
   const notaClamped = Math.max(0, Math.min(100, Math.round(nota)));
 
-  const { data: resultado, error } = await supabase.rpc("avaliar_desafio", {
-    p_desafio_id: desafioId,
-    p_resposta_usuario: respostaUsuario,
-    p_nota: notaClamped,
-    p_feedback_ia: feedback,
-  });
+  // avaliar_desafio() não é mais alcançável via PostgREST por "authenticated"
+  // — nota/feedback só chegam aqui depois de terem vindo de verdade da
+  // Anthropic acima, nunca como parâmetro cru de uma chamada do client.
+  const resultado = await rpcComoUsuario<Record<string, unknown>>(
+    usuarioId,
+    "select public.avaliar_desafio($1, $2, $3, $4) as resultado",
+    [desafioId, respostaUsuario, notaClamped, feedback],
+  );
 
-  if (error || !resultado) {
-    throw new Error(error?.message ?? "Não foi possível registrar a avaliação.");
+  if (!resultado?.resultado) {
+    throw new Error("Não foi possível registrar a avaliação.");
   }
 
-  return { ...(resultado as object), nota: notaClamped, feedback } as ResultadoAvaliacao;
+  return { ...(resultado.resultado as object), nota: notaClamped, feedback } as ResultadoAvaliacao;
 }

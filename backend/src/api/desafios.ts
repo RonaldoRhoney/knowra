@@ -9,7 +9,7 @@ export const desafiosRouter = Router();
 
 desafiosRouter.post("/perguntas/:perguntaId/desafio", requireAuth, async (req: AuthedRequest, res) => {
   try {
-    const desafio = await gerarDesafio(req.supabase!, req.params.perguntaId);
+    const desafio = await gerarDesafio(req.supabase!, req.params.perguntaId, req.userId!);
     res.json(desafio);
   } catch (err) {
     if (err instanceof LimiteIAError) {
@@ -30,7 +30,7 @@ desafiosRouter.post("/desafios/:desafioId/avaliar", requireAuth, async (req: Aut
   }
 
   try {
-    const resultado = await avaliarDesafio(req.supabase!, req.params.desafioId, respostaUsuario);
+    const resultado = await avaliarDesafio(req.supabase!, req.params.desafioId, respostaUsuario, req.userId!);
     res.json(resultado);
   } catch (err) {
     console.error("Erro ao avaliar desafio:", err);

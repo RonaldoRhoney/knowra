@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { anthropic, MODEL } from "../../lib/anthropic.js";
 import { verificarLimiteIA } from "../../lib/limiteIA.js";
+import { rpcComoUsuario } from "../../lib/dbAdmin.js";
 
 const GERAR_DESAFIO_TOOL = {
   name: "gerar_desafio",
@@ -30,7 +31,7 @@ export interface Desafio {
   criado_em: string;
 }
 
-export async function gerarDesafio(supabase: SupabaseClient, perguntaId: string): Promise<Desafio> {
+export async function gerarDesafio(supabase: SupabaseClient, perguntaId: string, usuarioId: string): Promise<Desafio> {
   const { data: pergunta, error: erroPergunta } = await supabase
     .from("perguntas")
     .select("id, texto, resposta_ia")
@@ -67,17 +68,18 @@ export async function gerarDesafio(supabase: SupabaseClient, perguntaId: string)
 
   const { enunciado, dificuldade } = toolUse.input as { enunciado: string; dificuldade: string };
 
-  const { data: desafio, error } = await supabase
-    .rpc("criar_desafio", {
-      p_pergunta_id: perguntaId,
-      p_enunciado: enunciado,
-      p_dificuldade: dificuldade,
-    })
-    .single();
+  // criar_desafio() não é mais alcançável via PostgREST por "authenticated"
+  // — só o backend grava, com o enunciado/dificuldade que a Anthropic
+  // acabou de gerar (nunca o que o client mandaria direto).
+  const desafio = await rpcComoUsuario<Desafio>(
+    usuarioId,
+    "select * from public.criar_desafio($1, $2, $3)",
+    [perguntaId, enunciado, dificuldade],
+  );
 
-  if (error || !desafio) {
-    throw new Error(error?.message ?? "Não foi possível criar o desafio.");
+  if (!desafio) {
+    throw new Error("Não foi possível criar o desafio.");
   }
 
-  return desafio as Desafio;
+  return desafio;
 }

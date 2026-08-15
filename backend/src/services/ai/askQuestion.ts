@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { anthropic, MODEL } from "../../lib/anthropic.js";
 import { verificarLimiteIA } from "../../lib/limiteIA.js";
+import { dbAdmin, rpcComoUsuario } from "../../lib/dbAdmin.js";
 
 const RESPONDER_TOOL = {
   name: "responder_e_classificar",
@@ -58,7 +59,7 @@ interface RespostaEstruturada {
   observacao_verificacao: string | null;
 }
 
-export async function askQuestion(supabase: SupabaseClient, texto: string): Promise<AskResult> {
+export async function askQuestion(supabase: SupabaseClient, texto: string, usuarioId: string): Promise<AskResult> {
   // Cache de respostas canônicas: pergunta com o mesmo texto normalizado
   // (acento/caixa/pontuação/espaço) reaproveita a resposta já gerada, sem
   // nova chamada à Anthropic. Ver DECISIONS.md — prioridade #1 de custo.
@@ -123,33 +124,39 @@ export async function askQuestion(supabase: SupabaseClient, texto: string): Prom
       observacao_verificacao: observacao_verificacao ?? null,
     };
 
-    // popula o cache pra próxima pergunta igual não precisar chamar a IA de novo
-    await supabase.rpc("salvar_resposta_canonica", {
-      p_pergunta: texto,
-      p_resposta_ia: resultado.resposta,
-      p_area_nome: resultado.area_nome,
-      p_area_slug: resultado.area_slug,
-      p_requer_verificacao: resultado.requer_verificacao,
-      p_observacao_verificacao: resultado.observacao_verificacao,
-    });
+    // popula o cache pra próxima pergunta igual não precisar chamar a IA de novo.
+    // Só o backend grava aqui (função não exposta a "authenticated" via
+    // PostgREST — ver DECISIONS.md) pra ninguém envenenar o cache compartilhado
+    // com conteúdo que nunca passou pela Anthropic.
+    await dbAdmin().query(
+      "select public.salvar_resposta_canonica($1, $2, $3, $4, $5, $6)",
+      [
+        texto,
+        resultado.resposta,
+        resultado.area_nome,
+        resultado.area_slug,
+        resultado.requer_verificacao,
+        resultado.observacao_verificacao,
+      ],
+    );
   }
 
   const { resposta, area_nome, area_slug, requer_verificacao, observacao_verificacao } = resultado;
 
-  const { data: pergunta, error } = await supabase
-    .rpc("registrar_pergunta", {
-      p_texto: texto,
-      p_resposta_ia: resposta,
-      p_area_nome: area_nome,
-      p_area_slug: area_slug,
-      p_requer_verificacao: requer_verificacao ?? false,
-      p_observacao_verificacao: observacao_verificacao ?? null,
-    })
-    .single();
+  // Mesmo motivo: registrar_pergunta() não é mais alcançável via PostgREST
+  // por "authenticated"/"anon" — só o backend grava, depois de a resposta
+  // ter vindo de verdade da IA (ou do cache) logo acima. 6 parâmetros
+  // (versão em uso real — requer_verificacao/observacao_verificacao
+  // existem desde 0014_verificacao_resposta.sql).
+  const pergunta = await rpcComoUsuario<AskResult>(
+    usuarioId,
+    "select * from public.registrar_pergunta($1, $2, $3, $4, $5, $6)",
+    [texto, resposta, area_nome, area_slug, requer_verificacao ?? false, observacao_verificacao ?? null],
+  );
 
-  if (error || !pergunta) {
-    throw new Error(error?.message ?? "Não foi possível salvar a pergunta.");
+  if (!pergunta) {
+    throw new Error("Não foi possível salvar a pergunta.");
   }
 
-  return pergunta as AskResult;
+  return pergunta;
 }
