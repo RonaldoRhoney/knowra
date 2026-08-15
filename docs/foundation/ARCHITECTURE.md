@@ -1,0 +1,97 @@
+# ARCHITECTURE.md — KnowRa
+
+> Este documento propõe uma arquitetura inicial. Antes de implementar, o Claude Code deve avaliar: stack atual do ecossistema RhoneyInc, custo, escalabilidade, segurança, facilidade de manutenção, integração com IA, velocidade de desenvolvimento — e justificar a escolha final, sinalizando qualquer divergência ao Ronaldo em vez de decidir silenciosamente.
+
+## Visão geral (blueprint conceitual)
+
+```text
+                 KNOWRA
+                    │
+        ┌───────────┴───────────┐
+        │                       │
+     WEB APP                MOBILE
+        │                       │
+        └───────────┬───────────┘
+                    ↓
+                API Layer
+                    ↓
+        ┌───────────┼───────────┐
+        ↓           ↓           ↓
+     Auth       Knowledge      Game
+     Engine       Engine       Engine
+        │           │           │
+        └───────────┼───────────┘
+                    ↓
+                 AI Engine
+                    ↓
+              Data Layer
+```
+
+Mobile é aspiracional (React Native/Expo, conforme blueprint) — **não faz parte do MVP**. O MVP é web-first.
+
+## Stack recomendada (alinhada ao padrão RhoneyInc)
+
+* **Frontend web**: React + Vite + TypeScript + Tailwind CSS — mesmo padrão já usado em MenuFlex, VoaRadar, VagaLume, VendeFlex. Deliberadamente diferente do "HTML estático" usado em produtos mais antigos (MeuPet, RhoneyInc hub) porque o KnowRa tem estado de UI e interações dinâmicas suficientes para justificar um framework, assim como os produtos mais recentes.
+* **Backend**: Node.js + Express (API Gateway + serviços), conforme blueprint — alternativa a avaliar caso surja necessidade concreta de Python (ex.: processamento de IA mais pesado), mas Node é o padrão inicial por simplicidade de stack única com o frontend.
+* **Banco de dados**: PostgreSQL via **Supabase** — é o padrão de fato do ecossistema RhoneyInc (MeuPet, VoaRadar, VagaLume, MenuFlex, RhoneyInc hub todos usam Supabase), o que já resolve Auth (incluindo OAuth Google), Row Level Security e API automática (PostgREST) sem reinventar. Diverge do blueprint original (que sugeria "Auth Service" e "Database" como camadas separadas) — a proposta aqui é usar Supabase Auth + Postgres RLS no lugar de um Auth Service customizado com JWT próprio, porque reduz superfície de ataque e tempo de desenvolvimento sem abrir mão de segurança (RLS resolve isolamento por usuário de forma mais robusta que checagem manual em cada endpoint).
+* **Cache/fila**: Redis — mencionado no blueprint; só entra quando houver necessidade real medida (ex.: rate limit de chamadas de IA), não desde o dia 1.
+* **IA**: Claude (Anthropic) como provedor principal — ver [AI_ENGINE.md](AI_ENGINE.md).
+* **Hospedagem**: Vercel — padrão RhoneyInc para frontend e funções serverless.
+
+## Auth (login social Google — obrigatório)
+
+Login social com Google é **padrão RhoneyInc**, não uma opção entre várias — deve estar presente desde a Fase 1, junto com e-mail/senha, seguindo o mesmo modelo já usado em produtos irmãos:
+
+* **Supabase Auth** como provedor de identidade, com o provider **Google OAuth** habilitado no projeto Supabase do KnowRa desde a criação.
+* Trigger `handle_new_user()` no Postgres promove automaticamente `rhoneyinc@gmail.com` a admin, independente do método de login usado (e-mail/senha ou Google) — skill `admin-padrao`, ver [SECURITY.md](SECURITY.md).
+* Nenhuma decisão de permissão/role pode viver no frontend — sempre imposta via RLS/backend (ver [SECURITY.md](SECURITY.md)).
+
+## Camadas lógicas (dentro do backend)
+
+* **Auth** — delegada ao Supabase Auth (login e-mail/senha + Google), não um serviço customizado.
+* **Knowledge Engine** — classificação de perguntas em área/tópico/conceito, cálculo de domínio por área (ver [KNOWLEDGE_MODEL.md](KNOWLEDGE_MODEL.md)).
+* **Game Engine** — cálculo de XP, nível, streak, badges (ver [GAME_RULES.md](GAME_RULES.md)).
+* **AI Engine** — orquestra as 3 chamadas de IA do Core Loop (responder, desafiar, avaliar) — ver [AI_ENGINE.md](AI_ENGINE.md). Sempre server-side, nunca chamada direta do frontend para o provedor de IA.
+
+## Domínio de produção
+
+`knowra.rhoneyinc.com` — subdomínio do domínio já registrado no Vercel da RhoneyInc, seguindo o padrão dos produtos irmãos (skill `novo-app-no-ar`). Nunca publicar em domínio genérico (`*.vercel.app`) como URL final pública, exceto como preview de desenvolvimento.
+
+## Repositório
+
+Repositório próprio (`github.com/RonaldoRhoney/knowra`), fora do repo raiz do home (que hoje pertence ao MeuPet) — mesmo padrão de AmaVida, MontaMovel, VagaLume, VoaRadar: cada produto RhoneyInc tem seu próprio repositório.
+
+## Estrutura de pastas proposta (Fase 1)
+
+```text
+knowra/
+├── CLAUDE.md
+├── README.md
+├── docs/
+│   └── foundation/
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── features/
+│   │   ├── services/
+│   │   ├── hooks/
+│   │   ├── types/
+│   │   └── utils/
+│   └── ...
+├── backend/
+│   ├── src/
+│   │   ├── api/
+│   │   ├── core/
+│   │   ├── services/
+│   │   │   ├── auth/
+│   │   │   ├── knowledge/
+│   │   │   ├── game/
+│   │   │   └── ai/
+│   │   └── types/
+│   └── ...
+└── supabase/
+    └── migrations/
+```
+
+Estrutura pode ser ajustada com justificativa técnica na hora da Fase 1 — não travar decisão de tooling específico (ex.: Next.js vs. Vite+React puro) antes de avaliar necessidade real de SSR.
