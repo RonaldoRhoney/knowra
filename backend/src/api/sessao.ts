@@ -12,17 +12,17 @@ sessaoRouter.post("/sessao", requireAuth, async (req: AuthedRequest, res) => {
     const ip = extrairIpCliente(req.headers["x-forwarded-for"]);
     const { pais, regiao } = await geolocalizarIp(ip);
 
-    const { error } = await req.supabase!.rpc("registrar_sessao", {
+    const { data, error } = await req.supabase!.rpc("registrar_sessao", {
       p_dispositivo: dispositivo,
       p_pais: pais,
       p_regiao: regiao,
     });
 
     if (error) throw error;
-    res.json({ ok: true });
+    res.json({ ok: true, tipo: data as string });
   } catch (err) {
     // Observabilidade nunca deve quebrar a experiência do usuário — falha aqui é só logada.
     console.error("Erro ao registrar sessão:", err);
-    res.status(200).json({ ok: false });
+    res.status(200).json({ ok: false, tipo: null });
   }
 });

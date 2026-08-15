@@ -1,6 +1,6 @@
 import type { Session } from "@supabase/supabase-js";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { registrarSessao } from "../lib/api";
+import { registrarSessao, type TipoAcesso } from "../lib/api";
 import { supabase } from "../lib/supabaseClient";
 import type { Profile } from "../types/profile";
 
@@ -10,6 +10,8 @@ interface AuthContextValue {
   session: Session | null;
   profile: Profile | null;
   loading: boolean;
+  tipoAcesso: TipoAcesso;
+  limparTipoAcesso: () => void;
   signInWithGoogle: () => Promise<void>;
   signInWithPassword: (email: string, password: string) => Promise<{ error: string | null }>;
   signUpWithPassword: (email: string, password: string) => Promise<{ error: string | null }>;
@@ -23,6 +25,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [tipoAcesso, setTipoAcesso] = useState<TipoAcesso>(null);
 
   async function loadProfile(userId: string) {
     const { data } = await supabase.from("profiles").select("*").eq("id", userId).single();
@@ -32,9 +35,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   function registrarSessaoUmaVez() {
     if (sessionStorage.getItem(CHAVE_SESSAO_REGISTRADA)) return;
     sessionStorage.setItem(CHAVE_SESSAO_REGISTRADA, "1");
-    registrarSessao().catch(() => {
-      sessionStorage.removeItem(CHAVE_SESSAO_REGISTRADA);
-    });
+    registrarSessao()
+      .then(({ tipo }) => {
+        if (tipo && tipo !== "normal") setTipoAcesso(tipo);
+      })
+      .catch(() => {
+        sessionStorage.removeItem(CHAVE_SESSAO_REGISTRADA);
+      });
+  }
+
+  function limparTipoAcesso() {
+    setTipoAcesso(null);
   }
 
   useEffect(() => {
@@ -91,6 +102,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         session,
         profile,
         loading,
+        tipoAcesso,
+        limparTipoAcesso,
         signInWithGoogle,
         signInWithPassword,
         signUpWithPassword,

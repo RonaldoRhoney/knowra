@@ -12,7 +12,7 @@ const GENEROS = [
 ];
 
 export function CompletarCadastroModal() {
-  const { profile, refreshProfile } = useAuth();
+  const { profile, refreshProfile, tipoAcesso } = useAuth();
   const [dispensado, setDispensado] = useState(() => sessionStorage.getItem(CHAVE_DISPENSADO) === "1");
   const [nome, setNome] = useState(profile?.nome ?? "");
   const [cidade, setCidade] = useState("");
@@ -22,7 +22,10 @@ export function CompletarCadastroModal() {
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
 
-  if (!profile || profile.dados_demograficos_consentidos_em || dispensado) return null;
+  // Espera a mensagem de boas-vindas ser fechada primeiro, pra não sobrepor os dois modais.
+  if (!profile || profile.dados_demograficos_consentidos_em || dispensado || tipoAcesso === "primeiro_acesso") {
+    return null;
+  }
 
   function dispensar() {
     sessionStorage.setItem(CHAVE_DISPENSADO, "1");

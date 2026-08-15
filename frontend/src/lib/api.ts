@@ -44,6 +44,8 @@ export function avaliarDesafio(desafioId: string, resposta: string): Promise<Res
   return apiPost<ResultadoAvaliacao>(`/api/desafios/${desafioId}/avaliar`, { resposta });
 }
 
-export function registrarSessao(): Promise<{ ok: boolean }> {
-  return apiPost<{ ok: boolean }>("/api/sessao");
+export type TipoAcesso = "primeiro_acesso" | "ausencia_longa" | "ausencia_media" | "normal" | null;
+
+export function registrarSessao(): Promise<{ ok: boolean; tipo: TipoAcesso }> {
+  return apiPost<{ ok: boolean; tipo: TipoAcesso }>("/api/sessao");
 }

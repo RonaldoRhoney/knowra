@@ -5,6 +5,7 @@ import { CompletarCadastroModal } from "../components/CompletarCadastroModal";
 import { DesafioCard } from "../components/DesafioCard";
 import { Footer } from "../components/Footer";
 import { HistoricoPerguntas } from "../components/HistoricoPerguntas";
+import { MensagemAcesso } from "../components/MensagemAcesso";
 import { ProgressoUsuario } from "../components/ProgressoUsuario";
 import { useAuth } from "../contexts/AuthContext";
 import { askQuestion, type AskResponse } from "../lib/api";
@@ -106,6 +107,7 @@ export function Home() {
 
       <HistoricoPerguntas atualizarQuando={historicoVersao} />
       <CompletarCadastroModal />
+      <MensagemAcesso />
     </div>
     <Footer />
     </div>

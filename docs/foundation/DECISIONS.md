@@ -115,6 +115,14 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 **Bug 3 — rotas diretas 404 no Vercel**: `/privacidade`, `/termos`, `/perfil` retornavam 404 ao acessar a URL diretamente (só funcionavam navegando pelo React Router dentro do app) — faltava `vercel.json` com rewrite `"/(.*)" → "/index.html"` pro deploy de SPA. Corrigido.
 **Lição geral**: RLS com múltiplas condições (`próprio OR admin`) exige disciplina dupla — a policy garante que ninguém vê o que não deveria, mas o código do client também precisa filtrar explicitamente o que quer mostrar como "meu", porque a policy sozinha define o teto de acesso, não a intenção da tela.
 
+## 2026-08-15 — Mensagens de boas-vindas / "sentimos sua falta" (sem e-mail/push)
+
+**Contexto**: pedido do Ronaldo por mensagem de boas-vindas no primeiro acesso, um "alerta" após 72h sem abrir o app, e uma mensagem diferente ("sentimos sua falta") após 7 dias, disparada quando o usuário volta.
+**Decisão**: os três casos são resolvidos **sem infraestrutura de e-mail/push** — o backend já sabe o último acesso (via `profiles.ultimo_acesso`, atualizado a cada login) e decide, na hora que o usuário volta a abrir o app, qual mensagem mostrar (`primeiro_acesso` | `ausencia_media` 72h+ | `ausencia_longa` 7d+ | `normal`) via `registrar_sessao()`. Decisão sempre no banco, nunca calculada no client.
+**Trade-off explicado ao Ronaldo**: isso cobre exatamente "quando o usuário retornar ao app", mas não envia nada enquanto o app está fechado (não é uma notificação de verdade tipo push/e-mail — se quiser reengajar quem nunca mais voltou, precisa de canal externo, registrado como melhoria futura).
+**Coordenação de UI**: no primeiro acesso, a mensagem de boas-vindas e o modal de completar cadastro (`CompletarCadastroModal`) disputariam a tela ao mesmo tempo — resolvido fazendo o modal de cadastro esperar `tipoAcesso !== 'primeiro_acesso'` antes de aparecer.
+**Status**: implementado, testado (4 cenários simulados no banco), publicado em produção.
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).
