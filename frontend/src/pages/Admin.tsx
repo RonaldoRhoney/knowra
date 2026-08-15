@@ -169,7 +169,65 @@ function PainelBarList({ titulo, itens, labels }: { titulo: string; itens: Item[
   return (
     <div className="bg-knowra-surface rounded-2xl p-5">
       <h2 className="text-sm font-semibold text-knowra-text/80 mb-4">{titulo}</h2>
-      <BarList itens={itens} labels={labels} />
+      <Donut itens={itens} labels={labels} />
+    </div>
+  );
+}
+
+// Paleta categórica fixa (nunca reordenada por valor) — cores já usadas no
+// design system do KnowRa, com contraste suficiente sobre knowra-surface.
+const PALETA_CATEGORICA = ["#38BDF8", "#7C3AED", "#34D399", "#FBBF24", "#E879F9", "#FB923C"];
+
+function Donut({ itens, labels }: { itens: Item[]; labels?: Record<string, string> }) {
+  const total = itens.reduce((soma, i) => soma + i.total, 0);
+  const raio = 40;
+  const circunferencia = 2 * Math.PI * raio;
+  const gapDeg = itens.length > 1 ? 3 : 0;
+  let anguloAcumulado = 0;
+
+  return (
+    <div className="flex items-center gap-5">
+      <svg viewBox="0 0 100 100" className="w-24 h-24 shrink-0 -rotate-90">
+        {itens.map((item, i) => {
+          const fracao = total > 0 ? item.total / total : 0;
+          const arcoDeg = Math.max(fracao * 360 - gapDeg, 0);
+          const arcoLen = (arcoDeg / 360) * circunferencia;
+          const dashoffset = -((anguloAcumulado / 360) * circunferencia);
+          anguloAcumulado += fracao * 360;
+          return (
+            <circle
+              key={item.nome}
+              cx="50"
+              cy="50"
+              r={raio}
+              fill="none"
+              stroke={PALETA_CATEGORICA[i % PALETA_CATEGORICA.length]}
+              strokeWidth="16"
+              strokeDasharray={`${arcoLen} ${circunferencia}`}
+              strokeDashoffset={dashoffset}
+            />
+          );
+        })}
+      </svg>
+      <div className="flex-1 min-w-0 space-y-1.5">
+        {itens.map((item, i) => (
+          <div key={item.nome} className="flex items-center gap-2 text-xs">
+            <span
+              className="w-2.5 h-2.5 rounded-full shrink-0"
+              style={{ backgroundColor: PALETA_CATEGORICA[i % PALETA_CATEGORICA.length] }}
+            />
+            <span
+              className="text-knowra-text/70 truncate flex-1"
+              title={labels?.[item.nome] ?? item.nome}
+            >
+              {labels?.[item.nome] ?? item.nome}
+            </span>
+            <span className="text-knowra-text/40 shrink-0">
+              {total > 0 ? Math.round((item.total / total) * 100) : 0}%
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
