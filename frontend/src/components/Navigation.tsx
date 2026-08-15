@@ -35,39 +35,44 @@ export function Navigation() {
           Know<span className="text-knowra-primary">Ra</span>
         </Link>
 
-        <nav className="hidden lg:flex items-center gap-6 flex-1">
-          {LINKS.map((l) => (
-            <Link key={l.to} to={l.to} className={linkClasse(l.to)}>
-              {l.label}
-            </Link>
-          ))}
-        </nav>
+        {/* Nav + ações agrupados como um único bloco encostado à direita —
+            evita o vão vazio que sobrava entre os links e o grupo de ações
+            quando cada um tinha seu próprio flex-1 independente. */}
+        <div className="hidden lg:flex items-center justify-end flex-1 gap-8 min-w-0">
+          <nav className="flex items-center gap-6 shrink-0">
+            {LINKS.map((l) => (
+              <Link key={l.to} to={l.to} className={linkClasse(l.to)}>
+                {l.label}
+              </Link>
+            ))}
+          </nav>
 
-        <div className="hidden lg:flex items-center gap-5 shrink-0">
-          {profile && profile.streak_atual > 0 && (
-            <span
-              className="text-sm text-knowra-text-secondary flex items-center gap-1.5 shrink-0"
-              title="Sequência atual"
+          <div className="flex items-center gap-5 shrink-0">
+            {profile && profile.streak_atual > 0 && (
+              <span
+                className="text-sm text-knowra-text-secondary flex items-center gap-1.5 shrink-0"
+                title="Sequência atual"
+              >
+                <span aria-hidden>🔥</span>
+                <span className="font-semibold text-knowra-text">{profile.streak_atual}</span>
+              </span>
+            )}
+            {profile?.role === "admin" && (
+              <Link
+                to="/admin"
+                className="text-xs font-medium px-3 py-1.5 rounded-full bg-knowra-warning/15 text-knowra-warning border border-knowra-warning/30 whitespace-nowrap shrink-0"
+              >
+                Painel ADM
+              </Link>
+            )}
+            <span className="w-px h-5 bg-knowra-border shrink-0" aria-hidden />
+            <button
+              onClick={signOut}
+              className="text-sm text-knowra-text-secondary hover:text-knowra-text transition-colors shrink-0"
             >
-              <span aria-hidden>🔥</span>
-              <span className="font-semibold text-knowra-text">{profile.streak_atual}</span>
-            </span>
-          )}
-          {profile?.role === "admin" && (
-            <Link
-              to="/admin"
-              className="text-xs font-medium px-3 py-1.5 rounded-full bg-knowra-warning/15 text-knowra-warning border border-knowra-warning/30 whitespace-nowrap shrink-0"
-            >
-              Painel ADM
-            </Link>
-          )}
-          <span className="w-px h-5 bg-knowra-border shrink-0" aria-hidden />
-          <button
-            onClick={signOut}
-            className="text-sm text-knowra-text-secondary hover:text-knowra-text transition-colors shrink-0"
-          >
-            Sair
-          </button>
+              Sair
+            </button>
+          </div>
         </div>
 
         <button
