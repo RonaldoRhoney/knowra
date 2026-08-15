@@ -85,7 +85,7 @@ export function Temporadas() {
   return (
     <div>
       <Navigation />
-      <div className="px-4 py-8 max-w-lg mx-auto">
+      <div className="px-4 py-8 max-w-3xl mx-auto">
         <div className="mb-6">
           <h1 className="text-h2">Temporadas</h1>
           <p className="text-sm text-knowra-text-secondary mt-0.5">Ligas e competição por período</p>

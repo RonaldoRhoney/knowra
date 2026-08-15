@@ -31,7 +31,7 @@ export function Navigation() {
   return (
     <header className="border-b border-knowra-border bg-knowra-bg sticky top-0 z-40">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-6">
-        <Link to="/" className="text-lg font-bold shrink-0 tracking-tight">
+        <Link to="/" className="text-lg font-bold shrink-0 tracking-tight leading-none">
           Know<span className="text-knowra-primary">Ra</span>
         </Link>
 

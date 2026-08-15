@@ -32,7 +32,7 @@ export function MapaConhecimento() {
   return (
     <div>
       <Navigation />
-      <div className="px-4 py-8 max-w-lg mx-auto">
+      <div className="px-4 py-8 max-w-3xl mx-auto">
         <div className="mb-8">
           <h1 className="text-h2">Mapa de Conhecimento</h1>
           <p className="text-sm text-knowra-text-secondary mt-0.5">

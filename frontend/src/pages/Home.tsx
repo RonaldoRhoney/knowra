@@ -41,7 +41,7 @@ export function Home() {
   return (
     <div className="min-h-screen flex flex-col">
     <Navigation />
-    <div className="px-4 py-8 max-w-lg mx-auto flex-1 w-full">
+    <div className="px-4 py-8 max-w-3xl mx-auto flex-1 w-full">
       <div className="mb-5">
         <h1 className="text-h2">Olá, {profile?.nome ?? "explorador"} 👋</h1>
         <p className="text-sm text-knowra-text-secondary mt-0.5">Continue sua jornada de conhecimento.</p>

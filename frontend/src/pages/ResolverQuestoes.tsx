@@ -90,7 +90,7 @@ export function ResolverQuestoes({ modo }: { modo: "concurso" | "area" }) {
   return (
     <div>
       <Navigation />
-      <div className="px-4 py-8 max-w-lg mx-auto">
+      <div className="px-4 py-8 max-w-3xl mx-auto">
         <header className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-h2">{titulo || "Questões"}</h1>
