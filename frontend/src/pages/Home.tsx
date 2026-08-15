@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { BadgesVitrine } from "../components/BadgesVitrine";
+import { BadgeGrid } from "../components/BadgeGrid";
 import { CompletarCadastroModal } from "../components/CompletarCadastroModal";
 import { DesafioCard } from "../components/DesafioCard";
 import { Footer } from "../components/Footer";
@@ -74,7 +74,7 @@ export function Home() {
       )}
 
       {profileExibido && <ProgressoUsuario profile={profileExibido} />}
-      <BadgesVitrine atualizarQuando={badgesVersao} />
+      <BadgeGrid atualizarQuando={badgesVersao} />
 
       <MissoesDiarias atualizarQuando={historicoVersao + badgesVersao} />
 

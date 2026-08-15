@@ -18,42 +18,68 @@ export function ProgressoUsuario({ profile }: { profile: Profile }) {
     ? Math.min(100, Math.max(0, ((profile.xp_total - xpBase) / (xpAlvo - xpBase)) * 100))
     : 100;
 
+  const raio = 30;
+  const circunferencia = 2 * Math.PI * raio;
+  const arco = (progresso / 100) * circunferencia;
+
   return (
-    <div className="bg-knowra-surface rounded-2xl p-4">
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-mono uppercase tracking-wide text-knowra-primary bg-knowra-primary/15 px-2 py-0.5 rounded-md">
-            Nível {profile.nivel_global}
-          </span>
-          <span className="text-sm text-knowra-text/60">{atual?.titulo ?? "Curioso"}</span>
-          {proximo && (
-            <span className="text-xs text-knowra-text/30 flex items-center gap-1">
-              → <span className="text-knowra-accent/70">{proximo.titulo}</span>
-            </span>
+    <div className="bg-knowra-surface rounded-hero p-5">
+      <div className="flex items-center gap-4">
+        <div className="relative w-20 h-20 shrink-0">
+          <svg viewBox="0 0 72 72" className="w-20 h-20 -rotate-90">
+            <circle cx="36" cy="36" r={raio} fill="none" stroke="#2A3042" strokeWidth="6" />
+            <circle
+              cx="36"
+              cy="36"
+              r={raio}
+              fill="none"
+              stroke="url(#anel-nivel)"
+              strokeWidth="6"
+              strokeLinecap="round"
+              strokeDasharray={`${arco} ${circunferencia}`}
+              className="transition-all duration-700 ease-out"
+            />
+            <defs>
+              <linearGradient id="anel-nivel" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#7C3AED" />
+                <stop offset="100%" stopColor="#38BDF8" />
+              </linearGradient>
+            </defs>
+          </svg>
+          <div className="absolute inset-0 grid place-items-center">
+            <div className="text-center leading-none">
+              <p className="text-[9px] text-knowra-text-terciario uppercase tracking-wide mb-0.5">Nível</p>
+              <p className="text-2xl font-bold">{profile.nivel_global}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <p className="text-h3">{atual?.titulo ?? "Curioso"}</p>
+            {proximo && <span className="text-xs text-knowra-text-terciario">→ {proximo.titulo}</span>}
+          </div>
+          {profile.streak_atual > 0 && (
+            <p className="text-sm text-knowra-text-secondary flex items-center gap-1 mt-1">
+              <span aria-hidden>🔥</span>
+              <span className="font-semibold text-knowra-text">{profile.streak_atual}</span> dias de sequência
+            </p>
           )}
         </div>
-        {profile.streak_atual > 0 && (
-          <span className="text-sm flex items-center gap-1">
-            🔥 <span className="font-semibold">{profile.streak_atual}</span>
-            <span className="text-knowra-text/40 text-xs">dias</span>
-          </span>
-        )}
       </div>
 
-      <div className="h-2 rounded-full bg-knowra-bg overflow-hidden">
-        <div
-          className="h-full bg-gradient-to-r from-knowra-primary to-knowra-accent transition-all duration-700 ease-out"
-          style={{ width: `${progresso}%` }}
-        />
-      </div>
-
-      <div className="flex justify-between mt-1.5">
-        <span className="text-[11px] text-knowra-text/40">{profile.xp_total} XP</span>
-        {proximo && (
-          <span className="text-[11px] text-knowra-text/40">
-            {xpAlvo - profile.xp_total} XP até {proximo.titulo}
-          </span>
-        )}
+      <div className="mt-4">
+        <div className="h-3 rounded-full bg-knowra-bg overflow-hidden">
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-knowra-primary to-knowra-accent transition-all duration-700 ease-out"
+            style={{ width: `${progresso}%` }}
+          />
+        </div>
+        <p className="text-xs text-knowra-text-secondary mt-2">
+          {proximo
+            ? `${profile.xp_total} XP · faltam ${xpAlvo - profile.xp_total} XP para ${proximo.titulo}`
+            : `${profile.xp_total} XP · nível máximo alcançado`}
+        </p>
       </div>
     </div>
   );

@@ -8,9 +8,9 @@ interface Missoes {
 }
 
 const DEFINICOES = [
-  { chave: "pergunta_hoje" as const, texto: "Faça uma pergunta hoje" },
-  { chave: "desafio_hoje" as const, texto: "Responda um desafio hoje" },
-  { chave: "area_nova_hoje" as const, texto: "Explore uma área diferente" },
+  { chave: "pergunta_hoje" as const, texto: "Faça uma pergunta hoje", icone: "❓" },
+  { chave: "desafio_hoje" as const, texto: "Responda um desafio hoje", icone: "🎯" },
+  { chave: "area_nova_hoje" as const, texto: "Explore uma área diferente", icone: "🧭" },
 ];
 
 export function MissoesDiarias({ atualizarQuando }: { atualizarQuando: number }) {
@@ -25,23 +25,34 @@ export function MissoesDiarias({ atualizarQuando }: { atualizarQuando: number })
   if (!missoes) return null;
 
   return (
-    <div className="bg-knowra-surface rounded-2xl p-4 mt-4">
-      <p className="text-xs font-semibold text-knowra-text/70 mb-2.5">Missões de hoje</p>
-      <div className="space-y-1.5">
+    <div className="bg-knowra-surface rounded-hero p-5 mt-4">
+      <p className="text-sm font-semibold text-knowra-text-secondary mb-3">Missões de hoje</p>
+      <div className="space-y-2">
         {DEFINICOES.map((m) => {
           const concluida = missoes[m.chave];
           return (
-            <div key={m.chave} className="flex items-center gap-2">
+            <div
+              key={m.chave}
+              className={`flex items-center gap-3 rounded-xl p-3 border transition-colors ${
+                concluida ? "bg-knowra-success/10 border-knowra-success/25" : "bg-knowra-bg border-knowra-border"
+              }`}
+            >
               <span
-                className={`w-4 h-4 rounded-full grid place-items-center text-[10px] shrink-0 ${
-                  concluida ? "bg-knowra-primary text-white" : "border border-white/20"
+                className={`w-6 h-6 rounded-full grid place-items-center text-xs shrink-0 ${
+                  concluida
+                    ? "bg-knowra-success text-white"
+                    : "border border-knowra-border text-knowra-text-terciario"
                 }`}
+                aria-hidden
               >
-                {concluida && "✓"}
+                {concluida ? "✓" : m.icone}
               </span>
-              <span className={`text-xs ${concluida ? "text-knowra-text/40 line-through" : "text-knowra-text/70"}`}>
+              <span className={`text-sm flex-1 ${concluida ? "text-knowra-text" : "text-knowra-text-secondary"}`}>
                 {m.texto}
               </span>
+              {concluida && (
+                <span className="text-xs text-knowra-success font-medium shrink-0">Concluída</span>
+              )}
             </div>
           );
         })}
