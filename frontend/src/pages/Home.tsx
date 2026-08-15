@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { BadgesVitrine } from "../components/BadgesVitrine";
 import { CompletarCadastroModal } from "../components/CompletarCadastroModal";
@@ -7,8 +7,10 @@ import { Footer } from "../components/Footer";
 import { HistoricoPerguntas } from "../components/HistoricoPerguntas";
 import { MensagemAcesso } from "../components/MensagemAcesso";
 import { ProgressoUsuario } from "../components/ProgressoUsuario";
+import { SimuladorNivel } from "../components/SimuladorNivel";
 import { useAuth } from "../contexts/AuthContext";
 import { askQuestion, type AskResponse } from "../lib/api";
+import { getNiveis } from "../lib/niveis";
 
 export function Home() {
   const { profile, signOut } = useAuth();
@@ -18,6 +20,24 @@ export function Home() {
   const [erro, setErro] = useState<string | null>(null);
   const [historicoVersao, setHistoricoVersao] = useState(0);
   const [badgesVersao, setBadgesVersao] = useState(0);
+  const [nivelSimulado, setNivelSimulado] = useState<number | null>(null);
+  const [xpSimulado, setXpSimulado] = useState(0);
+
+  useEffect(() => {
+    if (nivelSimulado === null) return;
+    getNiveis().then((niveis) => {
+      const atual = niveis.find((n) => n.nivel === nivelSimulado);
+      const proximo = niveis.find((n) => n.nivel === nivelSimulado + 1);
+      const base = atual?.xp_necessario ?? 0;
+      const alvo = proximo?.xp_necessario ?? base;
+      setXpSimulado(proximo ? base + Math.round((alvo - base) * 0.5) : base);
+    });
+  }, [nivelSimulado]);
+
+  const profileExibido =
+    profile && nivelSimulado !== null
+      ? { ...profile, nivel_global: nivelSimulado, xp_total: xpSimulado }
+      : profile;
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -63,8 +83,18 @@ export function Home() {
         </div>
       </header>
 
-      {profile && <ProgressoUsuario profile={profile} />}
+      {nivelSimulado !== null && (
+        <div className="bg-knowra-primary text-white text-xs font-medium text-center py-1.5 rounded-lg mb-3">
+          🔍 MODO PREVIEW — visualizando nível {nivelSimulado}, seu XP real não foi alterado
+        </div>
+      )}
+
+      {profileExibido && <ProgressoUsuario profile={profileExibido} />}
       <BadgesVitrine atualizarQuando={badgesVersao} />
+
+      {profile?.role === "admin" && (
+        <SimuladorNivel nivelSimulado={nivelSimulado} onChange={setNivelSimulado} />
+      )}
 
       <form onSubmit={handleSubmit} className="bg-knowra-surface rounded-2xl p-4 mt-4">
         <textarea

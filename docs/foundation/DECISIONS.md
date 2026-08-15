@@ -123,6 +123,13 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 **Coordenação de UI**: no primeiro acesso, a mensagem de boas-vindas e o modal de completar cadastro (`CompletarCadastroModal`) disputariam a tela ao mesmo tempo — resolvido fazendo o modal de cadastro esperar `tipoAcesso !== 'primeiro_acesso'` antes de aparecer.
 **Status**: implementado, testado (4 cenários simulados no banco), publicado em produção.
 
+## 2026-08-15 — Modo preview de nível pro admin (só visual, nunca escreve no banco)
+
+**Contexto**: pedido do Ronaldo (admin) pra conseguir ver como o app fica em qualquer nível/fase, sem precisar progredir de verdade.
+**Decisão**: `SimuladorNivel` é um seletor visível só pra `role='admin'` na Home, que sobrepõe **localmente no componente React** o `nivel_global`/`xp_total` exibido na barra de progresso — nunca escreve no banco, nunca chama nenhuma RPC de XP. Banner "🔍 MODO PREVIEW" fica sempre visível enquanto ativo, pra nunca ser confundido com progresso real (mesmo princípio de "nunca apresentar dado fictício como real" do `CLAUDE.md`, aplicado aqui como "deixar claríssimo que é fictício quando for").
+**Por que não simular no banco**: alterar `profiles.xp_total`/`nivel_global` de verdade (mesmo que temporariamente) violaria a proteção de integridade de XP já estabelecida em `SECURITY.md` — states fictícios nunca devem tocar a fonte de verdade dos dados de progressão.
+**Escopo**: cobre nível/XP (o que foi pedido). Não simula badges conquistadas nem streak — o catálogo de badges (sempre as mesmas 5, estáticas) já aparece listado no painel do simulador pra referência, sem precisar simular "conquista".
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).
