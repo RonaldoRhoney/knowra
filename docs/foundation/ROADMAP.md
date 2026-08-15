@@ -102,10 +102,16 @@ Preparação arquitetural para o Competitive Mode, sem UI competitiva pública a
 
 **Critério de conclusão (7b)**: usuário consegue escolher um concurso, responder questões objetivas, ver o resultado com explicação imediatamente (sem espera de IA), acompanhar progresso por concurso, e (opcionalmente) aparecer no ranking daquele concurso — tudo com o banco de questões pré-gerado e revisado, nunca gerado ao vivo por tentativa.
 
-## FASE 8 — Seasons & Leagues *(planejado)*
+## FASE 8 — Seasons & Leagues ✅ concluída (2026-08-15)
 
-* Temporadas com início/fim, ranking congelado ao final, recompensas.
-* Ligas (Bronze → Lenda) — ver [GAME_RULES.md](GAME_RULES.md).
+* ✅ Migration em produção: `ligas` (catálogo fixo, liga sempre derivada do rating), `temporadas` (no máximo uma `ativa` por vez), `temporada_resultados` (snapshot congelado) + RPCs `iniciar_temporada`/`encerrar_temporada`/`ranking_temporada` — checklist de segurança rodado (admin-only testado de verdade: usuário comum bloqueado, segunda temporada ativa bloqueada, snapshot conferido).
+* ✅ Recompensa por liga reaproveita `badges`/`conceder_badge()` — 7 badges novas, sem currency nova.
+* ✅ `/temporadas`: liga atual do usuário, temporada ativa em andamento (linka pro ranking ao vivo já existente), histórico de temporadas encerradas com leaderboard congelado, controles de admin (iniciar/encerrar) na mesma página.
+* ⏳ Encerramento **é manual** (ação do admin), não automático por data — sem infraestrutura de cron no projeto. Documentado como dependência operacional, não esquecido.
+* ⏳ Limiares de rating por liga são provisórios (mesma ressalva do algoritmo de Rating desde a Fase 5) — sem dado real de distribuição ainda.
+* ⏳ Temporada por área/concurso, promoção/rebaixamento como mecânica própria — fora de escopo, mesmo princípio de não generalizar sem uso real.
+
+**Critério de conclusão**: ✅ admin consegue iniciar e encerrar uma temporada, o encerramento congela ranking+liga+percentual de cada usuário elegível e distribui badge de liga, e o usuário consegue ver sua liga atual e o histórico de temporadas passadas — testado em produção com bloqueio de segurança confirmado (não-admin não consegue iniciar/encerrar).
 
 ## FASE 9+ — Social *(futuro, fora de escopo por ora)*
 

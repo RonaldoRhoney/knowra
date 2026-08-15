@@ -104,7 +104,19 @@ areas 1─N areas (auto-relação, parent_id)
 
 `QuestionProvider` (integração real com fonte externa) **ainda não existe** — MVP usa só `ia_knowra` como origem, schema já preparado pra não exigir redesenho quando um provider real for integrado (ver [ARCHITECTURE.md](ARCHITECTURE.md) §Provider Layer).
 
-## Entidades futuras (planejado — Competitive Mode, atualização 2026-08-15)
+## Seasons & Leagues (implementado — Fase 8, 2026-08-15)
+
+> Ver [DECISIONS.md](DECISIONS.md) e [GAME_RULES.md](GAME_RULES.md) §Seasons/§Leagues.
+
+| Conceito | Tabela real | Notas |
+|---|---|---|
+| `Season` | `temporadas` | `nome`, `inicio`, `fim`, `status` (`planejada`/`ativa`/`encerrada`), `congelada_em`. Índice único garante no máximo uma `ativa` por vez. Encerramento é ação admin explícita, não automática por data. |
+| `League` | `ligas` (catálogo fixo, mesmo molde de `niveis`) | Liga é sempre **derivada** do rating atual — nunca um campo separado promovido/rebaixado. |
+| — | `temporada_resultados` | snapshot congelado no encerramento (posição, percentil, rating, liga) — registro pessoal permanente, visível ao próprio usuário mesmo sem opt-in de ranking público |
+
+Recompensa reaproveita `badges`/`conceder_badge()` já existentes — 7 badges novas (uma por liga), sem currency nova.
+
+## Entidades futuras (planejado, atualização 2026-08-15)
 
 > Ver [DECISIONS.md](DECISIONS.md). Conceitual, não é migration — não criar essas tabelas agora.
 
@@ -112,10 +124,8 @@ areas 1─N areas (auto-relação, parent_id)
 |---|---|---|
 | `QuestionProvider` | tabela nova | Fonte de Questões (config, auth, limite, custo, status) — ver [ARCHITECTURE.md](ARCHITECTURE.md) §Provider Layer |
 | `XPTransaction` | avaliar: hoje XP é só um contador (`profiles.xp_total` incrementado por RPC) — um ledger append-only (`XPTransaction`) dá auditabilidade/anti-cheat melhor, mas é mais caro de manter. Decisão adiada — reavaliar quando Rating precisar do mesmo tipo de rastro | hoje: `desafios.xp_ganho` já funciona como um registro histórico por linha, parcialmente cobre a necessidade |
-| `Rating` | `profiles.rating` (Fase 5) já implementado pro Knowledge Mode; `rating_por_area`/`rating_por_concurso` dedicados ainda não existem | ranking hoje (Fase 6/7a) usa `dominio_pct`/rating diretamente, não um Rating dedicado por escopo — ver [GAME_RULES.md](GAME_RULES.md) §Rating |
-| `Leaderboard` / `Ranking` | RPCs (`ranking_geral`/`ranking_por_area`/`ranking_por_concurso`) já implementadas — não é view/tabela própria | |
-| `Season` | tabela nova | período com início/fim, congela ranking ao final |
-| `League` | tabela nova ou enum fixo (Bronze→Lenda) + coluna em `profiles`/rating por temporada | avaliar complexidade real na hora |
+| `Rating` | `profiles.rating` (Fase 5) já implementado pro Knowledge Mode; `rating_por_area`/`rating_por_concurso` dedicados ainda não existem | ranking hoje (Fase 6/7a/8) usa `dominio_pct`/rating diretamente, não um Rating dedicado por escopo — ver [GAME_RULES.md](GAME_RULES.md) §Rating |
+| `Leaderboard` / `Ranking` | RPCs (`ranking_geral`/`ranking_por_area`/`ranking_por_concurso`/`ranking_temporada`) já implementadas — não é view/tabela própria | |
 | `AIInteraction` | tabela de log/observabilidade, não domínio de negócio | custo/latência por chamada de IA, ver [SECURITY.md](SECURITY.md) §Observabilidade |
 
 **Não assumir que todo conceito acima vira tabela** — vários são agregados, views ou colunas dentro de tabelas já existentes. Essa decisão é tomada na hora de cada Fase futura implementar, com o schema real na frente (skill `verificar-premissas`), não especulativamente agora.

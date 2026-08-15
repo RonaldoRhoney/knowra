@@ -114,13 +114,13 @@ Algoritmo definitivo de rating **não é decidido nesta fase** — só a regra d
 
 **Dimensões de ranking previstas**: geral, por área (Tecnologia, Ciência, História...), por domínio dentro de área (Tecnologia → Programação → Python), e de concursos (geral, por concurso, por área/disciplina, por banca, por período/temporada).
 
-## Seasons — temporadas (planejado)
+## Seasons — temporadas (implementado — Fase 8, 2026-08-15)
 
-Períodos competitivos com início/fim definidos (ex: "KnowRa — Temporada 01", 01/08 a 31/08). Ao final: ranking congela, recompensas/badges são distribuídas, posição percentual e histórico ficam registrados. Fora do MVP — arquitetura só precisa suportar no futuro (ver [DATA_MODEL.md](DATA_MODEL.md)), sem implementação agora.
+Períodos competitivos com início/fim definidos (ex: "KnowRa — Temporada 01"). Encerramento é **ação explícita do admin**, não automática por data (sem infraestrutura de cron no projeto) — ao encerrar, o ranking geral congela em `temporada_resultados` (posição, percentual, rating e liga no momento do encerramento), badges de liga são distribuídas, e o histórico fica registrado e visível pro próprio usuário mesmo sem opt-in de ranking público (é um registro pessoal, não uma vitrine). Ver [DECISIONS.md](DECISIONS.md).
 
-## Leagues — ligas (planejado)
+## Leagues — ligas (implementado — Fase 8, 2026-08-15)
 
-Progressão competitiva em camadas: Bronze → Prata → Ouro → Platina → Diamante → Mestre → Lenda. Não implementar ainda — só garantir que o modelo de dados e o futuro Competition Engine consigam suportar essa evolução sem redesenho.
+Progressão competitiva em camadas: Bronze → Prata → Ouro → Platina → Diamante → Mestre → Lenda. **Liga é sempre derivada do rating atual** (tabela `ligas`, faixas de rating por camada), nunca um estado promovido/rebaixado à parte — mesmo princípio já usado em `nivel_global`/`niveis`. Limiares de rating são provisórios (mesma ressalva do algoritmo de Rating em si, ver §Rating acima); recompensa por liga é uma badge (uma por camada, concedida na primeira vez que o usuário termina qualquer temporada naquela liga — não é por temporada individual).
 
 ## Regras anti-farming (Competitive Mode)
 

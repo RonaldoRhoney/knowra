@@ -10,6 +10,7 @@ import { Perfil } from "./pages/Perfil";
 import { Ranking } from "./pages/Ranking";
 import { Concursos } from "./pages/Concursos";
 import { ResolverQuestoes } from "./pages/ResolverQuestoes";
+import { Temporadas } from "./pages/Temporadas";
 import { Privacidade } from "./pages/Privacidade";
 import { Termos } from "./pages/Termos";
 
@@ -75,6 +76,14 @@ export function App() {
             element={
               <ProtectedRoute>
                 <ResolverQuestoes modo="area" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/temporadas"
+            element={
+              <ProtectedRoute>
+                <Temporadas />
               </ProtectedRoute>
             }
           />
