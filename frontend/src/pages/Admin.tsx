@@ -15,6 +15,9 @@ interface Stats {
   xp_distribuido: number;
   total_acessos: number;
   acessos_hoje: number;
+  acessos_semana: number;
+  acessos_mes: number;
+  acessos_ano: number;
   top_areas: Item[];
 }
 
@@ -79,8 +82,17 @@ export function Admin() {
           carregando={carregando}
         />
         <MetricaCard icone="⚡" label="XP distribuído" valor={stats?.xp_distribuido} carregando={carregando} />
-        <MetricaCard icone="📈" label="Acessos totais" valor={stats?.total_acessos} carregando={carregando} />
-        <MetricaCard icone="🕐" label="Acessos hoje" valor={stats?.acessos_hoje} carregando={carregando} />
+      </section>
+
+      <section className="bg-knowra-surface rounded-2xl p-5 mb-6">
+        <h2 className="text-sm font-semibold text-knowra-text/80 mb-4">Acessos</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+          <MetricaCard icone="🕐" label="Hoje" valor={stats?.acessos_hoje} carregando={carregando} fundo="bg-knowra-bg" />
+          <MetricaCard icone="📅" label="Semana" valor={stats?.acessos_semana} carregando={carregando} fundo="bg-knowra-bg" />
+          <MetricaCard icone="🗓️" label="Mês" valor={stats?.acessos_mes} carregando={carregando} fundo="bg-knowra-bg" />
+          <MetricaCard icone="📆" label="Ano" valor={stats?.acessos_ano} carregando={carregando} fundo="bg-knowra-bg" />
+          <MetricaCard icone="📈" label="Total" valor={stats?.total_acessos} carregando={carregando} fundo="bg-knowra-bg" />
+        </div>
       </section>
 
       {demografia && demografia.frequencia_14_dias.some((d) => d.total > 0) && (
@@ -206,14 +218,16 @@ function MetricaCard({
   label,
   valor,
   carregando,
+  fundo = "bg-knowra-surface",
 }: {
   icone: string;
   label: string;
   valor: number | undefined;
   carregando: boolean;
+  fundo?: string;
 }) {
   return (
-    <div className="bg-knowra-surface rounded-xl p-4">
+    <div className={`${fundo} rounded-xl p-4`}>
       <span className="text-lg">{icone}</span>
       <p className="text-xs text-knowra-text/50 mt-2">{label}</p>
       <p className="text-2xl font-bold mt-0.5">{carregando ? "—" : (valor ?? 0)}</p>
