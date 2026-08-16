@@ -529,6 +529,18 @@ Campos que variavam por cargo e eu não conseguia representar com um único valo
 
 **Status**: ✅ Etapa 7c.5 concluída — MVP de Concursos Hub populado com dado real e verificável, pipeline ponta a ponta validado (cadastro → listagem → badge de confiabilidade → pronto pra prática assim que houver questão pra cada disciplina relevante).
 
+## 2026-08-16 — Concursos: mais 2 concursos reais cadastrados (total 4)
+
+**Contexto**: Ronaldo pediu pra buscar mais concursos. Mesmo processo da Etapa 7c.5 — pesquisa real antes de cadastrar, fonte oficial linkada.
+
+**Decisão**: cadastrados via `cadastrar_concurso()` (produção, não simulado):
+- **SESAU-AL 2026** — 1.750 vagas imediatas (3.546 com cadastro reserva), Cebraspe, Especialista/Assistente em Saúde, inscrições 20/jul-26/ago/2026, salário R$ 2.050,55-5.757,15. Fonte: comunicado oficial do Cebraspe.
+- **CAER-RR 2026** — 105 vagas + 105 CR, Fundação Ajuri (UFRR), níveis médio/técnico/superior, inscrições 23/jul-31/ago/2026, salário R$ 3.036-4.554. Fonte: portal oficial da CAER.
+
+Total agora: 4 concursos reais em produção (Transpetro, TCE-MA, SESAU-AL, CAER-RR), todos `confiabilidade = 'verificado'`.
+
+**Status**: ✅ dado real, verificado, publicado.
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).
