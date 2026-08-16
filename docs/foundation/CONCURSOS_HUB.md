@@ -198,7 +198,7 @@ Zero custo de infraestrutura nova no MVP — cadastro manual (admin) não depend
 | 7c.4 | ✅ Frontend: `Concursos.tsx` reestruturado (busca, abas de status, Simulados, Videoaulas, Meu desempenho, formulário admin de cadastro) | Não |
 | 7c.5 | ✅ Populado MVP: 2 concursos reais (Transpetro 2026, TCE-MA 2026), dado verificado por busca web antes de cadastrar, com fonte oficial (Cesgranrio/Cebraspe) em `edital_url`/`pagina_oficial_url` | Não — trabalho manual de cadastro, não integração |
 | 7d | Conector `dados.gov.br` como fonte auxiliar opcional (enriquecimento, nunca crítico) | Sim — token pessoal do Ronaldo, mesmo fluxo manual já feito pro YouTube |
-| 7e (futuro) | RAG + extração de edital → geração de Questão a partir de conteúdo programático real (§10) | Sim — ferramenta de extração de PDF, decisão de custo separada |
+| 7e (futuro) | RAG + extração de edital → Concursos Intelligence Engine, detalhado em [CONCURSOS_INTELLIGENCE.md](CONCURSOS_INTELLIGENCE.md) (7e.1-7e.5) | Sim — ferramenta de extração de PDF, decisão de custo separada |
 
 Etapas 7c.1-7c.5 não dependem de nada externo — podem ser aprovadas e implementadas em sequência sem esperar decisão de infraestrutura. Etapa 7d depende só de você gerar um token gov.br (mesmo processo já feito pro YouTube). Etapa 7e é a mais especulativa — fica registrada como direção, sem data.
 

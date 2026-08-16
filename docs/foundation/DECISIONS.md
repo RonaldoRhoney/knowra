@@ -541,6 +541,18 @@ Total agora: 4 concursos reais em produção (Transpetro, TCE-MA, SESAU-AL, CAER
 
 **Status**: ✅ dado real, verificado, publicado.
 
+## 2026-08-16 — Concursos Intelligence Engine: discovery (doc only, sem código)
+
+**Contexto**: Ronaldo detalhou a visão da Etapa 7e (RAG + extração de edital) — não como "IA gera questão sobre um tema", mas como uma camada de inteligência completa: edital → Knowledge Base → RAG → questão/simulado/dica/plano de estudo grounded, com recomendação adaptativa baseada em desempenho real e detecção de disciplina recorrente entre concursos diferentes. Pediu explicitamente pra não implementar ainda — só projetar.
+
+**Achado principal antes de desenhar algo novo**: boa parte da infraestrutura necessária **já existe**, só nunca foi conectada a Concursos — `knowledge_record` (Knowledge Memory), `buscar_contexto_rag()` (RAG Retrieval Engine, Etapa H), Confidence Engine (Etapa D), Source Provenance (Etapa I), Knowledge Entity via `area_id`/`areas` (Etapa J), e até `progresso_concurso`/`progresso_disciplina_questoes` (que já são, na prática, a base de um "perfil de aprendizado adaptativo"). O gap real é menor do que parece: falta só (1) extrair conteúdo de edital pra dentro da Knowledge Memory existente, e (2) conectar `gerar_questoes.ts` a `buscar_contexto_rag()`, que já existe.
+
+**Decisão**: documento completo em [CONCURSOS_INTELLIGENCE.md](CONCURSOS_INTELLIGENCE.md) — reaproveita `knowledge_record` (com `concurso_id` novo, nullable) em vez de criar uma tabela `KnowledgeItem` paralela; `documentos_edital` novo só pra rastrear o documento fonte (hash, status de processamento). Roadmap detalhado em 5 sub-etapas (7e.1 extração de edital — a única peça genuinamente nova, depende de escolha de biblioteca de PDF parsing; 7e.2 geração de questão grounded em RAG — reaproveita Etapa H; 7e.3 cross-concurso e 7e.4 recomendação adaptativa básica — **dado já existe**, só falta RPC de leitura, candidatas a serem feitas primeiro por serem as mais baratas; 7e.5 recomendação com IA/plano de estudo — decisão de produto, não só técnica).
+
+**Reafirma regra anti-alucinação**: `CONCURSO → IA lê → IA inventa` nunca acontece — pipeline sempre `FONTES → EXTRAÇÃO → NORMALIZAÇÃO → KNOWLEDGE BASE → RAG → GERAÇÃO → VALIDAÇÃO → PUBLICAÇÃO`, mesma disciplina já aplicada em todo o KNOWRA_AI.
+
+**Status**: documento de projeto, nenhuma implementação autorizada. Complementa `CONCURSOS_HUB.md` (Etapa 7e agora detalhada) sem redesenhar `KNOWRA_AI.md` (RAG/Knowledge Memory/Knowledge Entity reaproveitados integralmente).
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).
