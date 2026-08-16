@@ -131,6 +131,10 @@ Ver [DECISIONS.md](DECISIONS.md) pro registro completo desse levantamento.
 
 Levantamento técnico completo em [AUDIO_ENGINE.md](AUDIO_ENGINE.md) — identidade sonora própria (música ambiente + efeitos de gamificação). **Nenhuma linha de código, biblioteca, tabela ou asset de áudio existe ainda.** Roadmap próprio (Etapas A a G, independente da numeração de Fases do produto) documentado lá — cada etapa exige aprovação explícita separada antes de virar implementação, mesma regra de todo o resto deste roadmap.
 
+## KNOWRA_AI — Knowledge Memory + AI cost-zero/local-first *(discovery apenas, 2026-08-15 — fora da numeração de fases)*
+
+Auditoria completa de dependências externas em [AI_COST_ZERO.md](AI_COST_ZERO.md), projeto de arquitetura em [KNOWRA_AI.md](KNOWRA_AI.md) — Knowledge Memory (cache semântico via `pgvector`, viabilidade alta, sem infra nova) + AI Engine local opcional via Ollama (viabilidade baixa no deploy serverless atual, exige decisão de infraestrutura separada). **Nenhuma tabela, dependência ou infraestrutura criada ainda.** Roadmap próprio (Etapas A a G) documentado em `KNOWRA_AI.md` §9 — etapas A-F não dependem de infraestrutura nova e podem ser aprovadas independentemente; etapa G (Ollama em runtime) exige decisão de infraestrutura explícita antes de qualquer código. Anthropic, KnowRa Pro, Mercado Pago e limites de IA **não foram alterados** por esta discovery.
+
 ## Sustentabilidade financeira *(em andamento, fora da numeração de fases)*
 
 Estratégia combinada com o Ronaldo em 2026-08-15 (ver [DECISIONS.md](DECISIONS.md) e [AI_ENGINE.md](AI_ENGINE.md) §Custo de IA e sustentabilidade financeira) — ordem de prioridade, maior retorno/menor risco primeiro:

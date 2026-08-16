@@ -245,6 +245,18 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 
 **Status**: ✅ corrigido, testado, publicado em produção.
 
+## 2026-08-15 — KNOWRA_AI: discovery aprovado, Fase 1/2 da auditoria concluídas
+
+**Contexto**: recebido `APIsFree.txt` — proposta do Ronaldo pra transformar o KnowRa de "app que consulta IA externa" em "plataforma com memória e inteligência própria" (Knowledge Memory, RAG interno, Ollama como IA local). Pedido explícito: interpretar antes de codar.
+
+**Entendimento apresentado e confirmado pelo Ronaldo**: identifiquei três pontos antes de qualquer código — (1) Ollama exige processo de vida longa com modelo em memória, incompatível com o backend serverless atual (Vercel Functions), (2) tensão real com o KnowRa Pro recém-lançado (um dos 3 pilares depende de custo de IA), (3) magnitude da mudança (comparável a várias Fases somadas). O Ronaldo concordou e adicionou uma correção importante: **não decidir Ollama-obrigatório agora** — a arquitetura final deve ser consequência da auditoria, não uma decisão prévia. Aprovou só Fase 1 (auditoria) + Fase 2 (mapeamento), com regras explícitas: não implementar nada, não remover Anthropic, não alterar KnowRa Pro/Mercado Pago/limites de IA, não criar infraestrutura Ollama, não criar tabela de produção, não migrar dado.
+
+**Decisão**: auditoria completa executada e documentada em [AI_COST_ZERO.md](AI_COST_ZERO.md) (inventário de dependências, matriz de custo, matriz de criticidade, riscos) e projeto de arquitetura em [KNOWRA_AI.md](KNOWRA_AI.md) (Knowledge Memory via `pgvector` — viabilidade alta, sem infra nova; Ollama em runtime — viabilidade baixa sem servidor dedicado, decisão de infraestrutura separada). `AI_ENGINE.md`, `ARCHITECTURE.md`, `DATA_MODEL.md`, `SECURITY.md`, `ROADMAP.md` atualizados com referências cruzadas (Fase 5 do pedido original).
+
+**Achado lateral relevante**: a auditoria (não relacionada ao objetivo principal) reconfirmou que `ip-api.com` (geolocalização de sessão) tem tier gratuito que proíbe uso comercial — já documentado como "revisar antes de monetizar" antes do KnowRa Pro existir. Agora que a monetização existe, isso é pendência ativa, não risco futuro. Não corrigido nesta auditoria (fora do escopo), só reconfirmado em `SECURITY.md`.
+
+**Status**: Fases 1 e 2 concluídas e apresentadas. Próximo passo depende da resposta do Ronaldo às 3 perguntas em aberto (`KNOWRA_AI.md` §11) — nenhuma Fase 3+ (código/tabela/infraestrutura) autorizada ainda.
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).

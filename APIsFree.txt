@@ -1,0 +1,602 @@
+depois de rever a direção que demos ao KNOWRA, eu faria uma mudança arquitetural importante agora, antes de continuar adicionando funcionalidades.
+
+A ideia é transformar o KNOWRA de:
+
+Aplicação que consulta uma IA externa para responder perguntas
+
+em:
+
+Plataforma de conhecimento com uma inteligência própria, memória própria e catálogo próprio de conhecimento.
+
+Isso é especialmente importante porque você não quer depender de créditos de OpenAI, Claude ou outras APIs pagas.
+
+Há uma ressalva: “API pública” não significa necessariamente “sem chave, sem limite ou gratuita para qualquer uso”. O catálogo oficial do governo brasileiro, por exemplo, possui APIs gratuitas, mas algumas exigem token. Portanto, eu criaria uma política no KNOWRA: nenhuma dependência paga ou que exija créditos será obrigatória para o funcionamento do produto.
+
+Minha proposta para o KNOWRA
+🧠 KNOWRA_AI
+
+O novo agente seria o núcleo inteligente:
+
+                         KNOWRA
+                            │
+                     ┌──────▼──────┐
+                     │ KNOWRA_AI   │
+                     └──────┬──────┘
+                            │
+        ┌───────────────────┼───────────────────┐
+        │                   │                   │
+   Memória KNOWRA      Knowledge Base      AI Local
+        │                   │                   │
+   Perguntas            Conteúdo             Ollama
+   Respostas             validado           modelo local
+   Contextos             Q&A                 embeddings
+   Preferências          Concursos           RAG
+        │                   │
+        └───────────────────┼───────────────────┘
+                            │
+                     API Gateway
+                            │
+          ┌─────────────────┼─────────────────┐
+          │                 │                 │
+      Wikimedia          Wikidata         Dados.gov.br
+          │                 │                 │
+      Wikipedia         conhecimento     dados públicos
+
+O ponto fundamental é:
+
+a busca externa deixa de ser o cérebro do KNOWRA.
+
+Ela passa a ser apenas uma fonte de aquisição de conhecimento.
+
+1. Não quero que o KNOWRA "treine sozinho" de qualquer maneira
+
+Aqui eu faria uma correção importante na sua ideia.
+
+Você disse:
+
+"um agente capaz de aprender tudo que é perguntado e respondido"
+
+Conceitualmente, sim.
+
+Mas tecnicamente não devemos fazer:
+
+Usuário pergunta
+      ↓
+IA responde
+      ↓
+"Resposta da IA = verdade"
+      ↓
+salvar para sempre
+
+Isso faria o KNOWRA acumular erros e informações falsas.
+
+Em vez disso:
+
+PERGUNTA
+   ↓
+KNOWRA_AI
+   ↓
+procura conhecimento interno
+   ↓
+encontra resposta conhecida?
+   │
+   ├── SIM → responde rapidamente
+   │
+   └── NÃO
+         ↓
+    fontes públicas
+         ↓
+    gera resposta
+         ↓
+    valida/confiança
+         ↓
+    Knowledge Memory
+         ↓
+    resposta futura mais rápida
+
+Esse mecanismo é muito mais seguro.
+
+2. A "memória" do KNOWRA
+
+Eu criaria uma camada chamada:
+
+KNOWRA KNOWLEDGE MEMORY
+
+Ela armazenaria conceitos, perguntas, respostas e relações.
+
+Por exemplo, alguém pergunta:
+
+"Quem proclamou a Independência do Brasil?"
+
+O KNOWRA responde.
+
+Depois outro usuário pergunta:
+
+"Quem declarou a independência brasileira?"
+
+Em vez de começar do zero:
+
+Google
+Wikipedia
+API
+IA
+
+o KNOWRA poderia reconhecer semanticamente:
+
+Pergunta nova
+     ↓
+similaridade semântica
+     ↓
+Conhecimento existente
+     ↓
+Resposta
+
+Isso pode reduzir bastante consultas externas.
+
+3. RAG interno
+
+Eu faria o KNOWRA nascer com:
+
+Internal RAG
+Pergunta
+   ↓
+Embedding
+   ↓
+Vector Search
+   ↓
+Knowledge Base
+   ↓
+Contexto relevante
+   ↓
+KNOWRA_AI
+   ↓
+Resposta
+
+E posteriormente:
+
+Pergunta
+   ↓
+Cache semântico
+   ↓
+Knowledge Base
+   ↓
+Resposta rápida
+4. KNOWRA_AI não precisa depender de OpenAI/Claude
+
+Aqui entra uma mudança muito interessante.
+
+O Ollama permite executar modelos localmente e disponibiliza uma API local, por padrão em http://localhost:11434/api. A documentação atual também indica suporte a modelos como Gemma, DeepSeek e Qwen, além de geração de embeddings.
+
+Então podemos ter:
+
+KNOWRA
+   ↓
+KNOWRA_AI
+   ↓
+Local AI Provider
+   ↓
+Ollama
+   ↓
+Modelo local
+
+Isso significa:
+
+$0 de créditos por pergunta para OpenAI/Claude.
+
+Existe, obviamente, custo computacional: o modelo precisa rodar em algum computador/servidor. Mas é completamente diferente de pagar por token em cada pergunta.
+
+5. E isso abre uma possibilidade excelente
+
+O KNOWRA poderia ter uma arquitetura de provider:
+
+AI_ENGINE
+    │
+    └── AIProvider
+          │
+          ├── LocalOllamaProvider
+          │
+          ├── FutureProvider
+          │
+          └── OfflineFallback
+
+Mas:
+
+OBRIGATÓRIO
+
+O KNOWRA deve funcionar com:
+
+LocalOllamaProvider
+
+Sem depender de OpenAI.
+
+Sem depender de Claude.
+
+Sem depender de Gemini.
+
+Sem depender de API paga.
+
+6. APIs públicas
+
+Eu não eliminaria APIs externas.
+
+Eu mudaria o papel delas.
+
+Fontes públicas
+
+Wikimedia/Wikipedia
+
+A API REST da Wikimedia é pública e fornece conteúdo e metadados em formato estruturado.
+
+Wikidata
+
+Excelente para conhecimento estruturado.
+
+Dados.gov.br
+
+O governo mantém um catálogo oficial de APIs e dados abertos; o catálogo atual possui dezenas de APIs catalogadas.
+
+IBGE
+
+Excelente fonte para:
+
+população;
+municípios;
+estados;
+indicadores;
+estatísticas.
+
+Open-Meteo
+
+Pode ser usado quando o KNOWRA precisar de dados meteorológicos. A documentação informa API sem chave para uso não comercial e dados sob CC BY 4.0; para o projeto, devemos verificar os termos conforme o uso real.
+
+7. Mas existe uma mudança conceitual importante
+
+Não quero:
+
+Pergunta
+ ↓
+Wikipedia
+ ↓
+Resposta
+
+Quero:
+
+                    KNOWRA_AI
+                       │
+              ┌────────┴────────┐
+              │                 │
+       KNOWRA MEMORY       PUBLIC SOURCES
+              │                 │
+       ┌──────┴──────┐    ┌─────┴─────┐
+       │             │    │           │
+     Cache         RAG  Wikimedia   Gov.br
+       │             │    Wikidata   IBGE
+       └──────┬──────┘    └─────┬─────┘
+              │                 │
+              └────────┬────────┘
+                       ↓
+                  KNOWRA_AI
+                       ↓
+                    RESPOSTA
+
+A fonte externa é alimentação, não dependência.
+
+8. O sistema aprende com as perguntas
+
+Eu criaria algo como:
+
+KnowledgeRecord
+
+com:
+
+id
+question
+normalized_question
+answer
+topic
+subcategory
+source
+source_url
+confidence
+times_used
+times_helpful
+created_at
+updated_at
+last_verified_at
+status
+embedding
+
+E:
+
+KnowledgeRelation
+
+para conectar conhecimentos:
+
+Brasil
+ ├── História
+ │    └── Independência
+ │          └── Pedro I
+ │
+ ├── Geografia
+ │    └── Estados
+ │
+ └── Política
+      └── Constituição
+
+Isso pode transformar o KNOWRA em algo muito maior no futuro.
+
+9. Sistema de confiança
+
+Eu adicionaria:
+
+Confidence Score
+
+Exemplo:
+
+0.98
+
+Resposta muito confiável.
+
+0.73
+
+Conhecimento razoavelmente confiável.
+
+0.41
+
+Precisa de validação.
+
+Isso permite ao KNOWRA decidir:
+
+confidence >= 0.90
+→ responder pela memória
+
+
+0.70–0.89
+→ responder + verificar fonte
+
+
+< 0.70
+→ buscar fonte pública
+
+Os valores acima são apenas uma proposta inicial; o Claude deverá avaliar os thresholds.
+
+10. E existe outra ideia muito forte
+KNOWRA aprende quais perguntas são mais comuns.
+
+Imagine que em um mês:
+
+"Quem descobriu o Brasil?"
+→ 1.482 perguntas
+
+
+"O que é fotossíntese?"
+→ 1.231 perguntas
+
+
+"Quando começou a Segunda Guerra?"
+→ 932 perguntas
+
+O KNOWRA pode identificar:
+
+🔥 Conhecimentos populares
+
+E pré-processá-los.
+
+Resultado:
+
+Pergunta
+↓
+Cache semântico
+↓
+Resposta quase imediata
+
+Isso reduz custo e melhora velocidade.
+
+11. Isso também conversa diretamente com o sistema de gamificação
+
+Quando alguém pergunta:
+
+"O que é machine learning?"
+
+O KNOWRA pode:
+
+Resposta
+   ↓
+"Quer testar seu conhecimento?"
+   ↓
+DESAFIO
+   ↓
+PERGUNTA
+   ↓
+RESPOSTA
+   ↓
+AVALIAÇÃO
+   ↓
+XP
+   ↓
+BADGE
+
+Então o KNOWRA_AI não é apenas um chatbot.
+
+Ele alimenta o:
+
+Core Loop.
+
+12. Concursos públicos
+
+Aqui a arquitetura fica ainda mais interessante.
+
+Poderíamos ter:
+
+KNOWRA_AI
+     │
+     ├── Conhecimento Geral
+     ├── Tecnologia
+     ├── História
+     ├── Ciência
+     ├── Geografia
+     └── Concursos Públicos
+             │
+             ├── Português
+             ├── Direito
+             ├── Informática
+             ├── Raciocínio Lógico
+             ├── Administração
+             └── Conhecimentos específicos
+
+E o conhecimento utilizado para gerar desafios pode ficar armazenado internamente.
+
+13. O que eu pediria agora ao Claude Code
+
+Eu não pediria ainda para ele implementar.
+
+Eu faria uma nova fase:
+
+KNOWRA FOUNDATION — API & AI COST ZERO AUDIT
+
+Ele deverá:
+
+FASE 1
+
+Auditar todo o projeto.
+
+Procurar:
+
+OpenAI
+Anthropic
+Claude
+Gemini
+OpenRouter
+Perplexity
+Replicate
+API keys
+credits
+paid endpoints
+
+e qualquer outra dependência paga.
+
+FASE 2
+
+Mapear:
+
+API
+→ finalidade
+→ onde é utilizada
+→ custo
+→ autenticação
+→ limite
+→ alternativa pública
+→ alternativa local
+FASE 3
+
+Criar:
+
+/docs/foundation/AI_COST_ZERO.md
+FASE 4
+
+Criar:
+
+/docs/foundation/KNOWRA_AI.md
+FASE 5
+
+Atualizar:
+
+AI_ENGINE.md
+ARCHITECTURE.md
+DATA_MODEL.md
+SECURITY.md
+ROADMAP.md
+DECISIONS.md
+FASE 6
+
+Projetar:
+
+KNOWRA_AI
+├── Local AI
+├── Knowledge Memory
+├── Semantic Cache
+├── RAG
+├── Knowledge Graph
+├── Public Sources
+├── Confidence Engine
+├── Learning Engine
+└── Response Engine
+
+Sem implementar ainda.
+
+🚨 Uma coisa que eu mudaria na sua solicitação
+
+Eu não escreveria para o Claude:
+
+"Todas as APIs devem ser gratuitas."
+
+Eu escreveria:
+
+"Nenhuma funcionalidade crítica do KNOWRA poderá depender de uma API paga, créditos por uso ou fornecedor externo proprietário. Sempre que houver dependência externa, deve existir uma alternativa local, pública, gratuita ou autogerenciada."
+
+Essa regra é muito mais poderosa.
+
+Porque amanhã uma API que hoje é gratuita pode mudar de política.
+
+O KNOWRA continua funcionando.
+
+🎯 Arquitetura que eu recomendo
+                         ┌──────────────────────┐
+                         │       KNOWRA         │
+                         │      Frontend        │
+                         └──────────┬───────────┘
+                                    │
+                                    ▼
+                         ┌──────────────────────┐
+                         │     KNOWRA CORE      │
+                         └──────────┬───────────┘
+                                    │
+                    ┌───────────────┼────────────────┐
+                    │               │                │
+                    ▼               ▼                ▼
+              KNOWRA_AI        GAME ENGINE      DATA ENGINE
+                    │
+        ┌───────────┼────────────┐
+        │           │            │
+        ▼           ▼            ▼
+      LOCAL       MEMORY        RAG
+       AI           │            │
+        │           │            │
+      Ollama     Semantic      Vector
+        │         Cache        Search
+        │           │            │
+        └───────────┼────────────┘
+                    │
+                    ▼
+             KNOWLEDGE BASE
+                    │
+        ┌───────────┼─────────────┐
+        │           │             │
+        ▼           ▼             ▼
+    Wikipedia   Wikidata      Dados Públicos
+
+E o mais importante:
+
+O KNOWRA passa a aprender internamente.
+
+Não necessariamente "treinando o modelo" a cada pergunta.
+
+Ele aprende por:
+
+MEMÓRIA + RAG + CACHE SEMÂNTICO + CONHECIMENTO ESTRUTURADO.
+
+Isso é muito mais barato, controlável e atualizável.
+
+Minha recomendação para o próximo passo
+
+Eu não começaria simplesmente trocando APIs.
+
+Primeiro faria uma auditoria completa do repositório atual do KNOWRA, porque precisamos descobrir exatamente quais APIs o Claude Code colocou, onde estão sendo chamadas e quais funcionalidades dependem delas.
+
+Depois disso, podemos dar ao Claude um prompt muito mais preciso:
+
+"Audite o KNOWRA inteiro e transforme sua arquitetura em Cost-Zero/Local-First, criando o KNOWRA_AI e a Knowledge Memory."
+
+Isso seria, na minha visão, uma mudança arquitetural de nível v0.5, e não apenas uma alteração de configuração. O site público do KNOWRA já está acessível em knowra.rhoneyinc.com, mas a inspeção do front público não revela o código-fonte/integrações internas; portanto, a auditoria precisa ser feita diretamente no repositório.
+
+Se fizermos isso corretamente, você poderá desenvolver o KNOWRA sem ficar refém de créditos de IA, mantendo a possibilidade de adicionar provedores externos futuramente — mas como opcionais, e não como dependências críticas. Analise e interprete tudo antes de codar, quero reavaliar seu entendimento. 

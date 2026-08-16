@@ -57,6 +57,10 @@ Além das três funções do MVP (responder, desafiar, avaliar), a IA poderá fu
 
 **Regra**: a IA **não é fonte absoluta de verdade**, principalmente para legislação, concursos e assuntos técnicos. Toda Questão gerada por IA precisa de mecanismo de validação, versionamento e marcação clara de origem — nunca apresentada com a mesma autoridade de uma Questão oficial de banca sem essa marcação.
 
+## KNOWRA_AI — discovery de arquitetura cost-zero/local-first (2026-08-15)
+
+> Ver [AI_COST_ZERO.md](AI_COST_ZERO.md) (auditoria completa de dependências externas) e [KNOWRA_AI.md](KNOWRA_AI.md) (projeto de Knowledge Memory + RAG interno + AI Engine local opcional via Ollama). Discovery aprovado, nenhuma implementação ainda — cada etapa do roadmap proposto exige aprovação separada. Não altera nada do que está descrito abaixo nesta seção até uma etapa específica ser aprovada.
+
 ## Provider Abstraction (planejado)
 
 Hoje o AI Engine chama a Anthropic diretamente (`backend/src/lib/anthropic.ts`) — aceitável para o MVP, mas a arquitetura de longo prazo não deve ficar acoplada a um único fornecedor:

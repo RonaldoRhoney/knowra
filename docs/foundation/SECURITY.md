@@ -58,6 +58,8 @@ Primeira coleta real de dado pessoal sensível do produto: faixa etária e gêne
 
 Dispositivo/país/região (tabela `sessoes`) são coletados a cada login para observabilidade agregada — **o IP bruto do usuário nunca é armazenado**, só o resultado já processado da geolocalização (país/região). Geolocalização feita via `ip-api.com` (best-effort — timeout de 2.5s, falha nunca bloqueia login, resultado fica `null`/`null` se a chamada falhar). Nenhuma linha de `sessoes` é exposta individualmente ao client, só agregada via `admin_demographics()` (RPC restrita a admin).
 
+**⚠️ Pendência ativa (reconfirmada na auditoria 2026-08-15, ver [AI_COST_ZERO.md](AI_COST_ZERO.md) §6)**: o tier gratuito do `ip-api.com` proíbe uso comercial nos próprios termos de serviço. Isso já estava sinalizado como "revisar antes de monetizar" desde a criação deste recurso — a monetização (KnowRa Pro) já aconteceu, então isso deixou de ser risco futuro e é pendência real hoje. Não corrigido nesta auditoria (fora do escopo dela), só reconfirmado — trocar por provedor com licença comercial (ex: ipapi.co pago, MaxMind GeoIP2) continua pendente.
+
 ## LGPD e privacidade (atualização 2026-08-15)
 
 O **perfil de conhecimento do usuário** (histórico de perguntas, respostas, domínio por área, desempenho, futuramente Rating/ranking/histórico competitivo) deve ser tratado como dado pessoal sensível do sistema, não só "dado de produto". Considerar desde já, mesmo sem implementar agora:

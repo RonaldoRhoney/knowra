@@ -167,6 +167,10 @@ Bucket `avatars` no Supabase Storage, público para leitura (avatar é imagem de
 
 `questoes.ordem` (bigint, identity) — ordem estável de geração, usada pro teto gratuito de Concursos (`listar_questoes()`/`responder_questao()` liberam só as 10 primeiras por `ordem` pra quem não é Pro). Não existia antes; `criado_em` sozinho não bastava porque um lote inteiro gerado numa transação recebe o mesmo timestamp.
 
+## KNOWRA_AI — Knowledge Memory (discovery 2026-08-15, nenhuma tabela criada)
+
+Modelo conceitual (`knowledge_record`/`knowledge_relation`, com `embedding` via `pgvector`) documentado em [KNOWRA_AI.md](KNOWRA_AI.md) §8 — evolução de `respostas_canonicas` (cache exato, já implementado) pra cache semântico com proveniência/confiança/validação, mesmo espírito de `origem`/`review_status` já usado em Questões de Concursos.
+
 ## Regras derivadas do modelo
 
 * `xp_total` e `nivel_global` em `profiles` são **derivados**, recalculados a partir de `desafios.xp_ganho` — não devem ser a fonte de verdade editável diretamente pelo frontend (ver [SECURITY.md](SECURITY.md), risco de manipulação de XP).

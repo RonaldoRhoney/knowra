@@ -148,6 +148,24 @@ Audio Engine
 
 Detalhe completo, incluindo por que Music e SFX nunca compartilham estado, em `AUDIO_ENGINE.md` §Arquitetura.
 
+## KNOWRA_AI — Knowledge Memory + AI Engine (discovery, ver [KNOWRA_AI.md](KNOWRA_AI.md) — não implementado)
+
+Camada nova proposta pra reduzir dependência de IA externa em runtime, sem removê-la:
+
+```text
+KNOWRA
+   │
+KNOWRA_AI
+   │
+   ├── Knowledge Memory (pgvector, cache semântico — viabilidade alta, sem infra nova)
+   │
+   └── AI Engine (Provider Abstraction — ver §Provider Abstraction em AI_ENGINE.md)
+         ├── Anthropic (já existe)
+         └── Ollama/local (opcional, viabilidade baixa no deploy serverless atual — ver KNOWRA_AI.md §7)
+```
+
+Knowledge Memory é independente da decisão sobre IA local — pode avançar sozinha. Detalhe completo em `KNOWRA_AI.md` e auditoria de dependências em `AI_COST_ZERO.md`.
+
 ## Onde o código atual se encaixa
 
 | Hoje (implementado) | Engine conceitual | Observação |
