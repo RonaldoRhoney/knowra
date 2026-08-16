@@ -3,6 +3,8 @@ import { aiProvider } from "../../lib/providers/anthropicProvider.js";
 import { verificarLimiteIA } from "../../lib/limiteIA.js";
 import { dbAdmin, rpcComoUsuario } from "../../lib/dbAdmin.js";
 import { embeddingParaLiteral, gerarEmbedding } from "../../lib/embeddings.js";
+import { buscarFonteWikipedia } from "../../lib/wikipedia.js";
+import { buscarVideoCC } from "../../lib/youtube.js";
 
 export interface AskResult {
   id: string;
@@ -11,6 +13,10 @@ export interface AskResult {
   area_id: string | null;
   requer_verificacao: boolean;
   observacao_verificacao: string | null;
+  fonte_url: string | null;
+  fonte_titulo: string | null;
+  video_url: string | null;
+  video_titulo: string | null;
   criado_em: string;
 }
 
@@ -20,6 +26,10 @@ interface RespostaEstruturada {
   area_slug: string | null;
   requer_verificacao: boolean;
   observacao_verificacao: string | null;
+  fonte_url: string | null;
+  fonte_titulo: string | null;
+  video_url: string | null;
+  video_titulo: string | null;
 }
 
 interface ConhecimentoSemantico {
@@ -27,6 +37,10 @@ interface ConhecimentoSemantico {
   answer: string;
   topic: string | null;
   requer_verificacao: boolean;
+  fonte_url: string | null;
+  fonte_titulo: string | null;
+  video_url: string | null;
+  video_titulo: string | null;
 }
 
 async function buscarConhecimentoSemantico(texto: string): Promise<ConhecimentoSemantico | undefined> {
@@ -51,25 +65,49 @@ async function responderComAnthropic(supabase: SupabaseClient, texto: string): P
 
   const listaAreas = (areasExistentes ?? []).map((a) => `${a.nome} (${a.slug})`).join(", ") || "nenhuma ainda";
 
-  const resultado: RespostaEstruturada = await aiProvider.responder(texto, listaAreas);
+  const respostaIA = await aiProvider.responder(texto, listaAreas);
+
+  // Fonte (Wikipedia) e vídeo (YouTube, licença CC) são resultado de busca
+  // real, nunca da IA — se a busca não achar nada, ficam null (nunca link
+  // inventado). Tema de busca é a área classificada, não o texto livre da
+  // pergunta (mais preciso pra achar artigo/vídeo relacionado). Buscas em
+  // paralelo, cada uma já protegida contra timeout/erro dentro do próprio
+  // cliente — nunca podem derrubar a resposta principal.
+  const tema = respostaIA.area_nome ?? texto;
+  const [fonte, video] = await Promise.all([buscarFonteWikipedia(tema), buscarVideoCC(tema)]);
+
+  const resultado: RespostaEstruturada = {
+    ...respostaIA,
+    fonte_url: fonte?.url ?? null,
+    fonte_titulo: fonte?.titulo ?? null,
+    video_url: video?.url ?? null,
+    video_titulo: video?.titulo ?? null,
+  };
 
   // Popula os dois caches pra próxima pergunta (igual ou parecida) não
-  // precisar chamar a IA de novo. Só o backend grava (funções não expostas
-  // a "authenticated"/"anon" via PostgREST — ver DECISIONS.md) pra ninguém
-  // envenenar o cache compartilhado com conteúdo que nunca passou pela
-  // Anthropic.
-  await dbAdmin().query("select public.salvar_resposta_canonica($1, $2, $3, $4, $5, $6)", [
-    texto,
-    resultado.resposta,
-    resultado.area_nome,
-    resultado.area_slug,
-    resultado.requer_verificacao,
-    resultado.observacao_verificacao,
-  ]);
+  // precisar chamar a IA nem a busca de fonte/vídeo de novo. Só o backend
+  // grava (funções não expostas a "authenticated"/"anon" via PostgREST —
+  // ver DECISIONS.md) pra ninguém envenenar o cache compartilhado com
+  // conteúdo que nunca passou pela Anthropic.
+  await dbAdmin().query(
+    "select public.salvar_resposta_canonica($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
+    [
+      texto,
+      resultado.resposta,
+      resultado.area_nome,
+      resultado.area_slug,
+      resultado.requer_verificacao,
+      resultado.observacao_verificacao,
+      resultado.fonte_url,
+      resultado.fonte_titulo,
+      resultado.video_url,
+      resultado.video_titulo,
+    ],
+  );
 
   const embedding = await gerarEmbedding(texto);
   await dbAdmin().query(
-    "select public.salvar_conhecimento($1, $2, $3, $4, $5, $6, $7, $8)",
+    "select public.salvar_conhecimento($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)",
     [
       texto,
       texto,
@@ -79,6 +117,10 @@ async function responderComAnthropic(supabase: SupabaseClient, texto: string): P
       null,
       "anthropic",
       0.95,
+      resultado.fonte_url,
+      resultado.fonte_titulo,
+      resultado.video_url,
+      resultado.video_titulo,
     ],
   );
 
@@ -101,6 +143,10 @@ export async function askQuestion(supabase: SupabaseClient, texto: string, usuar
       area_slug: cache.area_slug,
       requer_verificacao: cache.requer_verificacao ?? false,
       observacao_verificacao: cache.observacao_verificacao,
+      fonte_url: cache.fonte_url ?? null,
+      fonte_titulo: cache.fonte_titulo ?? null,
+      video_url: cache.video_url ?? null,
+      video_titulo: cache.video_titulo ?? null,
     };
   } else {
     // Cache exato deu miss — antes de chamar a IA, tenta o cache semântico
@@ -125,23 +171,48 @@ export async function askQuestion(supabase: SupabaseClient, texto: string, usuar
         observacao_verificacao: semantico.requer_verificacao
           ? "Resposta vinda da memória interna do KnowRa — pode estar desatualizada, considere verificar numa fonte oficial."
           : null,
+        fonte_url: semantico.fonte_url ?? null,
+        fonte_titulo: semantico.fonte_titulo ?? null,
+        video_url: semantico.video_url ?? null,
+        video_titulo: semantico.video_titulo ?? null,
       };
     } else {
       resultado = await responderComAnthropic(supabase, texto);
     }
   }
 
-  const { resposta, area_nome, area_slug, requer_verificacao, observacao_verificacao } = resultado;
+  const {
+    resposta,
+    area_nome,
+    area_slug,
+    requer_verificacao,
+    observacao_verificacao,
+    fonte_url,
+    fonte_titulo,
+    video_url,
+    video_titulo,
+  } = resultado;
 
   // Mesmo motivo: registrar_pergunta() não é mais alcançável via PostgREST
   // por "authenticated"/"anon" — só o backend grava, depois de a resposta
-  // ter vindo de verdade da IA (ou do cache) logo acima. 6 parâmetros
-  // (versão em uso real — requer_verificacao/observacao_verificacao
-  // existem desde 0014_verificacao_resposta.sql).
+  // ter vindo de verdade da IA (ou do cache) logo acima. 10 parâmetros
+  // (versão em uso real — fonte_url/fonte_titulo/video_url/video_titulo
+  // existem desde 0032_fonte_video_resposta.sql).
   const pergunta = await rpcComoUsuario<AskResult>(
     usuarioId,
-    "select * from public.registrar_pergunta($1, $2, $3, $4, $5, $6)",
-    [texto, resposta, area_nome, area_slug, requer_verificacao ?? false, observacao_verificacao ?? null],
+    "select * from public.registrar_pergunta($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
+    [
+      texto,
+      resposta,
+      area_nome,
+      area_slug,
+      requer_verificacao ?? false,
+      observacao_verificacao ?? null,
+      fonte_url ?? null,
+      fonte_titulo ?? null,
+      video_url ?? null,
+      video_titulo ?? null,
+    ],
   );
 
   if (!pergunta) {
