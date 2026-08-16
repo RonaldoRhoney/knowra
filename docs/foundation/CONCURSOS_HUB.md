@@ -101,6 +101,8 @@ fontes_externas (nova — auditoria de proveniência, exigida pela regra final d
   ultima_consulta_em timestamptz, licenca_uso text, observacoes text
 ```
 
+> **Atualização 2026-08-16** (`KNOWRA_SCOUT.md`): esta versão de `fontes_externas` foi **consolidada e estendida** (content_hash, ultima_mudanca_em, confidence, concurso_id/area_id opcionais) pra também cobrir o que `documentos_edital` (`CONCURSOS_INTELLIGENCE.md` §4) faria — evita duas tabelas de rastreio de fonte quase idênticas. Ver `KNOWRA_SCOUT.md` §4 pro schema definitivo quando qualquer uma dessas etapas for implementada.
+
 Nenhuma tabela existente (`questoes`, `tentativas_questao`, `progresso_concurso`, `progresso_disciplina_questoes`, `assinaturas`) muda de comportamento — só `concursos` ganha colunas novas, todas nullable/com default, migration puramente aditiva.
 
 ## 6a. Modelo de confiabilidade do dado (✅ implementado, migration 0038, 2026-08-16)

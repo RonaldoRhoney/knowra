@@ -567,6 +567,20 @@ Total agora: 4 concursos reais em produção (Transpetro, TCE-MA, SESAU-AL, CAER
 
 **Status**: ✅ 7e.3 e 7e.4 implementadas, testadas, publicadas em produção. Por escolha do Ronaldo, o próximo passo é uma **auditoria dos resultados** (qualidade de dado, performance, qualidade de recomendação, UX, integração com ranking/progressão, impacto no banco, índices) antes de avançar pra 7e.1/7e.2 (extração de edital).
 
+## 2026-08-16 — KNOWRA Scout: discovery completo (doc only, sem código)
+
+**Contexto**: Ronaldo propôs nomear e formalizar o agente de aquisição/curadoria de conhecimento como "KNOWRA Scout" — distinto de "Knowledge Memory"/"RAG"/"KNOWRA_AI" (responsabilidades diferentes, não uma "IA alimentando outra IA"). Pediu documento de arquitetura completo antes de qualquer código, com restrições explícitas (não criar segunda Knowledge Memory, não criar segundo RAG, não API paga, não baixar vídeo, não copiar conteúdo protegido sem licença, não tratar conteúdo encontrado como verdade sem validação, não gerar questão automaticamente ainda).
+
+**Achado técnico que precisava ser dito antes de desenhar algo bonito**: a camada "Discovery" (sair procurando conteúdo na web sozinho) **não é algo que o backend do KnowRa consegue fazer hoje** — é uma API Express comum, sem navegador embutido, sem acesso a busca web, e o projeto não tem infraestrutura de cron (mesmo limite já documentado em outras decisões, ex: encerramento de temporada manual). Documentado como duas rotas reais: **Scout v1** (processo conduzido por sessão — Claude Code/Ronaldo pesquisa, valida, cadastra via RPC — é exatamente o que já foi feito pra popular os 4 concursos reais, agora formalizado em schema/processo) vs. **Scout v2** (automação real, exigiria cron + API de busca paga, fora do cost-zero, não desta etapa).
+
+**Decisão**: documento completo em [KNOWRA_SCOUT.md](KNOWRA_SCOUT.md). Consolidação importante: `fontes_externas` (`CONCURSOS_HUB.md`) e `documentos_edital` (`CONCURSOS_INTELLIGENCE.md`), ambas projetadas separadamente em documentos anteriores e nenhuma implementada ainda, são **absorvidas numa única tabela** (`fontes_externas` estendida com `content_hash`/`ultima_mudanca_em`/`confidence`/`concurso_id`/`area_id` opcionais) — evita duas tabelas de rastreio de fonte quase idênticas quando qualquer uma dessas etapas for implementada de fato. Os dois documentos anteriores foram atualizados com nota cruzada apontando pra essa consolidação.
+
+**Legal/copyright**: reforça que `questoes.origem` e `knowledge_record.provenance` (ambos já implementados) já cobrem a distinção necessária — regra geral nova: na dúvida sobre licença, Scout armazena só metadado/referência, nunca o conteúdo completo; confirmação de licença é sempre ação humana, nunca inferida pela IA.
+
+**Roadmap**: Scout.1-Scout.3 (schema consolidado, RPCs admin, formalizar o processo v1 como checklist) são baratas, mesma régua de risco de 7c.1-7c.4. Scout.4 (automação real) fica registrada como direção futura, sem data, dependente de decisão de orçamento.
+
+**Status**: documento de projeto, nenhuma implementação autorizada.
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).

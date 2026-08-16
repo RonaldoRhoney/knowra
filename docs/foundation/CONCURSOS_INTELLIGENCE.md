@@ -85,6 +85,8 @@ documentos_edital (novo — rastreia o documento fonte, não o conteúdo extraí
   criado_em timestamptz
 ```
 
+> **Atualização 2026-08-16** (`KNOWRA_SCOUT.md`): `documentos_edital` fica **absorvida** pela versão consolidada de `fontes_externas` (`KNOWRA_SCOUT.md` §4) — mesmo conceito de rastreio de fonte (hash de conteúdo, detecção de mudança), generalizado pra cobrir edital, vídeo, listagem de concurso, questão pública, etc., numa tabela só. Não criar `documentos_edital` separada quando a Etapa 7e.1 for implementada.
+
 Nenhuma tabela nova de "KnowledgeItem" separada — **reaproveita `knowledge_record`** (mesmo raciocínio já aplicado à Etapa J, "não duplicar Knowledge Memory"). `concurso_id` nullable mantém compatibilidade total com o conhecimento geral que já existe (Knowledge Mode).
 
 ## 5. Cross-concurso: já é possível hoje, só falta uma RPC
