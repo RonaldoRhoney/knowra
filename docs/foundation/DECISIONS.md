@@ -501,6 +501,20 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 
 **Status**: ✅ 7c.1-7c.4 publicadas em produção. Pendente: 7c.5 (Ronaldo populando concursos reais pelo formulário que já está no ar), 7d (conector `dados.gov.br`, precisa do token pessoal dele) e 7e (RAG + extração de edital, sem data).
 
+## 2026-08-16 — Concursos: modelo de confiabilidade do dado, antes de autorizar a Etapa 7c.5
+
+**Contexto**: Ronaldo aprovou o entendimento das Etapas 7c.1-7c.4, mas condicionou a Etapa 7c.5 (popular concursos reais) a um ajuste: garantir que cada concurso carregue fonte, URL oficial, origem, data de última verificação/atualização e status de confiabilidade — senão o KnowRa corre o risco de mostrar um concurso desatualizado como se estivesse aberto. Também reforçou que o cadastro admin deve continuar sendo a **segunda entrada**, não a estratégia definitiva — a arquitetura-alvo (Ingestion Engine automatizado a partir de fonte oficial) precisa continuar preparada, mesmo sem ser implementada agora.
+
+**Decisão**: migration `0038_concursos_confiabilidade.sql` — `concursos` ganhou `cadastrado_por`/`ultima_verificacao_em`. Confiabilidade é **calculada** a cada leitura (idade de `ultima_verificacao_em`: 🟢 verificado <30 dias, 🟡 requer atualização 30-90 dias, 🔴 desatualizado >90 dias), nunca armazenada como coluna que precisaria de job agendado — mesmo princípio já usado no Confidence Engine do `KNOWRA_AI.md` (projeto sem infraestrutura de cron). `confirmar_concurso()` (admin-only) marca "ainda correto" sem precisar reeditar o concurso inteiro.
+
+**Frontend**: badge 🟢🟡🔴 em cada card de concurso (`Concursos.tsx`), botão "Reverificar" visível pro admin quando não está mais 🟢.
+
+**Documentação**: `CONCURSOS_HUB.md` atualizado — §3 reforça que cadastro admin é segunda entrada, com o diagrama de arquitetura-alvo (Fontes oficiais → Ingestion Engine → Normalização → Validação → KnowRa Database, admin manual como entrada paralela); §12 registra a distinção "concurso cadastrado" vs. "concurso preparado pra estudo" (página de detalhe por concurso — Sobre/Edital/Cargos/Conteúdo programático/Questões/Simulado/Videoaulas/Desempenho — não implementada ainda, candidata a próxima etapa); Etapa 7e (RAG + extração de edital) reafirmada como prioridade arquitetural preservada, não abandonada.
+
+**Testado com dado real antes de aplicar**: cadastro → `verificado`; simulação de 100 dias sem verificação → `desatualizado`; `confirmar_concurso()` → `verificado` de novo.
+
+**Status**: ✅ implementado, testado, publicado em produção. Etapa 7c.5 (popular com concursos reais) segue liberada pra prosseguir.
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).
