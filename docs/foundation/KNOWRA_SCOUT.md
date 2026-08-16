@@ -165,20 +165,22 @@ Não escrever código. Não criar `fontes_externas` ainda (fica projetada, conso
 
 | Etapa | O que é | Depende de decisão/infra nova? |
 |---|---|---|
-| Scout.1 | Consolidar `fontes_externas` como Source Registry (schema único, §3+§4) | Não |
-| Scout.2 | RPCs `cadastrar_fonte_externa()`/`atualizar_fonte_externa()` (admin-only) | Não |
-| Scout.3 | Ingestion Engine de fontes REST/sitemap (`dados.gov.br` + sitemap de bancas confirmadas) — Discovery real, não mais só sessão conduzida | Sim, parcial — token pessoal do Ronaldo pra `dados.gov.br`; sitemap não depende de nada |
+| Scout.1 | ✅ Consolidar `fontes_externas` como Source Registry (schema único, §3+§4) | Não |
+| Scout.2 | ✅ RPCs `cadastrar_fonte_externa()`/`atualizar_fonte_externa()`/`listar_fontes_externas()` (admin-only) | Não |
+| Scout.3 | ✅ Parcial — `scripts/scout_sitemap.ts` (sitemap real, sem cron, roda sob demanda). Pendente: conector `dados.gov.br` (token pessoal) | Sim, parcial — token pessoal do Ronaldo pra `dados.gov.br`; sitemap não depende de nada, já funciona |
 | Scout.4 | YouTube Discovery controlado — busca só por consulta relevante já definida (não a cada acesso de usuário), cache local, dedup | Não — reaproveita integração já existente |
 | Scout.5 (futuro) | Expansão do Source Registry pra novas fontes (IBGE, outras bancas com sitemap confirmado) | Caso a caso — cada fonte nova exige a mesma verificação real feita em §2, nunca assumida |
 
 Diferente da versão anterior deste documento, **não existe mais um "Scout v2 = API paga" como única evolução possível** — Scout.3/Scout.4 são automação real, sem API de busca paga, dentro do cost-zero.
 
+**Scout.1-Scout.3(parcial) implementados em 2026-08-16** (migration `0041`, script `scout_sitemap.ts`). Achado real ao aplicar: `fontes_externas` já existia (criada silenciosamente na Etapa 7c.1, 0 linhas, nunca usada) — corrigido de `CREATE TABLE` (teria falhado) pra `ALTER TABLE` aditivo. Testado contra produção: cadastrei Cebraspe (`post-sitemap.xml`, 1001 entradas reais) e Cesgranrio (`wp-sitemap-posts-concurso-1.xml`, um **custom post type dedicado a concurso** — achado melhor do que o esperado) como fontes reais — o scan da Cesgranrio achou a página real do concurso Transpetro já cadastrado no KnowRa, confirmando o mecanismo ponta a ponta. **Limitação real encontrada, não escondida**: ordenação por `lastmod` não reflete recência de publicação de forma confiável no site da Cebraspe (WordPress só atualiza `lastmod` em edição, não em publicação) — o hash de mudança funciona, o ranking "mais recente" é aproximado. Fundação Ajuri (banca da CAER-RR) **não resolveu DNS** durante o teste — não incluída no Source Registry, sem confirmação, sem assumir que funciona.
+
 ## 12. Perguntas em aberto pro Product Owner
 
-1. Scout.1-Scout.2 (schema) valem a pena agora, ou esperar até Scout.3 estar aprovado pra implementar os dois juntos?
-2. Vale eu (nesta ou numa próxima sessão) verificar sitemap/RSS das outras bancas dos 4 concursos já cadastrados (Cesgranrio, Fundação Ajuri) antes de aprovar Scout.3, pra saber quantas fontes prioridade 1 realmente têm essa opção disponível?
-3. Confirmar: você mesmo geraria o token pessoal do `dados.gov.br` quando Scout.3 for aprovado (mesmo processo já feito pro YouTube)?
+1. Vale eu verificar sitemap/RSS de mais bancas (além de Cebraspe/Cesgranrio já confirmadas) conforme novos concursos forem cadastrados?
+2. `dados.gov.br` (Scout.3 completo) — quando você gerar o token pessoal (mesmo processo já feito pro YouTube), eu conecto o script equivalente pra essa fonte.
+3. Vale a pena refinar a ordenação por recência do `scout_sitemap.ts` (ex: extrair data do slug da URL quando `lastmod` não for confiável), ou o mecanismo atual (hash de mudança + lista bruta pra revisão humana) já é suficiente pro volume atual?
 
 ## 13. Status
 
-Documento de projeto, revisado com investigação real (não suposição) no mesmo dia da primeira versão. Nenhuma implementação autorizada. Consolida `fontes_externas`/`documentos_edital` numa única fonte de verdade de schema, agora também Source Registry. Reaproveita integralmente `knowledge_record`, `buscar_contexto_rag()`, `questoes.origem`, `knowledge_record.provenance` — nenhum componente do KNOWRA_AI redesenhado.
+Scout.1, Scout.2 e Scout.3(parcial — só sitemap, `dados.gov.br` pendente de token) implementados, testados contra produção e publicados em 2026-08-16. Consolida `fontes_externas`/`documentos_edital` numa única fonte de verdade de schema, agora também Source Registry funcionando de verdade. Reaproveita integralmente `knowledge_record`, `buscar_contexto_rag()`, `questoes.origem`, `knowledge_record.provenance` — nenhum componente do KNOWRA_AI redesenhado. Scout.4/Scout.5 seguem sem implementação, aguardando aprovação.

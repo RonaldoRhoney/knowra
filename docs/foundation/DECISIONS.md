@@ -593,6 +593,22 @@ Total agora: 4 concursos reais em produção (Transpetro, TCE-MA, SESAU-AL, CAER
 
 **Status**: documento de projeto, nenhuma implementação autorizada.
 
+## 2026-08-16 — KNOWRA Scout Etapas Scout.1-Scout.3(parcial) implementadas
+
+**Contexto**: Ronaldo pediu "pode implementar logo" depois de eu reconfirmar as 3 perguntas em aberto do `KNOWRA_SCOUT.md`. Implementei Scout.1 (schema), Scout.2 (RPCs) e Scout.3 parcial (só sitemap, sem `dados.gov.br` ainda — falta token pessoal do Ronaldo), verificando as outras bancas antes (respondendo a pergunta 2 sozinho).
+
+**Verificação real das outras bancas antes de implementar**: Cesgranrio (Transpetro) — sitemap real, `wp-sitemap-posts-concurso-1.xml` (**custom post type dedicado a concurso**, melhor do que o já confirmado na Cebraspe). Fundação Ajuri (CAER-RR) — domínio **não resolveu DNS**, não incluída no Source Registry, sem assumir que funciona.
+
+**Achado real ao aplicar a migration**: `fontes_externas` já existia — criada silenciosamente na Etapa 7c.1 (migration `0037`), 0 linhas, nunca usada. `KNOWRA_SCOUT.md` tratou como "não implementada" por engano. Migration `0041` corrigida na hora de `CREATE TABLE` (teria falhado, "relation already exists" — pego testando em transação antes de aplicar) pra `ALTER TABLE` aditivo.
+
+**Implementado**: `fontes_externas` estendida (`access_method`/`enabled`/`priority`/`rate_limit`/`concurso_id`/`area_id`/`content_hash`/`confidence`/`ultima_mudanca_em`); RPCs `cadastrar_fonte_externa()`/`atualizar_fonte_externa()`/`listar_fontes_externas()` (admin-only, sem grant direto na tabela); `scripts/scout_sitemap.ts` — script offline (sem cron, roda sob demanda, mesmo padrão de `gerar_questoes.ts`) que busca sitemap, compara hash SHA-256, reporta entradas mais recentes, **nunca insere em `concursos`/`knowledge_record` sozinho** (Validator/Curator continuam decisão humana nesta etapa).
+
+**Testado contra produção, dado real**: cadastrei Cebraspe (`post-sitemap.xml`, 1001 entradas) e Cesgranrio (`wp-sitemap-posts-concurso-1.xml`, 32 entradas) como fontes reais — o scan da Cesgranrio achou `cesgranrio.org.br/concurso/transpetro/`, a página real do concurso já cadastrado no KnowRa, confirmando o mecanismo ponta a ponta.
+
+**Limitação real encontrada, registrada sem esconder**: ordenação por `lastmod` não reflete recência de publicação de forma confiável no site da Cebraspe (WordPress só atualiza `lastmod` em edição de post, não em publicação) — o hash de mudança funciona corretamente, o ranking "mais recente" é só aproximado.
+
+**Status**: ✅ Scout.1/Scout.2/Scout.3(parcial) publicados. Pendente: conector `dados.gov.br` (aguarda token pessoal do Ronaldo), Scout.4 (YouTube Discovery controlado), Scout.5 (expansão pra novas fontes).
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).
