@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Footer } from "../components/Footer";
 import { Navigation } from "../components/Navigation";
 import { useAuth } from "../contexts/AuthContext";
@@ -23,6 +24,7 @@ interface Disciplina {
 }
 
 export function Concursos() {
+  const { t } = useTranslation();
   const { session } = useAuth();
   const [concursos, setConcursos] = useState<Concurso[]>([]);
   const [disciplinas, setDisciplinas] = useState<Disciplina[]>([]);
@@ -44,29 +46,23 @@ export function Concursos() {
       <Navigation />
       <div className="px-4 py-8 max-w-3xl mx-auto">
         <div className="mb-4">
-          <h1 className="text-h2">Concursos</h1>
-          <p className="text-sm text-knowra-text-secondary mt-0.5">Pratique com questões objetivas</p>
+          <h1 className="text-h2">{t("nav.concursos")}</h1>
+          <p className="text-sm text-knowra-text-secondary mt-0.5">{t("concursos.subtitulo")}</p>
         </div>
 
         <div className="bg-knowra-accent/10 border border-knowra-accent/20 rounded-xl px-4 py-3 mb-6">
-          <p className="text-xs text-knowra-text/70">
-            📝 Questões de treino geradas por IA pelo KnowRa — não são questões oficiais de banca ou
-            concurso real.
-          </p>
+          <p className="text-xs text-knowra-text/70">📝 {t("concursos.avisoIA")}</p>
         </div>
 
-        {carregando && <p className="text-sm text-knowra-text/40">Carregando...</p>}
+        {carregando && <p className="text-sm text-knowra-text/40">{t("common.carregando")}</p>}
 
         {!carregando && (
           <>
             <section className="mb-6">
-              <h2 className="text-sm font-semibold text-knowra-text/80 mb-3">Concursos</h2>
+              <h2 className="text-sm font-semibold text-knowra-text/80 mb-3">{t("nav.concursos")}</h2>
               {concursos.length === 0 ? (
                 <div className="bg-knowra-surface/50 rounded-2xl p-6 text-center">
-                  <p className="text-sm text-knowra-text/50">
-                    Nenhum concurso com questões disponível ainda. Enquanto isso, pratique por
-                    disciplina abaixo.
-                  </p>
+                  <p className="text-sm text-knowra-text/50">{t("concursos.semConcursos")}</p>
                 </div>
               ) : (
                 <div className="space-y-2.5">
@@ -82,8 +78,8 @@ export function Concursos() {
                       </p>
                       <p className="text-xs text-knowra-accent mt-1.5">
                         {c.total_questoes > c.questoes_gratis
-                          ? `${c.questoes_gratis} grátis de ${c.total_questoes} questões · resto no Pro`
-                          : `${c.total_questoes} questão${c.total_questoes !== 1 ? "ões" : ""} disponível${c.total_questoes !== 1 ? "eis" : ""}`}
+                          ? t("concursos.gratisDe", { gratis: c.questoes_gratis, total: c.total_questoes })
+                          : t("concursos.questoesDisponiveis", { count: c.total_questoes })}
                       </p>
                     </Link>
                   ))}
@@ -92,10 +88,10 @@ export function Concursos() {
             </section>
 
             <section>
-              <h2 className="text-sm font-semibold text-knowra-text/80 mb-3">Praticar por disciplina</h2>
+              <h2 className="text-sm font-semibold text-knowra-text/80 mb-3">{t("concursos.praticarPorDisciplina")}</h2>
               {disciplinas.length === 0 ? (
                 <div className="bg-knowra-surface/50 rounded-2xl p-6 text-center">
-                  <p className="text-sm text-knowra-text/50">Nenhuma disciplina disponível ainda.</p>
+                  <p className="text-sm text-knowra-text/50">{t("concursos.semDisciplinas")}</p>
                 </div>
               ) : (
                 <div className="flex flex-wrap gap-2">

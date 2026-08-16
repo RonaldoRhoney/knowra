@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 // Rodapé padrão RhoneyInc (skill footer-padrao): 4 colunas fixas —
 // Marca / Produto / RhoneyInc / Legal — só cor/logo/texto mudam por produto.
 export function Footer() {
+  const { t } = useTranslation();
   return (
     <footer className="bg-knowra-surface mt-16 pt-14 pb-7">
       <div className="max-w-3xl mx-auto px-4">
@@ -15,11 +17,9 @@ export function Footer() {
               />
               <span className="font-semibold">KnowRa</span>
             </div>
-            <p className="text-sm text-knowra-text/60 max-w-[260px] mb-4">
-              Transforme sua curiosidade em conhecimento — feito pela RhoneyInc.
-            </p>
+            <p className="text-sm text-knowra-text/60 max-w-[260px] mb-4">{t("footer.tagline")}</p>
             <span className="font-mono text-[11px] tracking-wide bg-knowra-primary/15 text-knowra-primary px-3 py-1.5 rounded-lg inline-block">
-              Uma conta. Todos os softwares.
+              {t("footer.umaConta")}
             </span>
             <div className="flex gap-2.5 mt-4">
               <a
@@ -53,18 +53,18 @@ export function Footer() {
           </div>
 
           <div>
-            <h5 className="font-mono text-xs uppercase tracking-wide text-knowra-primary mb-3.5">Produto</h5>
+            <h5 className="font-mono text-xs uppercase tracking-wide text-knowra-primary mb-3.5">{t("footer.produto")}</h5>
             <Link to="/" className="block text-sm text-knowra-text/60 hover:text-knowra-text mb-2.5">
-              Início
+              {t("footer.inicio")}
             </Link>
             <Link to="/como-usar" className="block text-sm text-knowra-text/60 hover:text-knowra-text mb-2.5">
-              Como usar
+              {t("nav.comoUsar")}
             </Link>
             <Link to="/mapa" className="block text-sm text-knowra-text/60 hover:text-knowra-text mb-2.5">
-              Mapa de Conhecimento
+              {t("footer.mapaConhecimento")}
             </Link>
             <Link to="/perfil" className="block text-sm text-knowra-text/60 hover:text-knowra-text mb-2.5">
-              Perfil
+              {t("nav.perfil")}
             </Link>
           </div>
 
@@ -83,26 +83,26 @@ export function Footer() {
               MenuFlex
             </a>
             <a href="https://rhoneyinc.com" className="block text-sm text-knowra-text/60 hover:text-knowra-text mb-2.5">
-              Sobre nós
+              {t("footer.sobreNos")}
             </a>
           </div>
 
           <div>
-            <h5 className="font-mono text-xs uppercase tracking-wide text-knowra-primary mb-3.5">Legal</h5>
+            <h5 className="font-mono text-xs uppercase tracking-wide text-knowra-primary mb-3.5">{t("footer.legal")}</h5>
             <Link to="/privacidade" className="block text-sm text-knowra-text/60 hover:text-knowra-text mb-2.5">
-              Privacidade (LGPD)
+              {t("footer.privacidade")}
             </Link>
             <Link to="/termos" className="block text-sm text-knowra-text/60 hover:text-knowra-text mb-2.5">
-              Termos de uso
+              {t("footer.termos")}
             </Link>
             <a href="mailto:rhoneyinc@gmail.com" className="block text-sm text-knowra-text/60 hover:text-knowra-text mb-2.5">
-              Contato
+              {t("footer.contato")}
             </a>
           </div>
         </div>
 
         <div className="flex justify-between items-center flex-wrap gap-3 pt-5 text-xs text-knowra-text/40">
-          <span>© {new Date().getFullYear()} KnowRa — um produto RhoneyInc. Todos os direitos reservados.</span>
+          <span>{t("footer.copyright", { ano: new Date().getFullYear() })}</span>
           <span className="font-mono">knowra.rhoneyinc.com</span>
         </div>
       </div>

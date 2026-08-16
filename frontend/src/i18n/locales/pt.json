@@ -1,4 +1,9 @@
 {
+  "common": {
+    "continuar": "Continuar",
+    "carregando": "Carregando...",
+    "salvar": "Salvar"
+  },
   "nav": {
     "comoUsar": "Como usar",
     "mapa": "Mapa",
@@ -27,5 +32,281 @@
     "videoRelacionado": "Vídeo relacionado",
     "ouvirResposta": "Ouvir resposta",
     "pararLeitura": "Parar leitura"
+  },
+  "footer": {
+    "tagline": "Transforme sua curiosidade em conhecimento — feito pela RhoneyInc.",
+    "umaConta": "Uma conta. Todos os softwares.",
+    "produto": "Produto",
+    "inicio": "Início",
+    "mapaConhecimento": "Mapa de Conhecimento",
+    "sobreNos": "Sobre nós",
+    "legal": "Legal",
+    "privacidade": "Privacidade (LGPD)",
+    "termos": "Termos de uso",
+    "contato": "Contato",
+    "copyright": "© {{ano}} KnowRa — um produto RhoneyInc. Todos os direitos reservados."
+  },
+  "login": {
+    "tagline": "Transforme sua curiosidade em conhecimento.",
+    "comoFunciona": "Como funciona?",
+    "continuarGoogle": "Continuar com Google",
+    "ou": "ou",
+    "email": "E-mail",
+    "senha": "Senha",
+    "entrar": "Entrar",
+    "criarConta": "Criar conta",
+    "naoTemConta": "Não tem conta? Criar conta",
+    "jaTemConta": "Já tem conta? Entrar"
+  },
+  "mensagemAcesso": {
+    "primeiro_acesso": {
+      "titulo": "Bem-vindo ao KnowRa!",
+      "texto": "Pergunte qualquer coisa que te deixou curioso — a gente transforma isso em aprendizado de verdade."
+    },
+    "ausencia_media": {
+      "titulo": "Bem-vindo de volta!",
+      "texto": "Faz um tempinho que você não aparecia por aqui. Que tal retomar sua sequência de curiosidade hoje?"
+    },
+    "ausencia_longa": {
+      "titulo": "Sentimos sua falta!",
+      "texto": "Já faz mais de uma semana desde a sua última visita. Sua jornada de conhecimento continua esperando por você."
+    }
+  },
+  "historico": {
+    "carregando": "Carregando histórico...",
+    "vazio": "Suas perguntas anteriores vão aparecer aqui.",
+    "titulo": "Histórico",
+    "valeConferir": "Vale conferir em fonte oficial"
+  },
+  "missoes": {
+    "titulo": "Missões de hoje",
+    "pergunta_hoje": "Faça uma pergunta hoje",
+    "desafio_hoje": "Responda um desafio hoje",
+    "area_nova_hoje": "Explore uma área diferente",
+    "concluida": "Concluída"
+  },
+  "progresso": {
+    "conquistas": "Conquistas",
+    "nivel": "Nível",
+    "diasSequencia": "dias de sequência",
+    "faltamXp": "{{xp}} XP · faltam {{faltam}} XP para {{titulo}}",
+    "nivelMaximo": "{{xp}} XP · nível máximo alcançado",
+    "curioso": "Curioso"
+  },
+  "desafio": {
+    "erroGerar": "Não foi possível gerar o desafio agora.",
+    "erroAvaliar": "Não foi possível avaliar sua resposta agora.",
+    "subiuNivel": "Você subiu para o nível {{nivel}}!",
+    "conhecimentoDemonstrado": "Conhecimento demonstrado",
+    "novaConquista": "Nova conquista",
+    "dificuldade": {
+      "facil": "Fácil",
+      "normal": "Normal",
+      "dificil": "Difícil",
+      "avancado": "Avançado",
+      "mestre": "Mestre"
+    },
+    "placeholderResposta": "Explique com suas próprias palavras...",
+    "avaliando": "Avaliando...",
+    "enviarResposta": "Enviar resposta",
+    "gerando": "Gerando desafio...",
+    "testarConhecimento": "Você acabou de aprender algo novo. Quer testar seu conhecimento?"
+  },
+  "cadastro": {
+    "erroSalvar": "Não foi possível salvar agora. Tente novamente.",
+    "titulo": "Complete seu cadastro",
+    "explicacao": "Nome é a única informação necessária — o resto é opcional e ajuda a gente a entender quem usa o KnowRa.",
+    "nome": "Nome",
+    "cidade": "Cidade (opcional)",
+    "pais": "País (opcional)",
+    "idade": "Idade (opcional)",
+    "genero": "Gênero (opcional)",
+    "generos": {
+      "feminino": "Feminino",
+      "masculino": "Masculino",
+      "nao_binario": "Não-binário",
+      "prefiro_nao_informar": "Prefiro não informar"
+    },
+    "salvando": "Salvando...",
+    "agoraNao": "Agora não"
+  },
+  "comoUsar": {
+    "pular": "Pular",
+    "irParaPasso": "Ir para o passo {{numero}}",
+    "anterior": "Anterior",
+    "comecarAgora": "Começar agora",
+    "proximo": "Próximo",
+    "passos": {
+      "pergunte": {
+        "titulo": "Pergunte qualquer coisa",
+        "texto": "Sem categoria, sem formulário — só digite o que te deixou curioso e clique em Perguntar."
+      },
+      "resposta": {
+        "titulo": "Receba uma resposta de verdade",
+        "texto": "A IA do KnowRa explica de forma clara, sem jargão — do jeito que qualquer pessoa curiosa entende."
+      },
+      "desafio": {
+        "titulo": "Aceite o desafio",
+        "texto": "Depois da resposta, você pode testar se realmente entendeu — sem obrigação, sem penalidade por errar."
+      },
+      "xp": {
+        "titulo": "Ganhe XP e suba de nível",
+        "texto": "Sua resposta é avaliada de verdade — quanto mais você demonstra que aprendeu, mais XP você ganha."
+      },
+      "evolucao": {
+        "titulo": "Acompanhe sua evolução",
+        "texto": "Nível, sequência de dias e conquistas ficam sempre visíveis. Edite seus dados quando quiser em Perfil, e veja seu domínio por área no Mapa de Conhecimento."
+      }
+    }
+  },
+  "mapa": {
+    "titulo": "Mapa de Conhecimento",
+    "subtitulo": "Seu domínio por área, baseado nos desafios avaliados",
+    "vazio": "Responda alguns desafios pra começar a ver seu domínio por área aqui.",
+    "area": "Área",
+    "desafios_one": "{{count}} desafio",
+    "desafios_other": "{{count}} desafios"
+  },
+  "ranking": {
+    "subtitulo": "Como você se compara na plataforma",
+    "suaPosicao": "Sua posição",
+    "de": "de {{total}}",
+    "percentilTop": "Você está entre os {{percentil}}% melhores da plataforma.",
+    "seuRating": "Seu rating: {{rating}} · média da plataforma: {{media}}",
+    "naoElegivel": "Responda mais desafios pra entrar no ranking (mínimo de 5 avaliados).",
+    "geral": "Geral",
+    "concurso": "Concurso",
+    "vazioGeral": "Ninguém no ranking geral ainda. Ative sua presença no ranking em Perfil pra aparecer aqui.",
+    "vazioConcurso": "Ninguém no ranking desse concurso ainda.",
+    "vazioArea": "Ninguém no ranking dessa área ainda."
+  },
+  "concursos": {
+    "subtitulo": "Pratique com questões objetivas",
+    "avisoIA": "Questões de treino geradas por IA pelo KnowRa — não são questões oficiais de banca ou concurso real.",
+    "semConcursos": "Nenhum concurso com questões disponível ainda. Enquanto isso, pratique por disciplina abaixo.",
+    "gratisDe": "{{gratis}} grátis de {{total}} questões · resto no Pro",
+    "questoesDisponiveis_one": "{{count}} questão disponível",
+    "questoesDisponiveis_other": "{{count}} questões disponíveis",
+    "praticarPorDisciplina": "Praticar por disciplina",
+    "semDisciplinas": "Nenhuma disciplina disponível ainda."
+  },
+  "questoes": {
+    "titulo": "Questões",
+    "treinoConcurso": "Treino de concurso",
+    "praticaLivre": "Prática livre por disciplina",
+    "catalogo": "Catálogo",
+    "semQuestoes": "Nenhuma questão disponível aqui ainda.",
+    "questaoXDeY": "Questão {{indice}} de {{total}}",
+    "acertos": "Acertos",
+    "acertou": "Você acertou!",
+    "errou": "Você errou.",
+    "respostaCorreta": "Resposta correta",
+    "seuDominio": "Seu domínio neste concurso: {{pct}}%",
+    "proximaQuestao": "Próxima questão",
+    "fimQuestoes": "Fim das questões disponíveis por aqui. Você acertou {{acertos}} de {{total}}.",
+    "gratisFim": "Essas foram as 10 questões grátis deste concurso.",
+    "assinarPro": "Assine o KnowRa Pro",
+    "paraVerResto": "pra ver o resto.",
+    "voltarCatalogo": "Voltar ao catálogo"
+  },
+  "temporadas": {
+    "subtitulo": "Ligas e competição por período",
+    "suaLigaAtual": "Sua liga atual",
+    "ratingRecalculado": "Rating {{rating}} · liga é recalculada automaticamente conforme seu rating muda",
+    "emAndamento": "{{nome}} está em andamento",
+    "de": "De",
+    "ate": "até",
+    "rankingAoVivo": "O ranking ao vivo está em",
+    "historico": "Histórico de temporadas",
+    "semTemporadas": "Nenhuma temporada encerrada ainda.",
+    "encerradaEm": "Encerrada em",
+    "voce": "Você",
+    "top": "top",
+    "semLeaderboard": "Ninguém apareceu publicamente nesse ranking.",
+    "adminTitulo": "Admin — Temporadas",
+    "adminVisivel": "Visível só pra você.",
+    "temporadaAtiva": "Temporada ativa",
+    "encerrando": "Encerrando...",
+    "encerrarTemporada": "Encerrar temporada",
+    "placeholderNome": "Nome da temporada (ex: KnowRa — Temporada 01)",
+    "inicio": "Início",
+    "fim": "Fim",
+    "iniciando": "Iniciando...",
+    "iniciarTemporada": "Iniciar temporada",
+    "confirmarEncerrar": "Encerrar \"{{nome}}\"? Isso congela o ranking e distribui as badges de liga."
+  },
+  "perfil": {
+    "gerencie": "Gerencie suas informações",
+    "trocarFotoPerfil": "Trocar foto de perfil",
+    "trocar": "Trocar",
+    "semNome": "Sem nome",
+    "trocarFoto": "Trocar foto",
+    "assinaturaAtiva": "Sua assinatura está ativa. Obrigado por apoiar o KnowRa!",
+    "mes": "mês",
+    "beneficiosPro": "Mais interações de IA por dia e acesso completo às questões de todos os concursos.",
+    "assinaturaProcessando": "Assinatura em processamento — pode levar alguns minutos até confirmarmos o pagamento.",
+    "abrindoCheckout": "Abrindo checkout...",
+    "assinarPro": "Assinar KnowRa Pro",
+    "cidade": "Cidade",
+    "pais": "País",
+    "idade": "Idade",
+    "genero": "Gênero",
+    "perfilAtualizado": "Perfil atualizado.",
+    "salvarAlteracoes": "Salvar alterações",
+    "progresso": "Progresso",
+    "xpTotal": "XP total",
+    "perguntasFeitas": "Perguntas feitas",
+    "taxaAcerto": "Taxa de acerto",
+    "areasDestaque": "Áreas em destaque",
+    "verMapaCompleto": "Ver Mapa de Conhecimento completo",
+    "verRanking": "Ver ranking",
+    "explicacaoRanking": "Você escolhe se quer aparecer publicamente. Nunca é obrigatório pra competir — sua posição fica visível só pra você mesmo assim.",
+    "apelidoRanking": "Apelido no ranking",
+    "placeholderApelido": "Como você quer aparecer publicamente",
+    "aparecerRankingPublico": "Aparecer no ranking público",
+    "preferenciasSalvas": "Preferências salvas.",
+    "salvarPreferencias": "Salvar preferências",
+    "escolhaImagem": "Escolha um arquivo de imagem.",
+    "imagemMuitoGrande": "A imagem precisa ter até {{mb}}MB.",
+    "erroEnviarFoto": "Não foi possível enviar a foto agora. Tente novamente.",
+    "fotoEnviadaSemAtualizar": "Foto enviada, mas não foi possível atualizar o perfil. Tente novamente.",
+    "apelidoCurto": "O apelido precisa ter pelo menos 2 caracteres.",
+    "erroSalvarGenerico": "Não foi possível salvar agora. Tente novamente.",
+    "erroAssinatura": "Não foi possível iniciar a assinatura agora. Tente novamente."
+  },
+  "admin": {
+    "celular": "Celular",
+    "tablet": "Tablet",
+    "desktop": "Desktop",
+    "erroCarregar": "Não foi possível carregar os dados do painel.",
+    "usuarios": "Usuários",
+    "perguntas": "Perguntas",
+    "desafiosAvaliados": "Desafios avaliados",
+    "xpDistribuido": "XP distribuído",
+    "acessos": "Acessos",
+    "hoje": "Hoje",
+    "semana": "Semana",
+    "mesLabel": "Mês",
+    "ano": "Ano",
+    "total": "Total",
+    "cacheRespostas": "Cache de respostas (economia de IA)",
+    "cacheExplicacao": "Perguntas com o mesmo texto (ignorando acento/pontuação/caixa) reaproveitam a resposta já gerada.",
+    "respostasUnicas": "Respostas únicas em cache",
+    "chamadasEconomizadas": "Chamadas de IA economizadas",
+    "maisReaproveitadas": "Mais reaproveitadas",
+    "frequenciaUso": "Frequência de uso (14 dias)",
+    "areasExploradas": "Áreas mais exploradas",
+    "dispositivos": "Dispositivos",
+    "paises": "Países",
+    "regioes": "Regiões",
+    "cidades": "Cidades",
+    "faixaEtaria": "Faixa etária",
+    "genero": "Gênero",
+    "semUsuarios": "Nenhum usuário cadastrado ainda.",
+    "desde": "desde",
+    "ferramentasDev": "Ferramentas de desenvolvimento",
+    "semDado": "Sem dado suficiente ainda.",
+    "selecionado": "selecionado",
+    "totalLower": "total"
   }
 }

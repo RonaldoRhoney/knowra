@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "../lib/supabaseClient";
 
 interface Missoes {
@@ -8,12 +9,13 @@ interface Missoes {
 }
 
 const DEFINICOES = [
-  { chave: "pergunta_hoje" as const, texto: "Faça uma pergunta hoje", icone: "❓" },
-  { chave: "desafio_hoje" as const, texto: "Responda um desafio hoje", icone: "🎯" },
-  { chave: "area_nova_hoje" as const, texto: "Explore uma área diferente", icone: "🧭" },
+  { chave: "pergunta_hoje" as const, icone: "❓" },
+  { chave: "desafio_hoje" as const, icone: "🎯" },
+  { chave: "area_nova_hoje" as const, icone: "🧭" },
 ];
 
 export function MissoesDiarias({ atualizarQuando }: { atualizarQuando: number }) {
+  const { t } = useTranslation();
   const [missoes, setMissoes] = useState<Missoes | null>(null);
 
   useEffect(() => {
@@ -26,7 +28,7 @@ export function MissoesDiarias({ atualizarQuando }: { atualizarQuando: number })
 
   return (
     <div className="bg-knowra-surface rounded-hero p-5 mt-4">
-      <p className="text-sm font-semibold text-knowra-text-secondary mb-3">Missões de hoje</p>
+      <p className="text-sm font-semibold text-knowra-text-secondary mb-3">{t("missoes.titulo")}</p>
       <div className="space-y-2">
         {DEFINICOES.map((m) => {
           const concluida = missoes[m.chave];
@@ -48,10 +50,10 @@ export function MissoesDiarias({ atualizarQuando }: { atualizarQuando: number })
                 {concluida ? "✓" : m.icone}
               </span>
               <span className={`text-sm flex-1 ${concluida ? "text-knowra-text" : "text-knowra-text-secondary"}`}>
-                {m.texto}
+                {t(`missoes.${m.chave}`)}
               </span>
               {concluida && (
-                <span className="text-xs text-knowra-success font-medium shrink-0">Concluída</span>
+                <span className="text-xs text-knowra-success font-medium shrink-0">{t("missoes.concluida")}</span>
               )}
             </div>
           );

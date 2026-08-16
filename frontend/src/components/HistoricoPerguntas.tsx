@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "../lib/supabaseClient";
 import type { Pergunta } from "../types/pergunta";
 
 export function HistoricoPerguntas({ atualizarQuando }: { atualizarQuando: number }) {
+  const { t } = useTranslation();
   const [perguntas, setPerguntas] = useState<Pergunta[]>([]);
   const [carregando, setCarregando] = useState(true);
 
@@ -23,24 +25,20 @@ export function HistoricoPerguntas({ atualizarQuando }: { atualizarQuando: numbe
     });
   }, [atualizarQuando]);
 
-  if (carregando) return <p className="text-sm text-knowra-text/40 mt-6">Carregando histórico...</p>;
+  if (carregando) return <p className="text-sm text-knowra-text/40 mt-6">{t("historico.carregando")}</p>;
 
   if (perguntas.length === 0) {
-    return (
-      <p className="text-sm text-knowra-text/40 mt-6 text-center">
-        Suas perguntas anteriores vão aparecer aqui.
-      </p>
-    );
+    return <p className="text-sm text-knowra-text/40 mt-6 text-center">{t("historico.vazio")}</p>;
   }
 
   return (
     <div className="mt-8 space-y-3">
-      <h2 className="text-sm font-semibold text-knowra-text/70">Histórico</h2>
+      <h2 className="text-sm font-semibold text-knowra-text/70">{t("historico.titulo")}</h2>
       {perguntas.map((p) => (
         <details key={p.id} className="bg-knowra-surface rounded-xl p-4">
           <summary className="cursor-pointer text-sm flex items-center justify-between gap-2">
             <span className="line-clamp-1 flex items-center gap-1.5">
-              {p.requer_verificacao && <span title="Vale conferir em fonte oficial">⚠️</span>}
+              {p.requer_verificacao && <span title={t("historico.valeConferir")}>⚠️</span>}
               {p.texto}
             </span>
             {p.areas?.nome && (
@@ -52,7 +50,7 @@ export function HistoricoPerguntas({ atualizarQuando }: { atualizarQuando: numbe
           <p className="text-sm text-knowra-text/60 mt-3">{p.resposta_ia}</p>
           {p.requer_verificacao && (
             <p className="text-xs text-knowra-text/40 mt-2">
-              ⚠️ Vale conferir em fonte oficial.{p.observacao_verificacao && ` ${p.observacao_verificacao}`}
+              ⚠️ {t("historico.valeConferir")}.{p.observacao_verificacao && ` ${p.observacao_verificacao}`}
             </p>
           )}
         </details>

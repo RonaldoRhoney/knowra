@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { BADGES, BADGE_ICONE_PADRAO } from "../lib/badges";
 import { supabase } from "../lib/supabaseClient";
 
@@ -15,6 +16,7 @@ interface BadgeCatalogo {
  * local — evita o tipo de drift que deixou as badges de liga invisíveis.
  */
 export function BadgeGrid({ atualizarQuando }: { atualizarQuando: number }) {
+  const { t } = useTranslation();
   const [catalogo, setCatalogo] = useState<BadgeCatalogo[]>([]);
   const [conquistados, setConquistados] = useState<Set<string>>(new Set());
   const [carregando, setCarregando] = useState(true);
@@ -41,7 +43,7 @@ export function BadgeGrid({ atualizarQuando }: { atualizarQuando: number }) {
   return (
     <div className="bg-knowra-surface rounded-hero p-5 mt-4">
       <h2 className="text-sm font-semibold text-knowra-text-secondary mb-3">
-        Conquistas <span className="text-knowra-text-terciario">({conquistados.size}/{catalogo.length})</span>
+        {t("progresso.conquistas")} <span className="text-knowra-text-terciario">({conquistados.size}/{catalogo.length})</span>
       </h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
         {catalogo.map((b) => {

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Footer } from "../components/Footer";
 import { Navigation } from "../components/Navigation";
 import { useAuth } from "../contexts/AuthContext";
@@ -27,6 +28,7 @@ interface Resultado {
 }
 
 export function ResolverQuestoes({ modo }: { modo: "concurso" | "area" }) {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const { session } = useAuth();
   const [titulo, setTitulo] = useState<string>("");
@@ -91,7 +93,7 @@ export function ResolverQuestoes({ modo }: { modo: "concurso" | "area" }) {
   }
 
   if (carregando) {
-    return <p className="px-4 py-8 text-sm text-knowra-text/40">Carregando...</p>;
+    return <p className="px-4 py-8 text-sm text-knowra-text/40">{t("common.carregando")}</p>;
   }
 
   return (
@@ -100,19 +102,19 @@ export function ResolverQuestoes({ modo }: { modo: "concurso" | "area" }) {
       <div className="px-4 py-8 max-w-3xl mx-auto">
         <header className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-h2">{titulo || "Questões"}</h1>
+            <h1 className="text-h2">{titulo || t("questoes.titulo")}</h1>
             <p className="text-sm text-knowra-text-secondary mt-0.5">
-              {modo === "concurso" ? "Treino de concurso" : "Prática livre por disciplina"}
+              {modo === "concurso" ? t("questoes.treinoConcurso") : t("questoes.praticaLivre")}
             </p>
           </div>
           <Link to="/concursos" className="text-xs text-knowra-text-secondary hover:text-knowra-text shrink-0">
-            ← Catálogo
+            ← {t("questoes.catalogo")}
           </Link>
         </header>
 
         {questoes.length === 0 && (
           <div className="bg-knowra-surface/50 rounded-2xl p-6 text-center">
-            <p className="text-sm text-knowra-text/50">Nenhuma questão disponível aqui ainda.</p>
+            <p className="text-sm text-knowra-text/50">{t("questoes.semQuestoes")}</p>
           </div>
         )}
 
@@ -120,10 +122,10 @@ export function ResolverQuestoes({ modo }: { modo: "concurso" | "area" }) {
           <div className="bg-knowra-surface rounded-2xl p-5">
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs text-knowra-text/40">
-                Questão {indice + 1} de {questoes.length}
+                {t("questoes.questaoXDeY", { indice: indice + 1, total: questoes.length })}
               </span>
               <span className="text-xs text-knowra-text/40">
-                Acertos: {tally.acertos}/{tally.total}
+                {t("questoes.acertos")}: {tally.acertos}/{tally.total}
               </span>
             </div>
 
@@ -159,16 +161,16 @@ export function ResolverQuestoes({ modo }: { modo: "concurso" | "area" }) {
             {resultado && (
               <div className="mt-4 pt-4 border-t border-white/10">
                 <p className={`text-sm font-semibold mb-1 ${resultado.correta ? "text-emerald-400" : "text-red-400"}`}>
-                  {resultado.correta ? "Você acertou!" : "Você errou."}
+                  {resultado.correta ? t("questoes.acertou") : t("questoes.errou")}
                 </p>
                 <p className="text-xs text-knowra-text/50 mb-3">
-                  Resposta correta: <span className="font-semibold">{resultado.gabarito}</span>
+                  {t("questoes.respostaCorreta")}: <span className="font-semibold">{resultado.gabarito}</span>
                 </p>
                 <p className="text-sm text-knowra-text/70">{resultado.explicacao}</p>
 
                 {resultado.dominio_pct_concurso !== null && (
                   <p className="text-xs text-knowra-text/40 mt-3">
-                    Seu domínio neste concurso: {resultado.dominio_pct_concurso}%
+                    {t("questoes.seuDominio", { pct: resultado.dominio_pct_concurso })}
                   </p>
                 )}
 
@@ -178,27 +180,24 @@ export function ResolverQuestoes({ modo }: { modo: "concurso" | "area" }) {
                     onClick={handleProxima}
                     className="w-full rounded-lg bg-knowra-primary py-2.5 text-sm font-medium mt-4"
                   >
-                    Próxima questão
+                    {t("questoes.proximaQuestao")}
                   </button>
                 ) : (
                   <div className="mt-4 text-center">
                     <p className="text-sm text-knowra-text/70">
-                      Fim das questões disponíveis por aqui. Você acertou {tally.acertos} de {tally.total}.
+                      {t("questoes.fimQuestoes", { acertos: tally.acertos, total: tally.total })}
                     </p>
                     {modo === "concurso" && plano === "free" && questoes.length === 10 && (
                       <p className="text-xs text-knowra-warning mt-2">
-                        Essas foram as 10 questões grátis deste concurso.{" "}
+                        {t("questoes.gratisFim")}{" "}
                         <Link to="/perfil" className="hover:underline">
-                          Assine o KnowRa Pro
+                          {t("questoes.assinarPro")}
                         </Link>{" "}
-                        pra ver o resto.
+                        {t("questoes.paraVerResto")}
                       </p>
                     )}
-                    <Link
-                      to="/concursos"
-                      className="text-xs text-knowra-accent hover:underline mt-2 inline-block"
-                    >
-                      Voltar ao catálogo →
+                    <Link to="/concursos" className="text-xs text-knowra-accent hover:underline mt-2 inline-block">
+                      {t("questoes.voltarCatalogo")} →
                     </Link>
                   </div>
                 )}

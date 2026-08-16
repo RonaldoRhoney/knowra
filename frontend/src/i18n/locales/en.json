@@ -1,4 +1,9 @@
 {
+  "common": {
+    "continuar": "Continue",
+    "carregando": "Loading...",
+    "salvar": "Save"
+  },
   "nav": {
     "comoUsar": "How to use",
     "mapa": "Map",
@@ -27,5 +32,281 @@
     "videoRelacionado": "Related video",
     "ouvirResposta": "Listen to answer",
     "pararLeitura": "Stop reading"
+  },
+  "footer": {
+    "tagline": "Turn your curiosity into knowledge — built by RhoneyInc.",
+    "umaConta": "One account. All the software.",
+    "produto": "Product",
+    "inicio": "Home",
+    "mapaConhecimento": "Knowledge Map",
+    "sobreNos": "About us",
+    "legal": "Legal",
+    "privacidade": "Privacy",
+    "termos": "Terms of use",
+    "contato": "Contact",
+    "copyright": "© {{ano}} KnowRa — a RhoneyInc product. All rights reserved."
+  },
+  "login": {
+    "tagline": "Turn your curiosity into knowledge.",
+    "comoFunciona": "How does it work?",
+    "continuarGoogle": "Continue with Google",
+    "ou": "or",
+    "email": "Email",
+    "senha": "Password",
+    "entrar": "Log in",
+    "criarConta": "Create account",
+    "naoTemConta": "Don't have an account? Sign up",
+    "jaTemConta": "Already have an account? Log in"
+  },
+  "mensagemAcesso": {
+    "primeiro_acesso": {
+      "titulo": "Welcome to KnowRa!",
+      "texto": "Ask anything that made you curious — we turn it into real learning."
+    },
+    "ausencia_media": {
+      "titulo": "Welcome back!",
+      "texto": "It's been a while since you dropped by. How about picking up your curiosity streak today?"
+    },
+    "ausencia_longa": {
+      "titulo": "We missed you!",
+      "texto": "It's been over a week since your last visit. Your knowledge journey is still waiting for you."
+    }
+  },
+  "historico": {
+    "carregando": "Loading history...",
+    "vazio": "Your previous questions will show up here.",
+    "titulo": "History",
+    "valeConferir": "Worth checking an official source"
+  },
+  "missoes": {
+    "titulo": "Today's missions",
+    "pergunta_hoje": "Ask a question today",
+    "desafio_hoje": "Answer a challenge today",
+    "area_nova_hoje": "Explore a different area",
+    "concluida": "Completed"
+  },
+  "progresso": {
+    "conquistas": "Achievements",
+    "nivel": "Level",
+    "diasSequencia": "day streak",
+    "faltamXp": "{{xp}} XP · {{faltam}} XP left to {{titulo}}",
+    "nivelMaximo": "{{xp}} XP · max level reached",
+    "curioso": "Curious"
+  },
+  "desafio": {
+    "erroGerar": "Couldn't generate the challenge right now.",
+    "erroAvaliar": "Couldn't evaluate your answer right now.",
+    "subiuNivel": "You leveled up to {{nivel}}!",
+    "conhecimentoDemonstrado": "Knowledge demonstrated",
+    "novaConquista": "New achievement",
+    "dificuldade": {
+      "facil": "Easy",
+      "normal": "Normal",
+      "dificil": "Hard",
+      "avancado": "Advanced",
+      "mestre": "Master"
+    },
+    "placeholderResposta": "Explain it in your own words...",
+    "avaliando": "Evaluating...",
+    "enviarResposta": "Submit answer",
+    "gerando": "Generating challenge...",
+    "testarConhecimento": "You just learned something new. Want to test your knowledge?"
+  },
+  "cadastro": {
+    "erroSalvar": "Couldn't save right now. Please try again.",
+    "titulo": "Complete your profile",
+    "explicacao": "Name is the only required info — the rest is optional and helps us understand who uses KnowRa.",
+    "nome": "Name",
+    "cidade": "City (optional)",
+    "pais": "Country (optional)",
+    "idade": "Age (optional)",
+    "genero": "Gender (optional)",
+    "generos": {
+      "feminino": "Female",
+      "masculino": "Male",
+      "nao_binario": "Non-binary",
+      "prefiro_nao_informar": "Prefer not to say"
+    },
+    "salvando": "Saving...",
+    "agoraNao": "Not now"
+  },
+  "comoUsar": {
+    "pular": "Skip",
+    "irParaPasso": "Go to step {{numero}}",
+    "anterior": "Back",
+    "comecarAgora": "Get started",
+    "proximo": "Next",
+    "passos": {
+      "pergunte": {
+        "titulo": "Ask anything",
+        "texto": "No category, no form — just type what made you curious and click Ask."
+      },
+      "resposta": {
+        "titulo": "Get a real answer",
+        "texto": "KnowRa's AI explains it clearly, no jargon — in a way any curious person can understand."
+      },
+      "desafio": {
+        "titulo": "Take the challenge",
+        "texto": "After the answer, you can test whether you really understood — no obligation, no penalty for getting it wrong."
+      },
+      "xp": {
+        "titulo": "Earn XP and level up",
+        "texto": "Your answer is really evaluated — the more you show you learned, the more XP you earn."
+      },
+      "evolucao": {
+        "titulo": "Track your progress",
+        "texto": "Level, day streak and achievements are always visible. Edit your info anytime in Profile, and see your mastery by area in the Knowledge Map."
+      }
+    }
+  },
+  "mapa": {
+    "titulo": "Knowledge Map",
+    "subtitulo": "Your mastery by area, based on evaluated challenges",
+    "vazio": "Answer a few challenges to start seeing your mastery by area here.",
+    "area": "Area",
+    "desafios_one": "{{count}} challenge",
+    "desafios_other": "{{count}} challenges"
+  },
+  "ranking": {
+    "subtitulo": "How you compare on the platform",
+    "suaPosicao": "Your position",
+    "de": "of {{total}}",
+    "percentilTop": "You're among the top {{percentil}}% on the platform.",
+    "seuRating": "Your rating: {{rating}} · platform average: {{media}}",
+    "naoElegivel": "Answer more challenges to join the ranking (minimum of 5 evaluated).",
+    "geral": "Overall",
+    "concurso": "Exam",
+    "vazioGeral": "No one on the overall ranking yet. Turn on your ranking presence in Profile to show up here.",
+    "vazioConcurso": "No one on this exam's ranking yet.",
+    "vazioArea": "No one on this area's ranking yet."
+  },
+  "concursos": {
+    "subtitulo": "Practice with multiple-choice questions",
+    "avisoIA": "Practice questions generated by KnowRa's AI — not official questions from a real exam board.",
+    "semConcursos": "No exam with questions available yet. Meanwhile, practice by subject below.",
+    "gratisDe": "{{gratis}} free out of {{total}} questions · rest on Pro",
+    "questoesDisponiveis_one": "{{count}} question available",
+    "questoesDisponiveis_other": "{{count}} questions available",
+    "praticarPorDisciplina": "Practice by subject",
+    "semDisciplinas": "No subject available yet."
+  },
+  "questoes": {
+    "titulo": "Questions",
+    "treinoConcurso": "Exam practice",
+    "praticaLivre": "Free practice by subject",
+    "catalogo": "Catalog",
+    "semQuestoes": "No question available here yet.",
+    "questaoXDeY": "Question {{indice}} of {{total}}",
+    "acertos": "Correct",
+    "acertou": "Correct!",
+    "errou": "Incorrect.",
+    "respostaCorreta": "Correct answer",
+    "seuDominio": "Your mastery in this exam: {{pct}}%",
+    "proximaQuestao": "Next question",
+    "fimQuestoes": "That's the end of the questions here. You got {{acertos}} out of {{total}} correct.",
+    "gratisFim": "Those were the 10 free questions for this exam.",
+    "assinarPro": "Subscribe to KnowRa Pro",
+    "paraVerResto": "to see the rest.",
+    "voltarCatalogo": "Back to catalog"
+  },
+  "temporadas": {
+    "subtitulo": "Leagues and competition by period",
+    "suaLigaAtual": "Your current league",
+    "ratingRecalculado": "Rating {{rating}} · league is recalculated automatically as your rating changes",
+    "emAndamento": "{{nome}} is underway",
+    "de": "From",
+    "ate": "to",
+    "rankingAoVivo": "The live ranking is at",
+    "historico": "Season history",
+    "semTemporadas": "No season closed yet.",
+    "encerradaEm": "Closed on",
+    "voce": "You",
+    "top": "top",
+    "semLeaderboard": "No one showed up publicly on this ranking.",
+    "adminTitulo": "Admin — Seasons",
+    "adminVisivel": "Visible only to you.",
+    "temporadaAtiva": "Active season",
+    "encerrando": "Closing...",
+    "encerrarTemporada": "Close season",
+    "placeholderNome": "Season name (e.g., KnowRa — Season 01)",
+    "inicio": "Start",
+    "fim": "End",
+    "iniciando": "Starting...",
+    "iniciarTemporada": "Start season",
+    "confirmarEncerrar": "Close \"{{nome}}\"? This freezes the ranking and hands out league badges."
+  },
+  "perfil": {
+    "gerencie": "Manage your information",
+    "trocarFotoPerfil": "Change profile photo",
+    "trocar": "Change",
+    "semNome": "No name",
+    "trocarFoto": "Change photo",
+    "assinaturaAtiva": "Your subscription is active. Thanks for supporting KnowRa!",
+    "mes": "mo",
+    "beneficiosPro": "More AI interactions per day and full access to questions from every exam.",
+    "assinaturaProcessando": "Subscription processing — it may take a few minutes to confirm the payment.",
+    "abrindoCheckout": "Opening checkout...",
+    "assinarPro": "Subscribe to KnowRa Pro",
+    "cidade": "City",
+    "pais": "Country",
+    "idade": "Age",
+    "genero": "Gender",
+    "perfilAtualizado": "Profile updated.",
+    "salvarAlteracoes": "Save changes",
+    "progresso": "Progress",
+    "xpTotal": "Total XP",
+    "perguntasFeitas": "Questions asked",
+    "taxaAcerto": "Accuracy rate",
+    "areasDestaque": "Top areas",
+    "verMapaCompleto": "See full Knowledge Map",
+    "verRanking": "See ranking",
+    "explicacaoRanking": "You choose whether to appear publicly. Never required to compete — your position stays visible only to you either way.",
+    "apelidoRanking": "Ranking nickname",
+    "placeholderApelido": "How you want to appear publicly",
+    "aparecerRankingPublico": "Show on public ranking",
+    "preferenciasSalvas": "Preferences saved.",
+    "salvarPreferencias": "Save preferences",
+    "escolhaImagem": "Choose an image file.",
+    "imagemMuitoGrande": "The image needs to be under {{mb}}MB.",
+    "erroEnviarFoto": "Couldn't upload the photo right now. Please try again.",
+    "fotoEnviadaSemAtualizar": "Photo uploaded, but couldn't update the profile. Please try again.",
+    "apelidoCurto": "The nickname needs at least 2 characters.",
+    "erroSalvarGenerico": "Couldn't save right now. Please try again.",
+    "erroAssinatura": "Couldn't start the subscription right now. Please try again."
+  },
+  "admin": {
+    "celular": "Mobile",
+    "tablet": "Tablet",
+    "desktop": "Desktop",
+    "erroCarregar": "Couldn't load the dashboard data.",
+    "usuarios": "Users",
+    "perguntas": "Questions",
+    "desafiosAvaliados": "Evaluated challenges",
+    "xpDistribuido": "XP awarded",
+    "acessos": "Visits",
+    "hoje": "Today",
+    "semana": "Week",
+    "mesLabel": "Month",
+    "ano": "Year",
+    "total": "Total",
+    "cacheRespostas": "Answer cache (AI savings)",
+    "cacheExplicacao": "Questions with the same text (ignoring accents/punctuation/case) reuse the already-generated answer.",
+    "respostasUnicas": "Unique cached answers",
+    "chamadasEconomizadas": "AI calls saved",
+    "maisReaproveitadas": "Most reused",
+    "frequenciaUso": "Usage frequency (14 days)",
+    "areasExploradas": "Most explored areas",
+    "dispositivos": "Devices",
+    "paises": "Countries",
+    "regioes": "Regions",
+    "cidades": "Cities",
+    "faixaEtaria": "Age range",
+    "genero": "Gender",
+    "semUsuarios": "No user registered yet.",
+    "desde": "since",
+    "ferramentasDev": "Development tools",
+    "semDado": "Not enough data yet.",
+    "selecionado": "selected",
+    "totalLower": "total"
   }
 }

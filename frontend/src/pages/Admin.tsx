@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Navigation } from "../components/Navigation";
 import { SimuladorNivel } from "../components/SimuladorNivel";
 import { supabase } from "../lib/supabaseClient";
@@ -38,10 +39,19 @@ interface Demographics {
   frequencia_14_dias: { data: string; total: number }[];
 }
 
-const LABEL_DISPOSITIVO: Record<string, string> = { mobile: "Celular", tablet: "Tablet", desktop: "Desktop" };
-const LABEL_GENERO: Record<string, string> = { feminino: "Feminino", masculino: "Masculino", nao_binario: "Não-binário" };
-
 export function Admin() {
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language === "en" ? "en-US" : i18n.language === "es" ? "es-ES" : "pt-BR";
+  const LABEL_DISPOSITIVO: Record<string, string> = {
+    mobile: t("admin.celular"),
+    tablet: t("admin.tablet"),
+    desktop: t("admin.desktop"),
+  };
+  const LABEL_GENERO: Record<string, string> = {
+    feminino: t("cadastro.generos.feminino"),
+    masculino: t("cadastro.generos.masculino"),
+    nao_binario: t("cadastro.generos.nao_binario"),
+  };
   const [usuarios, setUsuarios] = useState<Profile[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [demografia, setDemografia] = useState<Demographics | null>(null);
@@ -58,7 +68,7 @@ export function Admin() {
       supabase.rpc("admin_cache_stats"),
     ]).then(([usuariosRes, statsRes, demografiaRes, cacheRes]) => {
       if (usuariosRes.error || statsRes.error || demografiaRes.error || cacheRes.error) {
-        setErro("Não foi possível carregar os dados do painel.");
+        setErro(t("admin.erroCarregar"));
       } else {
         setUsuarios((usuariosRes.data ?? []) as Profile[]);
         setStats(statsRes.data as Stats);
@@ -74,53 +84,51 @@ export function Admin() {
       <Navigation />
       <div className="px-4 py-8 max-w-3xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-h2">Painel ADM</h1>
+        <h1 className="text-h2">{t("nav.painelAdm")}</h1>
         <p className="text-sm text-knowra-text-secondary mt-0.5">KnowRa</p>
       </div>
 
       {erro && <p className="text-sm text-red-400 mb-4">{erro}</p>}
 
       <section className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-        <MetricaCard icone="👥" label="Usuários" valor={stats?.total_usuarios} carregando={carregando} />
-        <MetricaCard icone="❓" label="Perguntas" valor={stats?.total_perguntas} carregando={carregando} />
+        <MetricaCard icone="👥" label={t("admin.usuarios")} valor={stats?.total_usuarios} carregando={carregando} />
+        <MetricaCard icone="❓" label={t("admin.perguntas")} valor={stats?.total_perguntas} carregando={carregando} />
         <MetricaCard
           icone="🎯"
-          label="Desafios avaliados"
+          label={t("admin.desafiosAvaliados")}
           valor={stats?.total_desafios_avaliados}
           carregando={carregando}
         />
-        <MetricaCard icone="⚡" label="XP distribuído" valor={stats?.xp_distribuido} carregando={carregando} />
+        <MetricaCard icone="⚡" label={t("admin.xpDistribuido")} valor={stats?.xp_distribuido} carregando={carregando} />
       </section>
 
       <section className="bg-knowra-surface rounded-2xl p-5 mb-6">
-        <h2 className="text-sm font-semibold text-knowra-text/80 mb-4">Acessos</h2>
+        <h2 className="text-sm font-semibold text-knowra-text/80 mb-4">{t("admin.acessos")}</h2>
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-          <MetricaCard icone="🕐" label="Hoje" valor={stats?.acessos_hoje} carregando={carregando} fundo="bg-knowra-bg" />
-          <MetricaCard icone="📅" label="Semana" valor={stats?.acessos_semana} carregando={carregando} fundo="bg-knowra-bg" />
-          <MetricaCard icone="🗓️" label="Mês" valor={stats?.acessos_mes} carregando={carregando} fundo="bg-knowra-bg" />
-          <MetricaCard icone="📆" label="Ano" valor={stats?.acessos_ano} carregando={carregando} fundo="bg-knowra-bg" />
-          <MetricaCard icone="📈" label="Total" valor={stats?.total_acessos} carregando={carregando} fundo="bg-knowra-bg" />
+          <MetricaCard icone="🕐" label={t("admin.hoje")} valor={stats?.acessos_hoje} carregando={carregando} fundo="bg-knowra-bg" />
+          <MetricaCard icone="📅" label={t("admin.semana")} valor={stats?.acessos_semana} carregando={carregando} fundo="bg-knowra-bg" />
+          <MetricaCard icone="🗓️" label={t("admin.mesLabel")} valor={stats?.acessos_mes} carregando={carregando} fundo="bg-knowra-bg" />
+          <MetricaCard icone="📆" label={t("admin.ano")} valor={stats?.acessos_ano} carregando={carregando} fundo="bg-knowra-bg" />
+          <MetricaCard icone="📈" label={t("admin.total")} valor={stats?.total_acessos} carregando={carregando} fundo="bg-knowra-bg" />
         </div>
       </section>
 
       <section className="bg-knowra-surface rounded-2xl p-5 mb-6">
         <div className="flex items-center justify-between mb-1">
-          <h2 className="text-sm font-semibold text-knowra-text/80">Cache de respostas (economia de IA)</h2>
+          <h2 className="text-sm font-semibold text-knowra-text/80">{t("admin.cacheRespostas")}</h2>
         </div>
-        <p className="text-xs text-knowra-text/40 mb-4">
-          Perguntas com o mesmo texto (ignorando acento/pontuação/caixa) reaproveitam a resposta já gerada.
-        </p>
+        <p className="text-xs text-knowra-text/40 mb-4">{t("admin.cacheExplicacao")}</p>
         <div className="grid grid-cols-2 gap-3 mb-4">
           <MetricaCard
             icone="💾"
-            label="Respostas únicas em cache"
+            label={t("admin.respostasUnicas")}
             valor={cacheStats?.total_respostas_unicas}
             carregando={carregando}
             fundo="bg-knowra-bg"
           />
           <MetricaCard
             icone="♻️"
-            label="Chamadas de IA economizadas"
+            label={t("admin.chamadasEconomizadas")}
             valor={cacheStats?.total_reaproveitamentos}
             carregando={carregando}
             fundo="bg-knowra-bg"
@@ -128,7 +136,7 @@ export function Admin() {
         </div>
         {cacheStats && cacheStats.top_reaproveitadas.length > 0 && (
           <div>
-            <p className="text-xs text-knowra-text/50 mb-2">Mais reaproveitadas</p>
+            <p className="text-xs text-knowra-text/50 mb-2">{t("admin.maisReaproveitadas")}</p>
             <ul className="space-y-1.5">
               {cacheStats.top_reaproveitadas.map((r, i) => (
                 <li key={i} className="flex items-center gap-2 text-xs">
@@ -143,34 +151,34 @@ export function Admin() {
 
       {demografia && demografia.frequencia_14_dias.some((d) => d.total > 0) && (
         <section className="bg-knowra-surface rounded-2xl p-5 mb-6">
-          <h2 className="text-sm font-semibold text-knowra-text/80 mb-4">Frequência de uso (14 dias)</h2>
-          <FrequenciaChart dados={demografia.frequencia_14_dias} />
+          <h2 className="text-sm font-semibold text-knowra-text/80 mb-4">{t("admin.frequenciaUso")}</h2>
+          <FrequenciaChart dados={demografia.frequencia_14_dias} locale={locale} />
         </section>
       )}
 
       {stats && stats.top_areas.length > 0 && (
         <section className="bg-knowra-surface rounded-2xl p-5 mb-6">
-          <h2 className="text-sm font-semibold text-knowra-text/80 mb-4">Áreas mais exploradas</h2>
+          <h2 className="text-sm font-semibold text-knowra-text/80 mb-4">{t("admin.areasExploradas")}</h2>
           <BarList itens={stats.top_areas} />
         </section>
       )}
 
       {demografia && (
         <section className="grid sm:grid-cols-2 gap-3 mb-6">
-          <PainelBarList titulo="Dispositivos" itens={demografia.dispositivos} labels={LABEL_DISPOSITIVO} />
-          <PainelBarList titulo="Países" itens={demografia.paises} />
-          <PainelBarList titulo="Regiões" itens={demografia.regioes} />
-          <PainelBarList titulo="Cidades" itens={demografia.cidades} />
-          <PainelBarList titulo="Faixa etária" itens={demografia.faixas_etarias} />
-          <PainelBarList titulo="Gênero" itens={demografia.generos} labels={LABEL_GENERO} />
+          <PainelBarList titulo={t("admin.dispositivos")} itens={demografia.dispositivos} labels={LABEL_DISPOSITIVO} />
+          <PainelBarList titulo={t("admin.paises")} itens={demografia.paises} />
+          <PainelBarList titulo={t("admin.regioes")} itens={demografia.regioes} />
+          <PainelBarList titulo={t("admin.cidades")} itens={demografia.cidades} />
+          <PainelBarList titulo={t("admin.faixaEtaria")} itens={demografia.faixas_etarias} />
+          <PainelBarList titulo={t("admin.genero")} itens={demografia.generos} labels={LABEL_GENERO} />
         </section>
       )}
 
       <section className="bg-knowra-surface rounded-2xl overflow-hidden">
-        <h2 className="text-sm font-semibold px-5 pt-5 pb-3 text-knowra-text/80">Usuários</h2>
-        {carregando && <p className="px-5 pb-5 text-sm text-knowra-text/50">Carregando...</p>}
+        <h2 className="text-sm font-semibold px-5 pt-5 pb-3 text-knowra-text/80">{t("admin.usuarios")}</h2>
+        {carregando && <p className="px-5 pb-5 text-sm text-knowra-text/50">{t("common.carregando")}</p>}
         {!carregando && !erro && usuarios.length === 0 && (
-          <p className="px-5 pb-5 text-sm text-knowra-text/50">Nenhum usuário cadastrado ainda.</p>
+          <p className="px-5 pb-5 text-sm text-knowra-text/50">{t("admin.semUsuarios")}</p>
         )}
         {usuarios.length > 0 && (
           <ul className="divide-y divide-white/5">
@@ -181,7 +189,7 @@ export function Admin() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium truncate">{u.nome ?? "Sem nome"}</span>
+                    <span className="text-sm font-medium truncate">{u.nome ?? t("perfil.semNome")}</span>
                     {u.role === "admin" && (
                       <span className="text-[10px] uppercase tracking-wide text-knowra-accent bg-knowra-accent/10 px-1.5 py-0.5 rounded">
                         admin
@@ -189,8 +197,8 @@ export function Admin() {
                     )}
                   </div>
                   <p className="text-xs text-knowra-text/40">
-                    Nível {u.nivel_global} · Rating {u.rating} · desde{" "}
-                    {new Date(u.criado_em).toLocaleDateString("pt-BR")}
+                    {t("progresso.nivel")} {u.nivel_global} · Rating {u.rating} · {t("admin.desde")}{" "}
+                    {new Date(u.criado_em).toLocaleDateString(locale)}
                   </p>
                 </div>
                 <span className="text-sm font-semibold text-knowra-accent shrink-0">{u.xp_total} XP</span>
@@ -206,7 +214,7 @@ export function Admin() {
           onClick={() => setMostrarFerramentas((v) => !v)}
           className="text-xs text-knowra-text-terciario hover:text-knowra-text-secondary"
         >
-          {mostrarFerramentas ? "▾" : "▸"} Ferramentas de desenvolvimento
+          {mostrarFerramentas ? "▾" : "▸"} {t("admin.ferramentasDev")}
         </button>
         {mostrarFerramentas && (
           <div className="mt-3">
@@ -220,11 +228,12 @@ export function Admin() {
 }
 
 function PainelBarList({ titulo, itens, labels }: { titulo: string; itens: Item[]; labels?: Record<string, string> }) {
+  const { t } = useTranslation();
   if (itens.length === 0) {
     return (
       <div className="bg-knowra-surface rounded-2xl p-5">
         <h2 className="text-sm font-semibold text-knowra-text/80 mb-1">{titulo}</h2>
-        <p className="text-xs text-knowra-text/40">Sem dado suficiente ainda.</p>
+        <p className="text-xs text-knowra-text/40">{t("admin.semDado")}</p>
       </div>
     );
   }
@@ -241,6 +250,7 @@ function PainelBarList({ titulo, itens, labels }: { titulo: string; itens: Item[
 const PALETA_CATEGORICA = ["#38BDF8", "#7C3AED", "#34D399", "#FBBF24", "#E879F9", "#FB923C"];
 
 function Donut({ itens, labels }: { itens: Item[]; labels?: Record<string, string> }) {
+  const { t } = useTranslation();
   const [emFoco, setEmFoco] = useState<number | null>(null);
   const total = itens.reduce((soma, i) => soma + i.total, 0);
   const raio = 40;
@@ -291,7 +301,7 @@ function Donut({ itens, labels }: { itens: Item[]; labels?: Record<string, strin
               {emFoco !== null ? itens[emFoco].total : total}
             </p>
             <p className="text-[10px] text-knowra-text/40 mt-0.5">
-              {emFoco !== null ? "selecionado" : "total"}
+              {emFoco !== null ? t("admin.selecionado") : t("admin.totalLower")}
             </p>
           </div>
         </div>
@@ -348,7 +358,7 @@ function BarList({ itens, labels }: { itens: Item[]; labels?: Record<string, str
   );
 }
 
-function FrequenciaChart({ dados }: { dados: { data: string; total: number }[] }) {
+function FrequenciaChart({ dados, locale }: { dados: { data: string; total: number }[]; locale: string }) {
   const max = Math.max(1, ...dados.map((d) => d.total));
   return (
     <div className="flex items-end gap-1.5 h-24">
@@ -357,7 +367,7 @@ function FrequenciaChart({ dados }: { dados: { data: string; total: number }[] }
           <div
             className="w-full rounded-t-sm bg-knowra-accent transition-all duration-500 min-h-[2px]"
             style={{ height: `${(d.total / max) * 100}%` }}
-            title={`${new Date(d.data + "T00:00:00").toLocaleDateString("pt-BR")}: ${d.total}`}
+            title={`${new Date(d.data + "T00:00:00").toLocaleDateString(locale)}: ${d.total}`}
           />
         </div>
       ))}

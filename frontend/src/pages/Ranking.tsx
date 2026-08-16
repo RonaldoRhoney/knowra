@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Footer } from "../components/Footer";
 import { Navigation } from "../components/Navigation";
 import { useAuth } from "../contexts/AuthContext";
@@ -64,6 +65,7 @@ interface MeuRanking {
 const PREFIXO_CONCURSO = "concurso:";
 
 export function Ranking() {
+  const { t } = useTranslation();
   const { session } = useAuth();
   const [aba, setAba] = useState<string>("geral");
   const [areasDisponiveis, setAreasDisponiveis] = useState<AreaDisponivel[]>([]);
@@ -117,37 +119,34 @@ export function Ranking() {
       <Navigation />
       <div className="px-4 py-8 max-w-3xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-h2">Ranking</h1>
-          <p className="text-sm text-knowra-text-secondary mt-0.5">Como você se compara na plataforma</p>
+          <h1 className="text-h2">{t("nav.ranking")}</h1>
+          <p className="text-sm text-knowra-text-secondary mt-0.5">{t("ranking.subtitulo")}</p>
         </div>
 
         {meuRanking && (
           <section className="bg-knowra-surface rounded-2xl p-5 mb-6">
             {meuRanking.elegivel ? (
               <>
-                <p className="text-xs text-knowra-text/50 mb-1">Sua posição</p>
+                <p className="text-xs text-knowra-text/50 mb-1">{t("ranking.suaPosicao")}</p>
                 <p className="text-2xl font-bold text-knowra-accent">
                   #{meuRanking.posicao}{" "}
                   <span className="text-sm font-normal text-knowra-text/60">
-                    de {meuRanking.total_participantes}
+                    {t("ranking.de", { total: meuRanking.total_participantes })}
                   </span>
                 </p>
                 {meuRanking.percentil_top !== null && (
                   <p className="text-sm text-knowra-text/70 mt-1">
-                    Você está entre os {meuRanking.percentil_top}% melhores da plataforma.
+                    {t("ranking.percentilTop", { percentil: meuRanking.percentil_top })}
                   </p>
                 )}
                 {meuRanking.media_rating_plataforma !== null && (
                   <p className="text-xs text-knowra-text/40 mt-2">
-                    Seu rating: {meuRanking.rating} · média da plataforma:{" "}
-                    {meuRanking.media_rating_plataforma}
+                    {t("ranking.seuRating", { rating: meuRanking.rating, media: meuRanking.media_rating_plataforma })}
                   </p>
                 )}
               </>
             ) : (
-              <p className="text-sm text-knowra-text/60">
-                Responda mais desafios pra entrar no ranking (mínimo de 5 avaliados).
-              </p>
+              <p className="text-sm text-knowra-text/60">{t("ranking.naoElegivel")}</p>
             )}
           </section>
         )}
@@ -161,7 +160,7 @@ export function Ranking() {
                 : "border-white/10 text-knowra-text/60"
             }`}
           >
-            Geral
+            {t("ranking.geral")}
           </button>
           {areasDisponiveis.map((a) => (
             <button
@@ -173,7 +172,7 @@ export function Ranking() {
                   : "border-white/10 text-knowra-text/60"
               }`}
             >
-              {a.areas?.nome ?? "Área"}
+              {a.areas?.nome ?? t("mapa.area")}
             </button>
           ))}
           {concursosDisponiveis.map((c) => (
@@ -186,35 +185,27 @@ export function Ranking() {
                   : "border-white/10 text-knowra-text/60"
               }`}
             >
-              {c.concursos?.nome ?? "Concurso"}
+              {c.concursos?.nome ?? t("ranking.concurso")}
             </button>
           ))}
         </div>
 
-        {carregando && <p className="text-sm text-knowra-text/40">Carregando...</p>}
+        {carregando && <p className="text-sm text-knowra-text/40">{t("common.carregando")}</p>}
 
         {!carregando && aba === "geral" && (
-          <ListaRanking
-            linhas={linhasGeral}
-            valorLabel={(l) => `${l.rating} pts`}
-            vazio="Ninguém no ranking geral ainda. Ative sua presença no ranking em Perfil pra aparecer aqui."
-          />
+          <ListaRanking linhas={linhasGeral} valorLabel={(l) => `${l.rating} pts`} vazio={t("ranking.vazioGeral")} />
         )}
 
         {!carregando && aba.startsWith(PREFIXO_CONCURSO) && (
           <ListaRanking
             linhas={linhasConcurso}
             valorLabel={(l) => `${l.dominio_pct}%`}
-            vazio="Ninguém no ranking desse concurso ainda."
+            vazio={t("ranking.vazioConcurso")}
           />
         )}
 
         {!carregando && aba !== "geral" && !aba.startsWith(PREFIXO_CONCURSO) && (
-          <ListaRanking
-            linhas={linhasArea}
-            valorLabel={(l) => `${l.dominio_pct}%`}
-            vazio="Ninguém no ranking dessa área ainda."
-          />
+          <ListaRanking linhas={linhasArea} valorLabel={(l) => `${l.dominio_pct}%`} vazio={t("ranking.vazioArea")} />
         )}
       </div>
       <Footer />

@@ -1,18 +1,20 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../contexts/AuthContext";
 import { avaliarDesafio, gerarDesafio } from "../lib/api";
 import { BADGES } from "../lib/badges";
 import type { Desafio, ResultadoAvaliacao } from "../types/desafio";
 
-const DIFICULDADE: Record<string, { label: string; cor: string }> = {
-  facil: { label: "Fácil", cor: "text-emerald-400 bg-emerald-400/10" },
-  normal: { label: "Normal", cor: "text-knowra-accent bg-knowra-accent/10" },
-  dificil: { label: "Difícil", cor: "text-amber-400 bg-amber-400/10" },
-  avancado: { label: "Avançado", cor: "text-orange-400 bg-orange-400/10" },
-  mestre: { label: "Mestre", cor: "text-fuchsia-400 bg-fuchsia-400/10" },
+const DIFICULDADE: Record<string, { chave: string; cor: string }> = {
+  facil: { chave: "facil", cor: "text-emerald-400 bg-emerald-400/10" },
+  normal: { chave: "normal", cor: "text-knowra-accent bg-knowra-accent/10" },
+  dificil: { chave: "dificil", cor: "text-amber-400 bg-amber-400/10" },
+  avancado: { chave: "avancado", cor: "text-orange-400 bg-orange-400/10" },
+  mestre: { chave: "mestre", cor: "text-fuchsia-400 bg-fuchsia-400/10" },
 };
 
 export function DesafioCard({ perguntaId, onAvaliado }: { perguntaId: string; onAvaliado?: () => void }) {
+  const { t } = useTranslation();
   const { refreshProfile } = useAuth();
   const [desafio, setDesafio] = useState<Desafio | null>(null);
   const [resposta, setResposta] = useState("");
@@ -26,7 +28,7 @@ export function DesafioCard({ perguntaId, onAvaliado }: { perguntaId: string; on
     try {
       setDesafio(await gerarDesafio(perguntaId));
     } catch (err) {
-      setErro(err instanceof Error ? err.message : "Não foi possível gerar o desafio agora.");
+      setErro(err instanceof Error ? err.message : t("desafio.erroGerar"));
     } finally {
       setCarregando(false);
     }
@@ -42,7 +44,7 @@ export function DesafioCard({ perguntaId, onAvaliado }: { perguntaId: string; on
       await refreshProfile();
       onAvaliado?.();
     } catch (err) {
-      setErro(err instanceof Error ? err.message : "Não foi possível avaliar sua resposta agora.");
+      setErro(err instanceof Error ? err.message : t("desafio.erroAvaliar"));
     } finally {
       setCarregando(false);
     }
@@ -56,7 +58,7 @@ export function DesafioCard({ perguntaId, onAvaliado }: { perguntaId: string; on
       <div className="mt-3 space-y-3">
         {resultado.subiu_de_nivel && (
           <div className="bg-gradient-to-r from-knowra-primary to-knowra-accent rounded-2xl p-4 text-center animate-[pulse_1.6s_ease-in-out_1]">
-            <p className="font-bold">🎉 Você subiu para o nível {resultado.nivel_novo}!</p>
+            <p className="font-bold">🎉 {t("desafio.subiuNivel", { nivel: resultado.nivel_novo })}</p>
           </div>
         )}
 
@@ -73,7 +75,7 @@ export function DesafioCard({ perguntaId, onAvaliado }: { perguntaId: string; on
               </span>
             </div>
             <div>
-              <p className="text-xs text-knowra-text/50 uppercase tracking-wide">Conhecimento demonstrado</p>
+              <p className="text-xs text-knowra-text/50 uppercase tracking-wide">{t("desafio.conhecimentoDemonstrado")}</p>
               <p className="text-knowra-accent font-semibold mt-0.5">+{resultado.xp_ganho} XP</p>
             </div>
           </div>
@@ -90,7 +92,7 @@ export function DesafioCard({ perguntaId, onAvaliado }: { perguntaId: string; on
                   className="flex items-center gap-2 bg-knowra-primary/15 border border-knowra-primary/30 rounded-full pl-2 pr-3 py-1.5"
                 >
                   <span className="text-lg">{badge?.icone ?? "🏅"}</span>
-                  <span className="text-xs font-medium">Nova conquista: {badge?.nome ?? codigo}</span>
+                  <span className="text-xs font-medium">{t("desafio.novaConquista")}: {badge?.nome ?? codigo}</span>
                 </div>
               );
             })}
@@ -105,13 +107,13 @@ export function DesafioCard({ perguntaId, onAvaliado }: { perguntaId: string; on
     return (
       <div className="bg-knowra-surface rounded-2xl p-5 mt-3 space-y-3">
         <span className={`inline-block text-[10px] font-mono uppercase tracking-wide px-2 py-0.5 rounded-md ${dificuldade.cor}`}>
-          {dificuldade.label}
+          {t(`desafio.dificuldade.${dificuldade.chave}`)}
         </span>
         <p className="text-sm font-medium">{desafio.enunciado}</p>
         <textarea
           value={resposta}
           onChange={(e) => setResposta(e.target.value)}
-          placeholder="Explique com suas próprias palavras..."
+          placeholder={t("desafio.placeholderResposta")}
           rows={3}
           maxLength={3000}
           className="w-full bg-knowra-bg rounded-lg p-3 text-sm outline-none resize-none placeholder:text-knowra-text/40"
@@ -122,7 +124,7 @@ export function DesafioCard({ perguntaId, onAvaliado }: { perguntaId: string; on
           disabled={carregando || resposta.trim().length < 2}
           className="rounded-lg bg-knowra-primary px-4 py-2 text-sm font-medium disabled:opacity-40"
         >
-          {carregando ? "Avaliando..." : "Enviar resposta"}
+          {carregando ? t("desafio.avaliando") : t("desafio.enviarResposta")}
         </button>
       </div>
     );
@@ -136,7 +138,7 @@ export function DesafioCard({ perguntaId, onAvaliado }: { perguntaId: string; on
         disabled={carregando}
         className="text-sm text-knowra-accent hover:underline disabled:opacity-40"
       >
-        {carregando ? "Gerando desafio..." : "Você acabou de aprender algo novo. Quer testar seu conhecimento?"}
+        {carregando ? t("desafio.gerando") : t("desafio.testarConhecimento")}
       </button>
     </div>
   );

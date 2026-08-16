@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Footer } from "../components/Footer";
 import { Navigation } from "../components/Navigation";
 import { useAuth } from "../contexts/AuthContext";
 import { supabase } from "../lib/supabaseClient";
+
+const LOCALE_DATA: Record<string, string> = { pt: "pt-BR", en: "en-US", es: "es-ES" };
 
 interface Liga {
   ordem: number;
@@ -43,6 +46,8 @@ function ligaAtual(rating: number, ligas: Liga[]): Liga | null {
 }
 
 export function Temporadas() {
+  const { t, i18n } = useTranslation();
+  const locale = LOCALE_DATA[i18n.language] ?? "pt-BR";
   const { profile, session } = useAuth();
   const [ligas, setLigas] = useState<Liga[]>([]);
   const [temporadas, setTemporadas] = useState<Temporada[]>([]);
@@ -87,26 +92,26 @@ export function Temporadas() {
       <Navigation />
       <div className="px-4 py-8 max-w-3xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-h2">Temporadas</h1>
-          <p className="text-sm text-knowra-text-secondary mt-0.5">Ligas e competição por período</p>
+          <h1 className="text-h2">{t("nav.temporadas")}</h1>
+          <p className="text-sm text-knowra-text-secondary mt-0.5">{t("temporadas.subtitulo")}</p>
         </div>
 
         {minhaLiga && (
           <section className="bg-knowra-surface rounded-2xl p-5 mb-6">
-            <p className="text-xs text-knowra-text/50 mb-1">Sua liga atual</p>
+            <p className="text-xs text-knowra-text/50 mb-1">{t("temporadas.suaLigaAtual")}</p>
             <p className="text-2xl font-bold text-knowra-accent">{minhaLiga.nome}</p>
             <p className="text-xs text-knowra-text/40 mt-1">
-              Rating {profile?.rating} · liga é recalculada automaticamente conforme seu rating muda
+              {t("temporadas.ratingRecalculado", { rating: profile?.rating })}
             </p>
           </section>
         )}
 
         {temporadaAtiva && (
           <div className="bg-knowra-accent/10 border border-knowra-accent/20 rounded-xl px-4 py-3 mb-6">
-            <p className="text-sm font-medium">🏆 {temporadaAtiva.nome} está em andamento</p>
+            <p className="text-sm font-medium">🏆 {t("temporadas.emAndamento", { nome: temporadaAtiva.nome })}</p>
             <p className="text-xs text-knowra-text/60 mt-0.5">
-              De {new Date(temporadaAtiva.inicio).toLocaleDateString("pt-BR")} até{" "}
-              {new Date(temporadaAtiva.fim).toLocaleDateString("pt-BR")}. O ranking ao vivo está em{" "}
+              {t("temporadas.de")} {new Date(temporadaAtiva.inicio).toLocaleDateString(locale)} {t("temporadas.ate")}{" "}
+              {new Date(temporadaAtiva.fim).toLocaleDateString(locale)}. {t("temporadas.rankingAoVivo")}{" "}
               <Link to="/ranking" className="text-knowra-accent hover:underline">
                 /ranking
               </Link>
@@ -115,48 +120,46 @@ export function Temporadas() {
           </div>
         )}
 
-        {carregando && <p className="text-sm text-knowra-text/40">Carregando...</p>}
+        {carregando && <p className="text-sm text-knowra-text/40">{t("common.carregando")}</p>}
 
         {!carregando && (
           <section>
-            <h2 className="text-sm font-semibold text-knowra-text/80 mb-3">Histórico de temporadas</h2>
-            {temporadas.filter((t) => t.status === "encerrada").length === 0 ? (
+            <h2 className="text-sm font-semibold text-knowra-text/80 mb-3">{t("temporadas.historico")}</h2>
+            {temporadas.filter((tp) => tp.status === "encerrada").length === 0 ? (
               <div className="bg-knowra-surface/50 rounded-2xl p-6 text-center">
-                <p className="text-sm text-knowra-text/50">Nenhuma temporada encerrada ainda.</p>
+                <p className="text-sm text-knowra-text/50">{t("temporadas.semTemporadas")}</p>
               </div>
             ) : (
               <div className="space-y-2.5">
                 {temporadas
-                  .filter((t) => t.status === "encerrada")
-                  .map((t) => {
-                    const meuResultado = meusResultados.find((r) => r.temporada_id === t.id);
+                  .filter((tp) => tp.status === "encerrada")
+                  .map((tp) => {
+                    const meuResultado = meusResultados.find((r) => r.temporada_id === tp.id);
                     return (
-                      <div key={t.id} className="bg-knowra-surface rounded-2xl overflow-hidden">
+                      <div key={tp.id} className="bg-knowra-surface rounded-2xl overflow-hidden">
                         <button
                           type="button"
-                          onClick={() => abrirTemporada(t.id)}
+                          onClick={() => abrirTemporada(tp.id)}
                           className="w-full text-left p-4"
                         >
-                          <p className="text-sm font-medium">{t.nome}</p>
+                          <p className="text-sm font-medium">{tp.nome}</p>
                           <p className="text-xs text-knowra-text/40 mt-0.5">
-                            Encerrada em{" "}
-                            {t.congelada_em ? new Date(t.congelada_em).toLocaleDateString("pt-BR") : "—"}
+                            {t("temporadas.encerradaEm")}{" "}
+                            {tp.congelada_em ? new Date(tp.congelada_em).toLocaleDateString(locale) : "—"}
                           </p>
                           {meuResultado && (
                             <p className="text-xs text-knowra-accent mt-1.5">
-                              Você: #{meuResultado.posicao} · {meuResultado.liga_final}
+                              {t("temporadas.voce")}: #{meuResultado.posicao} · {meuResultado.liga_final}
                               {meuResultado.percentil_top !== null &&
-                                ` · top ${meuResultado.percentil_top}%`}
+                                ` · ${t("temporadas.top")} ${meuResultado.percentil_top}%`}
                             </p>
                           )}
                         </button>
 
-                        {temporadaAberta === t.id && (
+                        {temporadaAberta === tp.id && (
                           <div className="border-t border-white/10 px-4 py-3">
                             {leaderboard.length === 0 ? (
-                              <p className="text-xs text-knowra-text/40">
-                                Ninguém apareceu publicamente nesse ranking.
-                              </p>
+                              <p className="text-xs text-knowra-text/40">{t("temporadas.semLeaderboard")}</p>
                             ) : (
                               <ul className="space-y-2">
                                 {leaderboard.map((l) => (
@@ -199,6 +202,7 @@ function AdminTemporadas({
   temporadaAtiva: Temporada | undefined;
   onAtualizar: () => void;
 }) {
+  const { t } = useTranslation();
   const [nome, setNome] = useState("");
   const [inicio, setInicio] = useState("");
   const [fim, setFim] = useState("");
@@ -220,7 +224,7 @@ function AdminTemporadas({
 
   async function handleEncerrar() {
     if (!temporadaAtiva) return;
-    if (!confirm(`Encerrar "${temporadaAtiva.nome}"? Isso congela o ranking e distribui as badges de liga.`)) return;
+    if (!confirm(t("temporadas.confirmarEncerrar", { nome: temporadaAtiva.nome }))) return;
     setEnviando(true);
     setErro(null);
     const { error } = await supabase.rpc("encerrar_temporada", { p_temporada_id: temporadaAtiva.id });
@@ -234,13 +238,13 @@ function AdminTemporadas({
 
   return (
     <section className="bg-knowra-surface rounded-2xl p-5 mt-6 border border-knowra-primary/30">
-      <h2 className="text-sm font-semibold text-knowra-text/80 mb-1">Admin — Temporadas</h2>
-      <p className="text-xs text-knowra-text/40 mb-4">Visível só pra você.</p>
+      <h2 className="text-sm font-semibold text-knowra-text/80 mb-1">{t("temporadas.adminTitulo")}</h2>
+      <p className="text-xs text-knowra-text/40 mb-4">{t("temporadas.adminVisivel")}</p>
 
       {temporadaAtiva ? (
         <div>
           <p className="text-sm mb-3">
-            Temporada ativa: <span className="font-medium">{temporadaAtiva.nome}</span>
+            {t("temporadas.temporadaAtiva")}: <span className="font-medium">{temporadaAtiva.nome}</span>
           </p>
           <button
             type="button"
@@ -248,7 +252,7 @@ function AdminTemporadas({
             disabled={enviando}
             className="w-full rounded-lg bg-red-500/20 text-red-400 border border-red-500/30 py-2.5 text-sm font-medium disabled:opacity-40"
           >
-            {enviando ? "Encerrando..." : "Encerrar temporada"}
+            {enviando ? t("temporadas.encerrando") : t("temporadas.encerrarTemporada")}
           </button>
         </div>
       ) : (
@@ -256,12 +260,12 @@ function AdminTemporadas({
           <input
             value={nome}
             onChange={(e) => setNome(e.target.value)}
-            placeholder="Nome da temporada (ex: KnowRa — Temporada 01)"
+            placeholder={t("temporadas.placeholderNome")}
             className="w-full rounded-lg bg-knowra-bg border border-white/10 px-3 py-2 text-sm outline-none focus:border-knowra-primary"
           />
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-knowra-text/50 mb-1 block">Início</label>
+              <label className="text-xs text-knowra-text/50 mb-1 block">{t("temporadas.inicio")}</label>
               <input
                 type="date"
                 value={inicio}
@@ -270,7 +274,7 @@ function AdminTemporadas({
               />
             </div>
             <div>
-              <label className="text-xs text-knowra-text/50 mb-1 block">Fim</label>
+              <label className="text-xs text-knowra-text/50 mb-1 block">{t("temporadas.fim")}</label>
               <input
                 type="date"
                 value={fim}
@@ -285,7 +289,7 @@ function AdminTemporadas({
             disabled={enviando || !nome.trim() || !inicio || !fim}
             className="w-full rounded-lg bg-knowra-primary py-2.5 text-sm font-medium disabled:opacity-40"
           >
-            {enviando ? "Iniciando..." : "Iniciar temporada"}
+            {enviando ? t("temporadas.iniciando") : t("temporadas.iniciarTemporada")}
           </button>
         </div>
       )}

@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { getNiveis, type Nivel } from "../lib/niveis";
 import type { Profile } from "../types/profile";
 
 export function ProgressoUsuario({ profile }: { profile: Profile }) {
+  const { t } = useTranslation();
   const [niveis, setNiveis] = useState<Nivel[]>([]);
 
   useEffect(() => {
@@ -48,7 +50,7 @@ export function ProgressoUsuario({ profile }: { profile: Profile }) {
           </svg>
           <div className="absolute inset-0 grid place-items-center">
             <div className="text-center leading-none">
-              <p className="text-[9px] text-knowra-text-terciario uppercase tracking-wide mb-0.5">Nível</p>
+              <p className="text-[9px] text-knowra-text-terciario uppercase tracking-wide mb-0.5">{t("progresso.nivel")}</p>
               <p className="text-2xl font-bold">{profile.nivel_global}</p>
             </div>
           </div>
@@ -56,13 +58,13 @@ export function ProgressoUsuario({ profile }: { profile: Profile }) {
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <p className="text-h3">{atual?.titulo ?? "Curioso"}</p>
+            <p className="text-h3">{atual?.titulo ?? t("progresso.curioso")}</p>
             {proximo && <span className="text-xs text-knowra-text-terciario">→ {proximo.titulo}</span>}
           </div>
           {profile.streak_atual > 0 && (
             <p className="text-sm text-knowra-text-secondary flex items-center gap-1 mt-1">
               <span aria-hidden>🔥</span>
-              <span className="font-semibold text-knowra-text">{profile.streak_atual}</span> dias de sequência
+              <span className="font-semibold text-knowra-text">{profile.streak_atual}</span> {t("progresso.diasSequencia")}
             </p>
           )}
         </div>
@@ -77,8 +79,8 @@ export function ProgressoUsuario({ profile }: { profile: Profile }) {
         </div>
         <p className="text-xs text-knowra-text-secondary mt-2">
           {proximo
-            ? `${profile.xp_total} XP · faltam ${xpAlvo - profile.xp_total} XP para ${proximo.titulo}`
-            : `${profile.xp_total} XP · nível máximo alcançado`}
+            ? t("progresso.faltamXp", { xp: profile.xp_total, faltam: xpAlvo - profile.xp_total, titulo: proximo.titulo })
+            : t("progresso.nivelMaximo", { xp: profile.xp_total })}
         </p>
       </div>
     </div>
