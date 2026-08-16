@@ -22,6 +22,10 @@
     "pensando": "Pensando...",
     "avisoVerificacao": "Vale la pena verificar en una fuente oficial antes de usar esta información para algo importante.",
     "semPergunta": "Tu viaje de curiosidad está empezando.",
-    "erroGenerico": "No fue posible procesar tu pregunta ahora."
+    "erroGenerico": "No fue posible procesar tu pregunta ahora.",
+    "fonte": "Fuente",
+    "videoRelacionado": "Video relacionado",
+    "ouvirResposta": "Escuchar respuesta",
+    "pararLeitura": "Detener lectura"
   }
 }

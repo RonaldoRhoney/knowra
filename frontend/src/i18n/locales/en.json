@@ -22,6 +22,10 @@
     "pensando": "Thinking...",
     "avisoVerificacao": "Worth checking an official source before relying on this for something important.",
     "semPergunta": "Your curiosity journey is just getting started.",
-    "erroGenerico": "Couldn't process your question right now."
+    "erroGenerico": "Couldn't process your question right now.",
+    "fonte": "Source",
+    "videoRelacionado": "Related video",
+    "ouvirResposta": "Listen to answer",
+    "pararLeitura": "Stop reading"
   }
 }

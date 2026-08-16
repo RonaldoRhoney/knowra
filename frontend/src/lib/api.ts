@@ -10,6 +10,10 @@ export interface AskResponse {
   area_id: string | null;
   requer_verificacao: boolean;
   observacao_verificacao: string | null;
+  fonte_url: string | null;
+  fonte_titulo: string | null;
+  video_url: string | null;
+  video_titulo: string | null;
   criado_em: string;
 }
 

@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { BadgeGrid } from "../components/BadgeGrid";
+import { BotaoLerResposta } from "../components/BotaoLerResposta";
 import { CompletarCadastroModal } from "../components/CompletarCadastroModal";
 import { DesafioCard } from "../components/DesafioCard";
 import { Footer } from "../components/Footer";
@@ -79,6 +80,34 @@ export function Home() {
       {resposta && (
         <div className="bg-knowra-surface rounded-2xl p-5 mt-4">
           <p className="text-sm text-knowra-text/90 whitespace-pre-wrap">{resposta.resposta_ia}</p>
+
+          <div className="mt-3 flex items-center gap-4 flex-wrap">
+            <BotaoLerResposta texto={resposta.resposta_ia} />
+            {resposta.fonte_url && (
+              <a
+                href={resposta.fonte_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs text-knowra-text-secondary hover:text-knowra-text transition-colors"
+              >
+                <span aria-hidden>📖</span>
+                {t("home.fonte")}: {resposta.fonte_titulo ?? resposta.fonte_url}
+              </a>
+            )}
+          </div>
+
+          {resposta.video_url && (
+            <a
+              href={resposta.video_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 flex items-center gap-2 rounded-lg bg-black/20 px-3 py-2 text-xs text-knowra-text-secondary hover:text-knowra-text transition-colors"
+            >
+              <span aria-hidden>▶️</span>
+              <span className="truncate">{t("home.videoRelacionado")}: {resposta.video_titulo ?? resposta.video_url}</span>
+            </a>
+          )}
+
           {resposta.requer_verificacao && (
             <div className="mt-3 pt-3 border-t border-white/10 flex items-start gap-2">
               <span className="text-amber-400 text-sm shrink-0">⚠️</span>
