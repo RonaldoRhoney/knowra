@@ -553,6 +553,20 @@ Total agora: 4 concursos reais em produção (Transpetro, TCE-MA, SESAU-AL, CAER
 
 **Status**: documento de projeto, nenhuma implementação autorizada. Complementa `CONCURSOS_HUB.md` (Etapa 7e agora detalhada) sem redesenhar `KNOWRA_AI.md` (RAG/Knowledge Memory/Knowledge Entity reaproveitados integralmente).
 
+## 2026-08-16 — Concursos Intelligence Etapas 7e.3-7e.4 implementadas
+
+**Contexto**: Ronaldo aprovou o plano (CURRENT STATE/IMPLEMENTATION PLAN/DATABASE IMPACT/QUERY-RPC PLAN/UI IMPACT/SECURITY IMPACT/PERFORMANCE IMPACT/TEST PLAN apresentado na entrada anterior) pra começar por 7e.3+7e.4 (cross-concurso + recomendação básica) antes de 7e.1/7e.2 (extração de edital) — validar a inteligência com dado que já existe antes de introduzir a complexidade de parsing de PDF.
+
+**Decisão**: migration `0039` — índices novos em `questoes(area_id)`/`questoes(concurso_id)` (faltavam); `areas_recorrentes_entre_concursos()` (disciplina que aparece em mais de um concurso ativo); `recomendacao_estudo()` — **regra determinística, sem machine learning**, conforme exigência explícita do Ronaldo: prioriza disciplina recorrente com menor domínio praticado; sem isso, cai pra menor domínio geral; sem histórico nenhum, sugere a disciplina mais recorrente; sem nada pra recomendar, devolve `null` honesto em vez de forçar resposta vazia de sentido.
+
+**Bug real encontrado e corrigido na hora** (migration `0040`): a primeira versão de `areas_recorrentes_entre_concursos()` esqueceu `security definer` — rodava com o privilégio de quem chama (`authenticated`), sem acesso às tabelas trancadas (`permission denied for table questoes`). Descoberto testando contra o banco real logo depois de aplicar `0039`, corrigido imediatamente com `create or replace function` (mesma assinatura, só a propriedade de segurança mudou).
+
+**Testado com dado real**: vinculei temporariamente 2 questões reais a 2 concursos reais compartilhando área (`Matemática Básica` → Transpetro + TCE-MA), tudo em transação com rollback — confirmei cross-concurso correto e os 3 cenários de recomendação (área recorrente praticada, sem área recorrente praticada, sem histórico nenhum). Depois testei contra o **banco real de produção** (sem questão de concurso ainda) — resposta honesta (`[]`/`null`) em vez de erro ou dado forçado.
+
+**Frontend**: card "🎯 Recomendação" em `/concursos` com motivo/disciplina/concursos beneficiados/domínio/prioridade; badge "aparece em N concursos" nos chips de disciplina recorrente.
+
+**Status**: ✅ 7e.3 e 7e.4 implementadas, testadas, publicadas em produção. Por escolha do Ronaldo, o próximo passo é uma **auditoria dos resultados** (qualidade de dado, performance, qualidade de recomendação, UX, integração com ranking/progressão, impacto no banco, índices) antes de avançar pra 7e.1/7e.2 (extração de edital).
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).

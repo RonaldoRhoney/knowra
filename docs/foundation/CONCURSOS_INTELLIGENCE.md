@@ -109,11 +109,11 @@ O insight "Direito Constitucional aparece nos Concursos A e B" não precisa de n
 |---|---|---|
 | 7e.1 | Extração de edital → `knowledge_record` (com `concurso_id`) — parsing de PDF, chunking, classificação por área | Sim — escolha de biblioteca de extração, sem custo esperado (avaliar OCR só se necessário) |
 | 7e.2 | `gerar_questoes.ts` grounded em RAG (`buscar_contexto_rag()` filtrado por concurso) | Não — reaproveita Etapa H |
-| 7e.3 | `areas_recorrentes_entre_concursos()` — cross-concurso, dado já existe | Não |
-| 7e.4 | Recomendação adaptativa básica (menor `dominio_pct` → sugestão), sem IA | Não |
+| 7e.3 | ✅ `areas_recorrentes_entre_concursos()` — cross-concurso, dado já existe | Não |
+| 7e.4 | ✅ Recomendação adaptativa básica (menor `dominio_pct` → sugestão), sem IA, regra determinística | Não |
 | 7e.5 | Recomendação adaptativa com IA (explicação + questão específica), simulado personalizado automático, plano de estudo gerado | Não em infra, mas escopo de produto a decidir (quanto de "coach automático" o KnowRa deve ser) |
 
-7e.3 e 7e.4 são as mais baratas (dado já existe, só falta RPC de leitura) — candidatas a serem feitas antes de 7e.1/7e.2 se o Ronaldo quiser valor rápido sem esperar a extração de edital funcionar.
+**7e.3/7e.4 implementadas em 2026-08-16** (migrations `0039`/`0040`, esta última corrigindo um bug real — `security definer` esquecido, achado testando contra produção). Testado com dado real (2 questões vinculadas temporariamente a 2 concursos reais compartilhando área, em transação com rollback) e depois contra o banco de produção de verdade (resposta honesta `null`/`[]`, já que nenhum concurso real tem questão vinculada ainda). Ver `DECISIONS.md` 2026-08-16. **Próximo passo, por escolha do Ronaldo**: auditoria dos resultados (dado, performance, UX, integração com ranking/progressão, índices) antes de avançar pra 7e.1/7e.2.
 
 ## 10. Riscos
 
@@ -133,4 +133,4 @@ Extração de PDF: zero (biblioteca local, sem API paga, dado já mapeado em §8
 
 ## 13. Status
 
-Documento de projeto. Nenhuma implementação autorizada — conforme pedido explícito do Ronaldo. Complementa (não substitui) `CONCURSOS_HUB.md` §10/§16 (Etapa 7e, agora detalhada aqui) e `KNOWRA_AI.md` (RAG/Knowledge Memory/Knowledge Entity, reaproveitados integralmente, não redesenhados).
+Etapas 7e.3/7e.4 implementadas e publicadas em produção (2026-08-16) — pergunta 1 do §12 respondida (baratas primeiro). Pendente: auditoria dos resultados (exigida pelo Ronaldo antes de avançar), depois 7e.1/7e.2 (extração de edital, ainda **não implementadas, aguardando aprovação**). Complementa (não substitui) `CONCURSOS_HUB.md` §10/§16 e `KNOWRA_AI.md` (RAG/Knowledge Memory/Knowledge Entity, reaproveitados integralmente, não redesenhados).
