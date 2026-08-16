@@ -439,6 +439,20 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 
 **Status**: ✅ corrigido, testado, publicado em produção (backend redeployado). Cache da pergunta específica que expôs o bug já limpo.
 
+## 2026-08-16 — Bug real: vídeo relacionado irrelevante (busca pela área genérica, não pela pergunta)
+
+**Contexto**: Ronaldo testou "que dia é hoje?" em produção — a IA classificou a área como "Informações Gerais" (genérica, esperado pra uma pergunta desse tipo) e o card de vídeo mostrou um resultado completamente aleatório sobre "deputados e senador eleitos em Minas Gerais" — coincidência de palavra ("Gerais") na busca do YouTube, não um vídeo relacionado de verdade.
+
+**Causa**: `askQuestion.ts` usava a área classificada como termo de busca pra fonte E vídeo. Área classificada é ótima pra Wikipedia (busca por título, termo limpo tipo "Fotossíntese" funciona bem — testado, confirmado), mas péssima pra YouTube quando a área é genérica — o YouTube não tem "não encontrei nada" pra query vaga, sempre retorna algo, mesmo que irrelevante.
+
+**Correção**: termos de busca separados — fonte (Wikipedia) continua usando a área classificada; vídeo (YouTube) passa a usar a **pergunta original inteira**, que é sempre mais específica que uma área genérica, mesmo quando a área em si não ajuda. Testado ao vivo antes de aplicar: `buscarFonteWikipedia("Fotossíntese")` funciona, `buscarFonteWikipedia("O que é fotossíntese?")` não encontra nada — confirma que a Wikipedia precisa do termo limpo. `buscarVideoCC` com a pergunta inteira trouxe resultado mais coerente pro caso reportado.
+
+**Limitação residual, registrada honestamente**: perguntas muito triviais/meta ("que dia é hoje?") não têm necessariamente um vídeo relacionado de verdade pra achar — o resultado pode continuar sendo uma coincidência de palavra (ex: um vídeo de oração cujo título contém "dia de hoje"), só que agora tematicamente mais próximo do que antes, não mais um erro grosseiro tipo eleição em Minas Gerais. Não implementado: filtro de relevância mais rigoroso (ex: exigir sobreposição de palavra significativa entre pergunta e título do vídeo) — avaliado como possível próximo passo se o problema persistir com mais uso real, não implementado agora pra não adicionar complexidade sem dado de quão frequente é esse caso.
+
+**Cache purgado**: mesma disciplina do bug de data — a pergunta específica que expôs o problema já estava cacheada com o vídeo errado (`respostas_canonicas` removida, `knowledge_record` marcado `invalidado`), senão o código corrigido não teria efeito nela.
+
+**Status**: ✅ corrigido, testado, publicado em produção.
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).
