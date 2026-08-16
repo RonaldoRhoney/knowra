@@ -30,7 +30,11 @@ export interface AvaliacaoIA {
 }
 
 export interface AIProvider {
-  responder(texto: string, areasExistentes: string): Promise<RespostaIA>;
+  // contexto: trechos de conhecimento já validado (KNOWRA_AI.md §9, RAG
+  // Retrieval Engine) recuperados ANTES da chamada — nunca a IA que decide
+  // o que é "relacionado", isso é responsabilidade do banco (buscar_contexto_rag()).
+  // A IA usa como apoio pra responder, nunca como verdade absoluta a repetir.
+  responder(texto: string, areasExistentes: string, contexto?: string[]): Promise<RespostaIA>;
   gerarDesafio(perguntaTexto: string, respostaDada: string): Promise<DesafioIA>;
   avaliar(enunciado: string, respostaUsuario: string): Promise<AvaliacaoIA>;
 }

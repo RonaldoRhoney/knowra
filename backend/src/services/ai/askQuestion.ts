@@ -43,6 +43,10 @@ interface ConhecimentoSemantico {
   video_titulo: string | null;
 }
 
+interface ContextoRag {
+  answer: string;
+}
+
 async function buscarConhecimentoSemantico(texto: string): Promise<ConhecimentoSemantico | undefined> {
   const embedding = await gerarEmbedding(texto);
   const { rows } = await dbAdmin().query<ConhecimentoSemantico>(
@@ -50,6 +54,19 @@ async function buscarConhecimentoSemantico(texto: string): Promise<ConhecimentoS
     [embeddingParaLiteral(embedding)],
   );
   return rows[0];
+}
+
+// RAG Retrieval Engine (KNOWRA_AI.md §9, Etapa H) — diferente de
+// buscarConhecimentoSemantico (que serve UMA resposta pronta direto da
+// memória), esta busca TOP-K registros relacionados pra alimentar uma nova
+// geração da IA como contexto. Híbrido (vetor + full text), nunca serve
+// conteúdo abaixo do piso de confiança (mesma regra do Confidence Engine).
+async function buscarContextoRag(texto: string, embedding: number[]): Promise<string[]> {
+  const { rows } = await dbAdmin().query<ContextoRag>(
+    "select answer from public.buscar_contexto_rag($1, $2)",
+    [embeddingParaLiteral(embedding), texto],
+  );
+  return rows.map((r) => r.answer);
 }
 
 async function responderComAnthropic(supabase: SupabaseClient, texto: string): Promise<RespostaEstruturada> {
@@ -65,7 +82,13 @@ async function responderComAnthropic(supabase: SupabaseClient, texto: string): P
 
   const listaAreas = (areasExistentes ?? []).map((a) => `${a.nome} (${a.slug})`).join(", ") || "nenhuma ainda";
 
-  const respostaIA = await aiProvider.responder(texto, listaAreas);
+  // Embedding calculado uma vez só, reaproveitado pra buscar contexto RAG
+  // agora e pra gravar em knowledge_record mais abaixo (evita gerar embedding
+  // duas vezes pra mesma pergunta).
+  const embedding = await gerarEmbedding(texto);
+  const contexto = await buscarContextoRag(texto, embedding);
+
+  const respostaIA = await aiProvider.responder(texto, listaAreas, contexto);
 
   // Fonte (Wikipedia) e vídeo (YouTube, licença CC) são resultado de busca
   // real, nunca da IA — se a busca não achar nada, ficam null (nunca link
@@ -105,7 +128,6 @@ async function responderComAnthropic(supabase: SupabaseClient, texto: string): P
     ],
   );
 
-  const embedding = await gerarEmbedding(texto);
   await dbAdmin().query(
     "select public.salvar_conhecimento($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)",
     [

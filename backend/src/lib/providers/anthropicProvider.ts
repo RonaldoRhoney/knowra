@@ -87,7 +87,16 @@ function extrairToolUse(content: { type: string }[]) {
 }
 
 export class AnthropicProvider implements AIProvider {
-  async responder(texto: string, areasExistentes: string): Promise<RespostaIA> {
+  async responder(texto: string, areasExistentes: string, contexto: string[] = []): Promise<RespostaIA> {
+    const blocoContexto =
+      contexto.length > 0
+        ? "\n\nConhecimento já validado no KnowRa, relacionado a esta pergunta (use como apoio pra responder de forma " +
+          "consistente com o que já foi ensinado antes, mas NUNCA copie literalmente — responda com suas próprias " +
+          "palavras, adaptando ao que foi perguntado agora; se o conhecimento abaixo não for relevante o suficiente, " +
+          "ignore e responda normalmente):\n" +
+          contexto.map((c, i) => `${i + 1}. ${c}`).join("\n")
+        : "";
+
     const message = await anthropic.messages.create({
       model: MODEL,
       max_tokens: 1024,
@@ -96,7 +105,7 @@ export class AnthropicProvider implements AIProvider {
         "Responda com clareza, sem jargão técnico desnecessário, de forma que qualquer pessoa curiosa entenda. " +
         "Ao classificar a área, reaproveite uma área já existente sempre que fizer sentido, em vez de criar uma nova quase igual. " +
         "Você não tem acesso à internet — nunca cite uma URL específica, mesmo que pareça plausível, porque pode não existir. " +
-        `Áreas já existentes: ${areasExistentes}.`,
+        `Áreas já existentes: ${areasExistentes}.${blocoContexto}`,
       tools: [RESPONDER_TOOL],
       tool_choice: { type: "tool", name: "responder_e_classificar" },
       messages: [{ role: "user", content: texto }],
