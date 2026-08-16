@@ -453,6 +453,18 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 
 **Status**: ✅ corrigido, testado, publicado em produção.
 
+## 2026-08-16 — i18n: rollout completo (Etapa 2, resto das páginas)
+
+**Contexto**: Etapa 1 do i18n (fundação + `Navigation`/`Home`) tinha sido publicada como piloto deliberado, com o resto adiado. Ronaldo pediu pra retomar e concluir.
+
+**Decisão**: traduzidas todas as páginas/componentes restantes visíveis ao usuário comum e ao admin — `Footer`, `Login` (ganhou o seletor de idioma pela primeira vez, já que antes só existia depois do login), `MensagemAcesso`, `HistoricoPerguntas`, `MissoesDiarias`, `BadgeGrid`, `ProgressoUsuario`, `DesafioCard`, `CompletarCadastroModal`, `ComoUsar`, `MapaConhecimento`, `Ranking`, `Concursos`, `ResolverQuestoes`, `Temporadas` (incluindo a seção admin de iniciar/encerrar temporada) e `Admin` (incluindo os componentes `Donut`/`BarList`/`FrequenciaChart`). Datas formatadas com `toLocaleDateString` passaram a usar o locale do idioma ativo (`pt-BR`/`en-US`/`es-ES`) em vez de `pt-BR` fixo.
+
+**Fora do escopo, deliberadamente**: `SimuladorNivel` (ferramenta de desenvolvimento, só admin vê, baixo valor de tradução); `Termos.tsx`/`Privacidade.tsx` (texto legal — tradução de documento jurídico merece cuidado à parte, não é troca mecânica de string); nome/descrição de badges e títulos de nível (vêm do banco — `badges.nome`/`niveis.titulo` — não são string do frontend, traduzir isso é um projeto separado de internacionalizar conteúdo de dados, não de UI).
+
+**Testado**: `tsc --noEmit` limpo, `vite build` de produção limpo, os 3 arquivos JSON de locale validados (`JSON.parse` sem erro), grep pra confirmar que não sobrou string solta óbvia nas páginas editadas.
+
+**Status**: ✅ publicado em produção. i18n do KnowRa cobre agora toda a UI de chrome do produto — o que resta em português é conteúdo dinâmico (respostas da IA, nome de badge/nível, texto legal), não interface.
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).
