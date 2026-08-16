@@ -157,6 +157,13 @@
         "titulo": "Sigue tu evolución",
         "texto": "Nivel, racha de días y logros siempre visibles. Edita tus datos cuando quieras en Perfil, y mira tu dominio por área en el Mapa de Conocimiento."
       }
+    },
+    "exemplo": {
+      "pergunta": "¿Por qué el cielo es azul?",
+      "resposta": "El cielo es azul por la dispersión de Rayleigh — la luz solar se dispersa más en el color azul que en los otros colores al atravesar la atmósfera. Por eso el cielo no se ve morado o verde, aunque esos colores también estén presentes en la luz del sol.",
+      "desafio": "Explica con tus propias palabras por qué el cielo no es rojo.",
+      "nivel2": "Nivel 2",
+      "explorador": "Explorador"
     }
   },
   "mapa": {

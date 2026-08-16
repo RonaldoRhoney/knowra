@@ -157,6 +157,13 @@
         "titulo": "Acompanhe sua evolução",
         "texto": "Nível, sequência de dias e conquistas ficam sempre visíveis. Edite seus dados quando quiser em Perfil, e veja seu domínio por área no Mapa de Conhecimento."
       }
+    },
+    "exemplo": {
+      "pergunta": "Por que o céu é azul?",
+      "resposta": "O céu é azul por causa da dispersão de Rayleigh — a luz solar se espalha mais na cor azul do que nas outras cores ao atravessar a atmosfera. É por isso que o céu não parece roxo ou verde, mesmo essas cores estando presentes na luz do sol.",
+      "desafio": "Explique com suas palavras por que o céu não é vermelho.",
+      "nivel2": "Nível 2",
+      "explorador": "Explorador"
     }
   },
   "mapa": {

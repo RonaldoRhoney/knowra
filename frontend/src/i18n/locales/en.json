@@ -157,6 +157,13 @@
         "titulo": "Track your progress",
         "texto": "Level, day streak and achievements are always visible. Edit your info anytime in Profile, and see your mastery by area in the Knowledge Map."
       }
+    },
+    "exemplo": {
+      "pergunta": "Why is the sky blue?",
+      "resposta": "The sky is blue because of Rayleigh scattering — sunlight scatters more in blue than in other colors as it passes through the atmosphere. That's why the sky doesn't look purple or green, even though those colors are also present in sunlight.",
+      "desafio": "Explain in your own words why the sky isn't red.",
+      "nivel2": "Level 2",
+      "explorador": "Explorer"
     }
   },
   "mapa": {
