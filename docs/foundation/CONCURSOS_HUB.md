@@ -196,7 +196,7 @@ Zero custo de infraestrutura nova no MVP — cadastro manual (admin) não depend
 | 7c.2 | ✅ RPCs de leitura/escrita admin (`listar_concursos`, `cadastrar_concurso`, `atualizar_status_concurso`, `cadastrar_recurso_video`, `listar_recursos_video`) | Não |
 | 7c.3 | ✅ `gerar_simulado()` (Simulado personalizado) | Não |
 | 7c.4 | ✅ Frontend: `Concursos.tsx` reestruturado (busca, abas de status, Simulados, Videoaulas, Meu desempenho, formulário admin de cadastro) | Não |
-| 7c.5 | Popular MVP: 3-5 concursos reais cadastrados manualmente (ex: Transpetro, citado pelo Ronaldo) pra validar o pipeline ponta a ponta, não "milhares" de uma vez — formulário admin já pronto em `/concursos`, falta só o Ronaldo popular | Não — trabalho manual de cadastro, não integração |
+| 7c.5 | ✅ Populado MVP: 2 concursos reais (Transpetro 2026, TCE-MA 2026), dado verificado por busca web antes de cadastrar, com fonte oficial (Cesgranrio/Cebraspe) em `edital_url`/`pagina_oficial_url` | Não — trabalho manual de cadastro, não integração |
 | 7d | Conector `dados.gov.br` como fonte auxiliar opcional (enriquecimento, nunca crítico) | Sim — token pessoal do Ronaldo, mesmo fluxo manual já feito pro YouTube |
 | 7e (futuro) | RAG + extração de edital → geração de Questão a partir de conteúdo programático real (§10) | Sim — ferramenta de extração de PDF, decisão de custo separada |
 
@@ -216,4 +216,4 @@ Etapas 7c.1-7c.5 não dependem de nada externo — podem ser aprovadas e impleme
 
 ## 19. Status
 
-Etapas 7c.1-7c.4 implementadas, testadas e publicadas em produção (2026-08-16) — pergunta 1 do §18 respondida (formulário admin construído primeiro). Modelo de confiabilidade do dado (§6a) implementado antes de autorizar a Etapa 7c.5, a pedido do Ronaldo. `/concursos` já é a Central de Preparação (busca, status, disciplinas, simulados, videoaulas, meu desempenho, badge 🟢🟡🔴 de confiabilidade). Falta 7c.5 (popular concursos reais pelo formulário — cadastro admin permanece segunda entrada, não estratégia definitiva, conforme §3), a página de detalhe por concurso (§12), e as etapas 7d (Ingestion Engine/dados.gov.br, token pessoal do Ronaldo) e 7e (RAG + extração de edital, prioridade arquitetural preservada, sem data).
+Etapas 7c.1-7c.5 implementadas, testadas e publicadas em produção (2026-08-16). `/concursos` já é a Central de Preparação de verdade: busca, status, disciplinas, simulados, videoaulas, meu desempenho, badge 🟢🟡🔴 de confiabilidade, e **dois concursos reais no ar** (Transpetro 2026, TCE-MA 2026 — dado verificado por busca web, fonte oficial linkada). Cadastro admin permanece segunda entrada, não estratégia definitiva (§3). Falta a página de detalhe por concurso (§12) e as etapas 7d (Ingestion Engine/dados.gov.br, token pessoal do Ronaldo) e 7e (RAG + extração de edital, prioridade arquitetural preservada, sem data).

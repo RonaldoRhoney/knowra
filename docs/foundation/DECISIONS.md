@@ -515,6 +515,20 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 
 **Status**: ✅ implementado, testado, publicado em produção. Etapa 7c.5 (popular com concursos reais) segue liberada pra prosseguir.
 
+## 2026-08-16 — Concursos: Etapa 7c.5, MVP populado com 2 concursos reais
+
+**Contexto**: Ronaldo pediu pra eu mesmo cadastrar os concursos reais, em vez de ele preencher o formulário.
+
+**Decisão**: pesquisei concursos públicos brasileiros com inscrição realmente aberta em agosto de 2026 antes de cadastrar qualquer coisa — nunca inventei dado. Cadastrados via `cadastrar_concurso()` (não simulado, gravação real):
+- **Transpetro 2026** — 281 vagas imediatas + cadastro reserva, Fundação Cesgranrio, inscrições 12/ago-14/set/2026, prova 29/nov/2026. Fonte: site institucional da Transpetro + Cesgranrio.
+- **TCE-MA 2026** — 40 vagas, Cebraspe, inscrições 17/jul-21/ago/2026, salário R$ 11.061,72-20.112,20. Fonte: edital oficial em PDF no CDN do Cebraspe + página oficial do concurso.
+
+Campos que variavam por cargo e eu não conseguia representar com um único valor honesto (taxa de inscrição da Transpetro, data de prova do TCE-MA — datas diferentes por cargo) ficaram `null` em vez de eu escolher um valor arbitrário — mesmo princípio de nunca apresentar dado incerto como certo.
+
+**Verificado após cadastro**: `listar_concursos('aberto', ...)` devolve os dois, `confiabilidade = 'verificado'` (calculado corretamente a partir de `ultima_verificacao_em` recém-setado).
+
+**Status**: ✅ Etapa 7c.5 concluída — MVP de Concursos Hub populado com dado real e verificável, pipeline ponta a ponta validado (cadastro → listagem → badge de confiabilidade → pronto pra prática assim que houver questão pra cada disciplina relevante).
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).
