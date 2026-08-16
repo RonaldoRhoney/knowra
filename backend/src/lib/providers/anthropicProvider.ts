@@ -78,6 +78,19 @@ const AVALIAR_TOOL = {
   },
 };
 
+// Claude não sabe a data de hoje por conta própria — sem isso, o modelo
+// raciocina a partir do corte de treinamento (ex: "estamos em 2024/2025")
+// mesmo quando a data real já avançou bem além disso. Calculado a cada
+// chamada (nunca cacheado), timezone de São Paulo (público-alvo do KnowRa).
+function dataAtualPorExtenso(): string {
+  return new Date().toLocaleDateString("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
+
 function extrairToolUse(content: { type: string }[]) {
   const toolUse = content.find((block) => block.type === "tool_use");
   if (!toolUse || toolUse.type !== "tool_use") {
@@ -105,6 +118,11 @@ export class AnthropicProvider implements AIProvider {
         "Responda com clareza, sem jargão técnico desnecessário, de forma que qualquer pessoa curiosa entenda. " +
         "Ao classificar a área, reaproveite uma área já existente sempre que fizer sentido, em vez de criar uma nova quase igual. " +
         "Você não tem acesso à internet — nunca cite uma URL específica, mesmo que pareça plausível, porque pode não existir. " +
+        `Hoje é ${dataAtualPorExtenso()} — use essa data como referência real de "hoje" em qualquer raciocínio sobre tempo ` +
+        "(o que já aconteceu, o que ainda vai acontecer, quanto tempo falta), mesmo que pareça posterior ao que você " +
+        "aprendeu no treinamento. Nunca diga que um evento é futuro/hipotético só porque está além do seu conhecimento " +
+        "de treinamento — se não tiver certeza do resultado de algo que já deveria ter ocorrido segundo essa data, diga " +
+        "que não tem essa informação atualizada, em vez de assumir que o evento ainda não aconteceu. " +
         `Áreas já existentes: ${areasExistentes}.${blocoContexto}`,
       tools: [RESPONDER_TOOL],
       tool_choice: { type: "tool", name: "responder_e_classificar" },
