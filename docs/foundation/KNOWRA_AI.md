@@ -121,7 +121,7 @@ Valores acima são só uma proposta inicial — precisam ser calibrados com dado
 | B | ✅ Cache semântico complementando o cache exato em `askQuestion.ts` | Não |
 | C | ✅ `AIProvider` — interface única (`responder`/`avaliar`/`gerarDesafio`) com adapter Anthropic (já existe, só reorganizado) | Não |
 | D | ✅ Confidence Engine (parte estrutural) + `requer_revalidacao` | Não |
-| E | Knowledge Graph (`knowledge_relation`) | Não |
+| E | ✅ Knowledge Graph (parte estrutural — CRUD admin, sem inferência automática nem wiring no fluxo de resposta) | Não |
 | F | Avaliação de Ollama em ambiente offline (trocar Opus por modelo local em `gerar_questoes.ts`) | Não — reaproveita infra existente do script |
 | G | Ollama como `AIProvider` adapter em runtime, servindo usuário real | **Sim — servidor/VPS dedicado, decisão de infraestrutura explícita** |
 

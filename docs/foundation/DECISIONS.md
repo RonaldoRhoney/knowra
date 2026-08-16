@@ -313,6 +313,14 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 
 **Status**: ✅ implementado, testado, publicado em produção. Etapa E (Knowledge Graph) em diante continua exigindo aprovação separada.
 
+## 2026-08-15 — KNOWRA_AI Etapa E: Knowledge Graph (parte estrutural)
+
+**Decisão**: "siga" depois da Etapa D. Mesmo raciocínio aplicado de novo: inferir relações entre conhecimentos automaticamente exigiria dado de uso real (ainda inexistente) ou uma chamada de IA nova (contradiria o objetivo de custo-zero da própria iniciativa). Implementado só o CRUD administrado manualmente — `criar_relacao_conhecimento()`/`remover_relacao_conhecimento()` (admin-only, mesmo padrão de `revisar_conhecimento()`) e `buscar_relacionados()` (leitura, não exposta a `authenticated` ainda — nenhuma decisão de produto de como "conhecimento relacionado" apareceria pro usuário, então fica pronta mas não conectada em nada).
+
+**Testado**: em transação com rollback — admin cria relação entre dois registros, `buscar_relacionados()` devolve corretamente, usuário comum tentando criar relação é bloqueado (`Acesso negado`).
+
+**Status**: ✅ implementado, testado, publicado. Nenhum código de aplicação alterado (só migration). Etapas F (Ollama offline) e G (Ollama runtime, exige VPS) restantes no roadmap.
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).
