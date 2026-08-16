@@ -347,6 +347,18 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 
 **Status**: ✅ corrigido, testado (conexão real validada antes do redeploy), publicado em produção.
 
+## 2026-08-15 — i18n: fundação PT/EN/ES, rollout por etapas
+
+**Contexto**: Ronaldo pediu multi-idioma (Português padrão, Inglês, Espanhol) com seletor por bandeira ao lado do nome do usuário. Achado ao investigar: o nome do usuário **não aparecia** na barra de navegação até então (só em `/perfil`) — sinalizado antes de implementar, não assumido silenciosamente. Escopo (app inteiro de uma vez vs. fundação primeiro) perguntado explicitamente — Ronaldo escolheu fundação + piloto primeiro.
+
+**Decisão**: `react-i18next` (biblioteca padrão de fato pra i18n em React, sem custo, sem infraestrutura nova). 3 locales em `frontend/src/i18n/locales/*.json` (pt default, en, es), preferência persistida em `localStorage` (`knowra_idioma`) — não em `profiles`, porque não depende de estar logado pra funcionar e evita migration só pra isso por ora. `SeletorIdioma` usa emoji de bandeira (🇧🇷🇺🇸🇪🇸), sem asset novo. Colocado na `Navigation.tsx` (desktop e mobile), ao lado do nome do usuário — que passou a aparecer ali pela primeira vez.
+
+**Rollout por etapas, decisão explícita**: só `Navigation.tsx` e `Home.tsx` traduzidas nesta etapa (piloto). Demais páginas (`Perfil`, `Concursos`, `Admin`, `Temporadas`, `Ranking`, `Mapa`, componentes como `DesafioCard`/`MissoesDiarias`/`HistoricoPerguntas`) continuam com string fixa em português — pendente, não esquecido. Traduzir tudo de uma vez foi avaliado e descartado por risco de string esquecida/layout quebrado com texto mais longo (inglês/espanhol tendem a ser mais longos que o rótulo em português em botão/badge).
+
+**Testado**: `tsc --noEmit` limpo, `vite build` de produção limpo. Não foi possível verificar visualmente no navegador nesta sessão (sem ferramenta de browser disponível) — Ronaldo avisado pra conferir manualmente após o deploy.
+
+**Status**: ✅ fundação + piloto implementados e publicados em produção. Próximo passo: traduzir o restante das páginas, uma de cada vez.
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).
