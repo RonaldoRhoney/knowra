@@ -63,6 +63,22 @@ interface ProgressoDisciplina {
   areas: { nome: string } | null;
 }
 
+interface AreaRecorrente {
+  area_id: string;
+  area_nome: string;
+  total_concursos: number;
+  concursos: { id: string; nome: string }[];
+}
+
+interface Recomendacao {
+  area_id: string;
+  area_nome: string;
+  dominio_pct: number | null;
+  concursos_beneficiados: { id: string; nome: string }[];
+  motivo: string;
+  prioridade: "alta" | "media" | "baixa";
+}
+
 const STATUS = ["aberto", "andamento", "encerrado"] as const;
 
 export function Concursos() {
@@ -75,6 +91,8 @@ export function Concursos() {
   const [recursos, setRecursos] = useState<RecursoVideo[]>([]);
   const [progressoConcursos, setProgressoConcursos] = useState<ProgressoConcurso[]>([]);
   const [progressoDisciplinas, setProgressoDisciplinas] = useState<ProgressoDisciplina[]>([]);
+  const [areasRecorrentes, setAreasRecorrentes] = useState<AreaRecorrente[]>([]);
+  const [recomendacao, setRecomendacao] = useState<Recomendacao | null>(null);
   const [carregando, setCarregando] = useState(true);
   const [mostrarCadastro, setMostrarCadastro] = useState(false);
 
@@ -101,6 +119,8 @@ export function Concursos() {
         .select("area_id, dominio_pct, areas(nome)")
         .eq("usuario_id", session.user.id)
         .then(({ data }) => setProgressoDisciplinas((data ?? []) as unknown as ProgressoDisciplina[])),
+      supabase.rpc("areas_recorrentes_entre_concursos").then(({ data }) => setAreasRecorrentes((data ?? []) as AreaRecorrente[])),
+      supabase.rpc("recomendacao_estudo").then(({ data }) => setRecomendacao((data ?? null) as Recomendacao | null)),
     ]).then(() => setCarregando(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session, aba]);
@@ -247,6 +267,34 @@ export function Concursos() {
               )}
             </section>
 
+            {recomendacao && (
+              <section className="mb-6">
+                <div
+                  className={`rounded-2xl p-4 border ${
+                    recomendacao.prioridade === "alta"
+                      ? "bg-knowra-warning/10 border-knowra-warning/30"
+                      : "bg-knowra-surface border-white/10"
+                  }`}
+                >
+                  <p className="text-sm font-medium mb-1">🎯 {t("concursos.recomendacao.titulo")}</p>
+                  <p className="text-sm text-knowra-text-secondary">{recomendacao.motivo}</p>
+                  <div className="flex items-center gap-3 mt-3 flex-wrap">
+                    <Link
+                      to={`/praticar/${recomendacao.area_id}`}
+                      className="text-xs rounded-lg bg-knowra-primary px-3 py-1.5 font-medium"
+                    >
+                      {t("concursos.recomendacao.praticarAgora")}
+                    </Link>
+                    {recomendacao.dominio_pct !== null && (
+                      <span className="text-xs text-knowra-text/40">
+                        {t("concursos.recomendacao.dominioAtual", { pct: recomendacao.dominio_pct })}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </section>
+            )}
+
             <section className="mb-6">
               <h2 className="text-sm font-semibold text-knowra-text/80 mb-3">{t("concursos.praticarPorDisciplina")}</h2>
               {disciplinas.length === 0 ? (
@@ -255,15 +303,24 @@ export function Concursos() {
                 </div>
               ) : (
                 <div className="flex flex-wrap gap-2">
-                  {disciplinas.map((d) => (
-                    <Link
-                      key={d.area_id}
-                      to={`/praticar/${d.area_id}`}
-                      className="bg-knowra-surface rounded-full px-4 py-2 text-sm hover:bg-knowra-surface/80 transition-colors"
-                    >
-                      {d.area_nome} <span className="text-knowra-accent text-xs">({d.total_questoes})</span>
-                    </Link>
-                  ))}
+                  {disciplinas.map((d) => {
+                    const recorrente = areasRecorrentes.find((r) => r.area_id === d.area_id);
+                    return (
+                      <Link
+                        key={d.area_id}
+                        to={`/praticar/${d.area_id}`}
+                        className="bg-knowra-surface rounded-full px-4 py-2 text-sm hover:bg-knowra-surface/80 transition-colors"
+                        title={recorrente ? recorrente.concursos.map((c) => c.nome).join(", ") : undefined}
+                      >
+                        {d.area_nome} <span className="text-knowra-accent text-xs">({d.total_questoes})</span>
+                        {recorrente && (
+                          <span className="text-[10px] text-knowra-warning ml-1.5">
+                            {t("concursos.recomendacao.apareceEmConcursos", { count: recorrente.total_concursos })}
+                          </span>
+                        )}
+                      </Link>
+                    );
+                  })}
                 </div>
               )}
             </section>

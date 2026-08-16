@@ -210,6 +210,13 @@
       "desatualizado": "Desactualizado — verificado hace más de 90 días"
     },
     "reverificar": "Reverificar",
+    "recomendacao": {
+      "titulo": "Recomendación",
+      "praticarAgora": "Practicar ahora",
+      "dominioAtual": "Dominio actual: {{pct}}%",
+      "apareceEmConcursos_one": "aparece en {{count}} concurso",
+      "apareceEmConcursos_other": "aparece en {{count}} concursos"
+    },
     "inscricoes": "Inscripciones",
     "edital": "Convocatoria",
     "paginaOficial": "Página oficial",

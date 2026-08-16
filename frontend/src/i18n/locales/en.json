@@ -210,6 +210,13 @@
       "desatualizado": "Outdated — verified over 90 days ago"
     },
     "reverificar": "Re-verify",
+    "recomendacao": {
+      "titulo": "Recommendation",
+      "praticarAgora": "Practice now",
+      "dominioAtual": "Current mastery: {{pct}}%",
+      "apareceEmConcursos_one": "appears in {{count}} exam",
+      "apareceEmConcursos_other": "appears in {{count}} exams"
+    },
     "inscricoes": "Registration",
     "edital": "Notice",
     "paginaOficial": "Official page",
