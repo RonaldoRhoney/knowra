@@ -1,0 +1,27 @@
+{
+  "nav": {
+    "comoUsar": "Cómo usar",
+    "mapa": "Mapa",
+    "ranking": "Ranking",
+    "concursos": "Concursos",
+    "temporadas": "Temporadas",
+    "perfil": "Perfil",
+    "painelAdm": "Panel ADM",
+    "sair": "Salir",
+    "sequencia": "Racha actual",
+    "dias": "días"
+  },
+  "idioma": {
+    "selecionar": "Seleccionar idioma"
+  },
+  "home": {
+    "ola": "Hola, {{nome}} 👋",
+    "subtitulo": "Continúa tu viaje de conocimiento.",
+    "placeholderPergunta": "Pregunta lo que quieras...",
+    "perguntar": "Preguntar",
+    "pensando": "Pensando...",
+    "avisoVerificacao": "Vale la pena verificar en una fuente oficial antes de usar esta información para algo importante.",
+    "semPergunta": "Tu viaje de curiosidad está empezando.",
+    "erroGenerico": "No fue posible procesar tu pregunta ahora."
+  }
+}

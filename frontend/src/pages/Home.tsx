@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { useTranslation } from "react-i18next";
 import { BadgeGrid } from "../components/BadgeGrid";
 import { CompletarCadastroModal } from "../components/CompletarCadastroModal";
 import { DesafioCard } from "../components/DesafioCard";
@@ -13,6 +14,7 @@ import { askQuestion, type AskResponse } from "../lib/api";
 
 export function Home() {
   const { profile } = useAuth();
+  const { t } = useTranslation();
   const [pergunta, setPergunta] = useState("");
   const [resposta, setResposta] = useState<AskResponse | null>(null);
   const [carregando, setCarregando] = useState(false);
@@ -32,7 +34,7 @@ export function Home() {
       setPergunta("");
       setHistoricoVersao((v) => v + 1);
     } catch (err) {
-      setErro(err instanceof Error ? err.message : "Não foi possível processar sua pergunta agora.");
+      setErro(err instanceof Error ? err.message : t("home.erroGenerico"));
     } finally {
       setCarregando(false);
     }
@@ -43,8 +45,8 @@ export function Home() {
     <Navigation />
     <div className="px-4 py-8 max-w-3xl mx-auto flex-1 w-full">
       <div className="mb-5">
-        <h1 className="text-h2">Olá, {profile?.nome ?? "explorador"} 👋</h1>
-        <p className="text-sm text-knowra-text-secondary mt-0.5">Continue sua jornada de conhecimento.</p>
+        <h1 className="text-h2">{t("home.ola", { nome: profile?.nome ?? "explorador" })}</h1>
+        <p className="text-sm text-knowra-text-secondary mt-0.5">{t("home.subtitulo")}</p>
       </div>
 
       {profile && <ProgressoUsuario profile={profile} />}
@@ -56,7 +58,7 @@ export function Home() {
         <textarea
           value={pergunta}
           onChange={(e) => setPergunta(e.target.value)}
-          placeholder="Pergunte qualquer coisa..."
+          placeholder={t("home.placeholderPergunta")}
           rows={2}
           maxLength={2000}
           className="w-full bg-transparent outline-none text-sm resize-none placeholder:text-knowra-text/40"
@@ -67,7 +69,7 @@ export function Home() {
             disabled={carregando || pergunta.trim().length < 3}
             className="rounded-lg bg-knowra-primary px-4 py-2 text-sm font-medium disabled:opacity-40"
           >
-            {carregando ? "Pensando..." : "Perguntar"}
+            {carregando ? t("home.pensando") : t("home.perguntar")}
           </button>
         </div>
       </form>
@@ -81,7 +83,7 @@ export function Home() {
             <div className="mt-3 pt-3 border-t border-white/10 flex items-start gap-2">
               <span className="text-amber-400 text-sm shrink-0">⚠️</span>
               <p className="text-xs text-knowra-text/50">
-                Vale conferir em uma fonte oficial antes de usar essa informação pra algo importante.
+                {t("home.avisoVerificacao")}
                 {resposta.observacao_verificacao && ` ${resposta.observacao_verificacao}`}
               </p>
             </div>
@@ -99,7 +101,7 @@ export function Home() {
 
       {!resposta && !erro && (
         <div className="bg-knowra-surface/50 rounded-2xl p-6 text-center mt-4">
-          <p className="text-knowra-text/50 text-sm">Sua jornada de curiosidade está começando.</p>
+          <p className="text-knowra-text/50 text-sm">{t("home.semPergunta")}</p>
         </div>
       )}
 

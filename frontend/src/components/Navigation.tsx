@@ -1,15 +1,20 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../contexts/AuthContext";
+import { SeletorIdioma } from "./SeletorIdioma";
 
-const LINKS = [
-  { to: "/como-usar", label: "Como usar" },
-  { to: "/mapa", label: "Mapa" },
-  { to: "/ranking", label: "Ranking" },
-  { to: "/concursos", label: "Concursos" },
-  { to: "/temporadas", label: "Temporadas" },
-  { to: "/perfil", label: "Perfil" },
-];
+function useLinks() {
+  const { t } = useTranslation();
+  return [
+    { to: "/como-usar", label: t("nav.comoUsar") },
+    { to: "/mapa", label: t("nav.mapa") },
+    { to: "/ranking", label: t("nav.ranking") },
+    { to: "/concursos", label: t("nav.concursos") },
+    { to: "/temporadas", label: t("nav.temporadas") },
+    { to: "/perfil", label: t("nav.perfil") },
+  ];
+}
 
 /**
  * Barra de navegação compartilhada por todas as páginas logadas. Substitui os
@@ -18,8 +23,10 @@ const LINKS = [
  */
 export function Navigation() {
   const { profile, signOut } = useAuth();
+  const { t } = useTranslation();
   const location = useLocation();
   const [menuAberto, setMenuAberto] = useState(false);
+  const LINKS = useLinks();
 
   function linkClasse(to: string) {
     const ativo = location.pathname === to;
@@ -53,7 +60,7 @@ export function Navigation() {
             {profile && profile.streak_atual > 0 && (
               <span
                 className="text-sm text-knowra-text-secondary flex items-center gap-1.5 shrink-0"
-                title="Sequência atual"
+                title={t("nav.sequencia")}
               >
                 <span aria-hidden>🔥</span>
                 <span className="font-semibold text-knowra-text">{profile.streak_atual}</span>
@@ -64,15 +71,21 @@ export function Navigation() {
                 to="/admin"
                 className="text-xs font-medium px-3 py-1.5 rounded-full bg-knowra-warning/15 text-knowra-warning border border-knowra-warning/30 whitespace-nowrap shrink-0"
               >
-                Painel ADM
+                {t("nav.painelAdm")}
               </Link>
             )}
             <span className="w-px h-5 bg-knowra-border shrink-0" aria-hidden />
+            {profile && (
+              <span className="text-sm text-knowra-text-secondary truncate max-w-[8rem] shrink-0" title={profile.nome ?? undefined}>
+                {profile.nome ?? "—"}
+              </span>
+            )}
+            <SeletorIdioma />
             <button
               onClick={signOut}
               className="text-sm text-knowra-text-secondary hover:text-knowra-text transition-colors shrink-0"
             >
-              Sair
+              {t("nav.sair")}
             </button>
           </div>
         </div>
@@ -114,27 +127,34 @@ export function Navigation() {
               onClick={() => setMenuAberto(false)}
               className="block py-2 text-sm font-medium text-knowra-warning"
             >
-              Painel ADM
+              {t("nav.painelAdm")}
             </Link>
           )}
           <div className="flex items-center justify-between pt-2 mt-2 border-t border-knowra-border">
             {profile && profile.streak_atual > 0 ? (
               <span className="text-sm text-knowra-text-secondary flex items-center gap-1">
-                🔥 <span className="font-semibold text-knowra-text">{profile.streak_atual} dias</span>
+                🔥{" "}
+                <span className="font-semibold text-knowra-text">
+                  {profile.streak_atual} {t("nav.dias")}
+                </span>
               </span>
             ) : (
               <span />
             )}
-            <button
-              onClick={() => {
-                setMenuAberto(false);
-                signOut();
-              }}
-              className="text-sm text-knowra-text-secondary hover:text-knowra-text"
-            >
-              Sair
-            </button>
+            <div className="flex items-center gap-2">
+              {profile && <span className="text-sm text-knowra-text-secondary">{profile.nome ?? "—"}</span>}
+              <SeletorIdioma />
+            </div>
           </div>
+          <button
+            onClick={() => {
+              setMenuAberto(false);
+              signOut();
+            }}
+            className="block w-full text-left py-2 text-sm text-knowra-text-secondary hover:text-knowra-text"
+          >
+            {t("nav.sair")}
+          </button>
         </nav>
       )}
     </header>
