@@ -321,6 +321,18 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 
 **Status**: ✅ implementado, testado, publicado. Nenhum código de aplicação alterado (só migration). Etapas F (Ollama offline) e G (Ollama runtime, exige VPS) restantes no roadmap.
 
+## 2026-08-15 — KNOWRA_AI Etapa F: Ollama offline avaliado, resultado desfavorável
+
+**Contexto**: "pode seguir" do Ronaldo pra avaliar Ollama offline (roadmap `KNOWRA_AI.md` §9, Etapa F) — comparar `llama3.1:8b` local contra o Opus que `gerar_questoes.ts` usa hoje, gerando o mesmo lote de questões com os dois, sem gravar nada no banco (script `backend/scripts/comparar_ollama_etapaF.ts`, não integrado a nenhum fluxo real).
+
+**Resultado real medido** (máquina de desenvolvimento, CPU, sem GPU dedicada): Anthropic (Opus) gerou 3 questões válidas em ~22s. `llama3.1:8b` levou **8min01s** pra gerar o mesmo lote — ~22x mais lento — e o resultado **não seguiu o schema exigido pela tool call**: só 2 alternativas por questão (o schema pede exatamente 4), campo `enunciado` grafado errado (`enunciato`), gabarito com letras fora do range esperado (`E`/`F` em vez de A-D). Teria falhado a validação que `gerar_questoes.ts` já aplica (`alternativas.length !== 4 || !["A","B","C","D"].includes(gabarito)`).
+
+**Decisão**: não trocar Opus por `llama3.1:8b` em `gerar_questoes.ts` — nem como opção, nem como default. Nesta configuração de hardware (CPU, sem GPU), o modelo local não é competitivo nem em velocidade nem em confiabilidade de formato pra geração de questões estruturadas. Responde com dado real a uma das perguntas do §11 do `KNOWRA_AI.md`: não há indício de que valha a pena avançar pra Etapa G (VPS dedicado) com este modelo — geração de questões continua via Anthropic.
+
+**Ressalva**: o teste usou um único modelo (`llama3.1:8b`, quantização Q4) numa única máquina sem GPU. Não descarta Ollama pra sempre — descarta essa combinação específica agora. Um modelo maior/melhor com GPU dedicada poderia ter resultado diferente, mas isso já seria a decisão de infraestrutura da Etapa G, fora do escopo deste teste offline.
+
+**Status**: ✅ Etapa F concluída (avaliação, não implementação). Script de comparação existe em `backend/scripts/comparar_ollama_etapaF.ts`, não chamado por nenhum fluxo de produção. Etapa G segue sem justificativa pra avançar.
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).

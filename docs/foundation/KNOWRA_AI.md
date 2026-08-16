@@ -122,7 +122,7 @@ Valores acima são só uma proposta inicial — precisam ser calibrados com dado
 | C | ✅ `AIProvider` — interface única (`responder`/`avaliar`/`gerarDesafio`) com adapter Anthropic (já existe, só reorganizado) | Não |
 | D | ✅ Confidence Engine (parte estrutural) + `requer_revalidacao` | Não |
 | E | ✅ Knowledge Graph (parte estrutural — CRUD admin, sem inferência automática nem wiring no fluxo de resposta) | Não |
-| F | Avaliação de Ollama em ambiente offline (trocar Opus por modelo local em `gerar_questoes.ts`) | Não — reaproveita infra existente do script |
+| F | ✅ Avaliação de Ollama em ambiente offline (trocar Opus por modelo local em `gerar_questoes.ts`) — resultado desfavorável, não adotado | Não — reaproveita infra existente do script |
 | G | Ollama como `AIProvider` adapter em runtime, servindo usuário real | **Sim — servidor/VPS dedicado, decisão de infraestrutura explícita** |
 
 Etapas A-F não dependem de infraestrutura nova e podem, cada uma, ser proposta e aprovada independentemente. A etapa G é a única que exige a decisão de "onde roda" antes de qualquer linha de código.
