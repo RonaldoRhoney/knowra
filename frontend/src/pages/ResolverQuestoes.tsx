@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Footer } from "../components/Footer";
 import { Navigation } from "../components/Navigation";
@@ -29,9 +29,10 @@ interface Resultado {
   dominio_pct_disciplina: number | null;
 }
 
-export function ResolverQuestoes({ modo }: { modo: "concurso" | "area" }) {
+export function ResolverQuestoes({ modo }: { modo: "concurso" | "area" | "simulado" }) {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
   const { session } = useAuth();
   const [titulo, setTitulo] = useState<string>("");
   const [questoes, setQuestoes] = useState<Questao[]>([]);
@@ -44,7 +45,25 @@ export function ResolverQuestoes({ modo }: { modo: "concurso" | "area" }) {
   const [plano, setPlano] = useState<"free" | "pro" | null>(null);
 
   useEffect(() => {
-    if (!session || !id) return;
+    if (!session) return;
+    if (modo !== "simulado" && !id) return;
+
+    if (modo === "simulado") {
+      const areaParam = searchParams.get("area");
+      const dificuldade = searchParams.get("dificuldade");
+      setTitulo(t("questoes.simulado"));
+      supabase
+        .rpc("gerar_simulado", {
+          p_areas: areaParam ? [areaParam] : null,
+          p_dificuldade: dificuldade || null,
+          p_quantidade: 20,
+        })
+        .then(({ data }) => {
+          setQuestoes((data ?? []) as Questao[]);
+          setCarregando(false);
+        });
+      return;
+    }
 
     const carregarTitulo =
       modo === "concurso"
@@ -68,7 +87,7 @@ export function ResolverQuestoes({ modo }: { modo: "concurso" | "area" }) {
         if (data) setPlano((data as { plano: "free" | "pro" }).plano);
       });
     }
-  }, [session, id, modo]);
+  }, [session, id, modo, searchParams, t]);
 
   const questaoAtual = questoes[indice];
 
@@ -106,7 +125,11 @@ export function ResolverQuestoes({ modo }: { modo: "concurso" | "area" }) {
           <div>
             <h1 className="text-h2">{titulo || t("questoes.titulo")}</h1>
             <p className="text-sm text-knowra-text-secondary mt-0.5">
-              {modo === "concurso" ? t("questoes.treinoConcurso") : t("questoes.praticaLivre")}
+              {modo === "concurso"
+                ? t("questoes.treinoConcurso")
+                : modo === "simulado"
+                  ? t("questoes.simuladoSubtitulo")
+                  : t("questoes.praticaLivre")}
             </p>
           </div>
           <Link to="/concursos" className="text-xs text-knowra-text-secondary hover:text-knowra-text shrink-0">
@@ -135,7 +158,7 @@ export function ResolverQuestoes({ modo }: { modo: "concurso" | "area" }) {
                 livre pode misturar disciplinas quando a área pedida
                 esgotar (fallback cross-disciplina, ver DECISIONS.md). Sem
                 isso o usuário não saberia que a questão mudou de área. */}
-            {modo === "area" && questaoAtual.area_nome && questaoAtual.area_nome !== titulo && (
+            {(modo === "simulado" || (modo === "area" && questaoAtual.area_nome !== titulo)) && questaoAtual.area_nome && (
               <span className="inline-block text-[10px] font-mono uppercase tracking-wide px-2 py-0.5 rounded-md text-knowra-accent bg-knowra-accent/10 mb-3">
                 {questaoAtual.area_nome}
               </span>

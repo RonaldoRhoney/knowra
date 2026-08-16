@@ -80,6 +80,14 @@ export function App() {
             }
           />
           <Route
+            path="/simulado"
+            element={
+              <ProtectedRoute>
+                <ResolverQuestoes modo="simulado" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/temporadas"
             element={
               <ProtectedRoute>

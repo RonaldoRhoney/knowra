@@ -195,7 +195,40 @@
     "questoesDisponiveis_one": "{{count}} question available",
     "questoesDisponiveis_other": "{{count}} questions available",
     "praticarPorDisciplina": "Practice by subject",
-    "semDisciplinas": "No subject available yet."
+    "semDisciplinas": "No subject available yet.",
+    "placeholderBusca": "Search exam, agency, role...",
+    "status": {
+      "aberto": "Open",
+      "andamento": "Ongoing",
+      "encerrado": "Closed"
+    },
+    "vagas_one": "{{count}} opening",
+    "vagas_other": "{{count}} openings",
+    "inscricoes": "Registration",
+    "edital": "Notice",
+    "paginaOficial": "Official page",
+    "simulados": "Mock exams",
+    "simuladoRapido": "Quick mock exam",
+    "simuladoDe": "Mock exam: {{disciplina}}",
+    "videoaulas": "Video lessons",
+    "semVideoaulas": "No video lesson added yet.",
+    "meuDesempenho": "My performance",
+    "adminCadastrar": "Add exam",
+    "form": {
+      "nome": "Exam name",
+      "orgao": "Agency",
+      "banca": "Board",
+      "cargo": "Role",
+      "vagas": "Openings",
+      "salarioMin": "Min. salary",
+      "salarioMax": "Max. salary",
+      "escolaridade": "Education level",
+      "localidade": "Location",
+      "inscricoesInicio": "Registration start",
+      "inscricoesFim": "Registration end",
+      "editalUrl": "Notice link",
+      "cadastrar": "Add"
+    }
   },
   "questoes": {
     "titulo": "Questions",
@@ -215,7 +248,9 @@
     "gratisFim": "Those were the 10 free questions for this exam.",
     "assinarPro": "Subscribe to KnowRa Pro",
     "paraVerResto": "to see the rest.",
-    "voltarCatalogo": "Back to catalog"
+    "voltarCatalogo": "Back to catalog",
+    "simulado": "Mock exam",
+    "simuladoSubtitulo": "Custom mock exam"
   },
   "temporadas": {
     "subtitulo": "Leagues and competition by period",

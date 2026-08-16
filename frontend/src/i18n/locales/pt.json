@@ -195,7 +195,40 @@
     "questoesDisponiveis_one": "{{count}} questão disponível",
     "questoesDisponiveis_other": "{{count}} questões disponíveis",
     "praticarPorDisciplina": "Praticar por disciplina",
-    "semDisciplinas": "Nenhuma disciplina disponível ainda."
+    "semDisciplinas": "Nenhuma disciplina disponível ainda.",
+    "placeholderBusca": "Buscar concurso, órgão, cargo...",
+    "status": {
+      "aberto": "Abertos",
+      "andamento": "Em andamento",
+      "encerrado": "Encerrados"
+    },
+    "vagas_one": "{{count}} vaga",
+    "vagas_other": "{{count}} vagas",
+    "inscricoes": "Inscrições",
+    "edital": "Edital",
+    "paginaOficial": "Página oficial",
+    "simulados": "Simulados",
+    "simuladoRapido": "Simulado rápido",
+    "simuladoDe": "Simulado de {{disciplina}}",
+    "videoaulas": "Videoaulas",
+    "semVideoaulas": "Nenhuma videoaula cadastrada ainda.",
+    "meuDesempenho": "Meu desempenho",
+    "adminCadastrar": "Cadastrar concurso",
+    "form": {
+      "nome": "Nome do concurso",
+      "orgao": "Órgão",
+      "banca": "Banca",
+      "cargo": "Cargo",
+      "vagas": "Vagas",
+      "salarioMin": "Salário mín.",
+      "salarioMax": "Salário máx.",
+      "escolaridade": "Escolaridade",
+      "localidade": "Localidade",
+      "inscricoesInicio": "Início das inscrições",
+      "inscricoesFim": "Fim das inscrições",
+      "editalUrl": "Link do edital",
+      "cadastrar": "Cadastrar"
+    }
   },
   "questoes": {
     "titulo": "Questões",
@@ -215,7 +248,9 @@
     "gratisFim": "Essas foram as 10 questões grátis deste concurso.",
     "assinarPro": "Assine o KnowRa Pro",
     "paraVerResto": "pra ver o resto.",
-    "voltarCatalogo": "Voltar ao catálogo"
+    "voltarCatalogo": "Voltar ao catálogo",
+    "simulado": "Simulado",
+    "simuladoSubtitulo": "Simulado personalizado"
   },
   "temporadas": {
     "subtitulo": "Ligas e competição por período",
