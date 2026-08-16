@@ -283,6 +283,16 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 
 **Lição pra próximas decisões de dependência nativa**: pacotes que envolvem binários nativos (ONNX, TensorFlow, etc.) frequentemente empacotam suporte a hardware que o ambiente de deploy nunca vai ter (GPU numa função serverless) — vale sempre inspecionar o tamanho real por arquivo antes de descartar uma opção como "grande demais", em vez de confiar só no tamanho total do pacote.
 
+## 2026-08-15 — KNOWRA_AI Etapa B: cache semântico ligado em `askQuestion.ts`
+
+**Decisão**: "siga para a Etapa B" do Ronaldo, depois da Etapa A (schema) e da validação de embeddings locais em deploy real. Migration `0029_knowledge_memory_semantic_cache.sql`: coluna `embedding` fixada em `vector(384)` (dimensão do modelo já decidido), `buscar_conhecimento_semantico()` (busca por cosseno, limiar provisório 0.90 — conservador de propósito, calibração fina fica pra quando houver volume real), `salvar_conhecimento()`, `registrar_uso_conhecimento()` — nenhuma grantada pra `anon`/`authenticated`, só chamadas pelo backend via `DATABASE_URL`, mesmo padrão de `salvar_resposta_canonica()`.
+
+**Fluxo em `askQuestion.ts`**: cache exato (já existia) → em miss, cache semântico (novo) → em miss dos dois, Anthropic (como antes) e grava nos DOIS caches (exato + semântico), não só num — "complementa, não substitui", como já registrado em `KNOWRA_AI.md`.
+
+**Testado**: funções da migration testadas em transação com rollback (vetor idêntico acha com similaridade 1.0, vetor oposto não acha nada). Formato do literal que o código de fato produz (`embeddingParaLiteral()`, ex: `"[0.1,0.2,...]"` com 384 valores) testado à parte, replicando exatamente a chamada `dbAdmin().query(...)` do TypeScript — confirmado que o cast implícito texto→`vector(384)` funciona igual em produção.
+
+**Status**: ✅ implementado, testado, publicado em produção. Etapa C (AIProvider) em diante continua exigindo aprovação separada.
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).

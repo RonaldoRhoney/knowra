@@ -117,8 +117,8 @@ Valores acima são só uma proposta inicial — precisam ser calibrados com dado
 
 | Etapa | O que é | Depende de infraestrutura nova? |
 |---|---|---|
-| A | `pgvector` + `knowledge_record` (schema, sem popular ainda) | Não |
-| B | Cache semântico substituindo/complementando o cache exato em `askQuestion.ts` | Não |
+| A | ✅ `pgvector` + `knowledge_record` (schema, sem popular ainda) | Não |
+| B | ✅ Cache semântico complementando o cache exato em `askQuestion.ts` | Não |
 | C | `AIProvider` — interface única (`responder`/`avaliar`/`gerarDesafio`) com adapter Anthropic (já existe, só reorganizado) | Não |
 | D | Confidence Engine + `requer_revalidacao` | Não |
 | E | Knowledge Graph (`knowledge_relation`) | Não |
