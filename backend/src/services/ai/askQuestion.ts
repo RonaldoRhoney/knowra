@@ -129,7 +129,7 @@ async function responderComAnthropic(supabase: SupabaseClient, texto: string): P
   );
 
   await dbAdmin().query(
-    "select public.salvar_conhecimento($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)",
+    "select public.salvar_conhecimento($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)",
     [
       texto,
       texto,
@@ -143,6 +143,11 @@ async function responderComAnthropic(supabase: SupabaseClient, texto: string): P
       resultado.fonte_titulo,
       resultado.video_url,
       resultado.video_titulo,
+      // Knowledge Entity (KNOWRA_AI.md §11, Etapa J): mesma área que
+      // registrar_pergunta() vai resolver mais abaixo — upsert_area() no
+      // banco garante que os dois caminhos apontam pra mesma linha de
+      // `areas`, deduplicando por conceito em vez de texto livre solto.
+      resultado.area_slug,
     ],
   );
 
