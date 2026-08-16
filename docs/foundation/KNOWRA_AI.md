@@ -139,9 +139,9 @@ Paralelo direto com o padrão já usado em Questões de Concursos (`origem` exte
 
 ---
 
-## 9. RAG Retrieval Engine — híbrido (projetado, não implementado)
+## 9. RAG Retrieval Engine — híbrido (✅ implementado, Etapa H, 2026-08-15)
 
-> Elevação de RAG a componente arquitetural obrigatório, conforme recomendação do Ronaldo (2026-08-15). Esta seção é **projeto**, não implementação — nenhuma das mudanças abaixo tem aprovação de código ainda.
+> Elevação de RAG a componente arquitetural obrigatório, conforme recomendação do Ronaldo (2026-08-15). Implementado como Etapa H — `buscar_contexto_rag()` (migration `0033_rag_retrieval_engine.sql`), wired em `askQuestion.ts` como contexto real de geração (RAG de verdade, não só cache). Ver `DECISIONS.md` 2026-08-15 "KNOWRA_AI Etapa H".
 
 O estado atual (§5) resolve bem "pergunta parecida com uma pergunta já respondida", mas não é ainda um motor de recuperação completo. A evolução projetada combina três fontes de sinal, não só vetor:
 
@@ -252,7 +252,7 @@ Isso não é uma função nova de IA — é o mesmo `AIProvider.gerarDesafio()` 
 | E | ✅ Knowledge Graph (parte estrutural — CRUD admin, sem inferência automática nem wiring no fluxo de resposta) | Não |
 | F | ✅ Avaliação de Ollama em ambiente offline — resultado desfavorável, não adotado | Não |
 | G | Ollama como `AIProvider` adapter em runtime, servindo usuário real | **Sim — servidor/VPS dedicado** |
-| H | RAG Retrieval Engine híbrido (§9) — Full Text Search + Metadata Filter + Reranking, top-K em vez de top-1 | Não — Postgres nativo, mesmo banco |
+| H | ✅ RAG Retrieval Engine híbrido (§9) — Full Text Search + Metadata Filter + Reranking, top-K em vez de top-1 | Não — Postgres nativo, mesmo banco |
 | I | Source Provenance (§10) — coluna de taxonomia de confiança em `knowledge_record`, regra de promoção manual | Não |
 | J | Knowledge Entity (§11) — deduplicação conceitual via `knowledge_relation` populada | Não, mas exige decisão de modelagem antes de qualquer schema (ver §11) |
 
@@ -281,4 +281,4 @@ Ver `DECISIONS.md` 2026-08-15 — entradas "KNOWRA_AI: discovery aprovado, Fase 
 
 ## Status
 
-Documento de projeto. Etapas A-F implementadas e em produção. Etapas G-J são projeto/arquitetura aprovada para **documentação**, não para código — próximo passo depende de resposta às perguntas do §15 e aprovação explícita, etapa por etapa, antes de qualquer implementação.
+Documento de projeto. Etapas A-F e H implementadas e em produção. Etapas G, I, J são projeto/arquitetura aprovada para **documentação**, não para código — próximo passo depende de resposta às perguntas do §15 e aprovação explícita, etapa por etapa, antes de qualquer implementação.

@@ -371,6 +371,22 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 
 **Status**: ✅ Foundation atualizada (`KNOWRA_AI.md` reescrito, `AI_ENGINE.md` com referência cruzada nova). Nenhum código, migration ou dependência nova — conforme pedido explícito do Ronaldo ("não implementar ainda"). Próximo passo depende de aprovação etapa por etapa (H, I ou J) e resposta às perguntas em aberto no `KNOWRA_AI.md` §15.
 
+## 2026-08-15 — KNOWRA_AI Etapa H: RAG Retrieval Engine híbrido implementado
+
+**Contexto**: "faça a implantação do RAG" do Ronaldo, depois da revisão que elevou RAG a componente arquitetural oficial (`KNOWRA_AI.md` §9, entrada anterior). Escopo: só Etapa H (Retrieval Engine híbrido) — Etapas I (Source Provenance) e J (Knowledge Entity) continuam sem data, não implementadas, por decisão já registrada (dependem de decisão de modelagem/dado real de uso).
+
+**Diferença real em relação ao que já existia**: até aqui, "RAG" no KnowRa era só cache semântico (`buscar_conhecimento_semantico()`, Etapa B/D) — serve uma resposta pronta direto da memória, ou nada. Isso não é retrieval-augmented generation de verdade, é cache. A implementação desta etapa adiciona `buscar_contexto_rag()`: busca **top-K** (default 5) registros relacionados, combinando score vetorial (peso 0.7) e full text search nativo do Postgres (`to_tsvector`/`ts_rank`, peso 0.3, config `portuguese` — sem extensão nova), e passa esse contexto pra a IA **gerar uma resposta nova**, não repetir uma pronta. `AIProvider.responder()` ganhou parâmetro opcional `contexto: string[]`; `AnthropicProvider` inclui no system prompt com instrução explícita de nunca copiar literalmente, só usar como apoio.
+
+**Anti-contaminação respeitada**: `buscar_contexto_rag()` usa o mesmo piso do Confidence Engine (`status='valido'`, `confidence >= 0.70`) — conteúdo não verificado nunca vira contexto de geração, mesma regra já aplicada a "servir direto da memória".
+
+**Migration 0033**: `search_vector` (coluna gerada, `tsvector`, índice GIN) em `knowledge_record`; `buscar_contexto_rag()` sem grant pra `anon`/`authenticated` (mesma postura de segurança de toda função sensível do KNOWRA_AI — só backend via `DATABASE_URL`). Índice de similaridade vetorial (ivfflat/hnsw) propositalmente não criado ainda — tabela pequena, mesma decisão já registrada na Etapa A/B.
+
+**Eficiência**: embedding da pergunta calculado uma única vez em `responderComAnthropic()` (antes gerado duas vezes — uma implícita pro cache semântico anterior no fluxo, outra pra salvar em `knowledge_record` no final), reaproveitado pra buscar contexto RAG e pra gravar o conhecimento novo.
+
+**Testado**: migration validada em transação com rollback antes de aplicar. Teste funcional real (script ad-hoc, também em transação com rollback): inserido um registro sobre "fotossíntese", buscado com uma pergunta sem sobreposição textual ("Como as plantas produzem energia a partir da luz?") — encontrado via similaridade semântica pura, score 0.5624. Grants confirmados vazios pra `anon`/`authenticated` depois de aplicar de verdade.
+
+**Status**: ✅ implementado, testado, publicado em produção (`vercel --prod` no backend). Etapas I e J do roadmap seguem sem data.
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).
