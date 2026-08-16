@@ -387,6 +387,20 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 
 **Status**: ✅ implementado, testado, publicado em produção (`vercel --prod` no backend). Etapas I e J do roadmap seguem sem data.
 
+## 2026-08-16 — KNOWRA_AI Etapa I: Source Provenance implementado
+
+**Contexto**: seguindo direto da Etapa H (RAG Retrieval Engine), Ronaldo pediu pra seguir pra Etapa I do roadmap já documentado — a taxonomia de confiança (`KNOWRA_AI.md` §10) proposta na revisão anterior.
+
+**Decisão**: coluna `provenance` (`verified`/`community`/`ai_generated`/`unverified`/`outdated`) em `knowledge_record`, ortogonal a `status` (ciclo de vida/validação, já existia) e a `confidence` (score numérico, já existia). Regra de classificação centralizada em `salvar_conhecimento()` — computada a partir de `source`/`source_url` já recebidos, sem exigir parâmetro novo do backend (`source in (wikimedia/wikidata/dados_gov_br/ibge) + source_url preenchida` → `verified`; `source='anthropic'` → `ai_generated`; `source='manual'` → `community`; resto → `unverified`). `buscar_conhecimento_semantico()` e `buscar_contexto_rag()` passam a expor `provenance` no resultado (drop+create, não `replace`, porque muda `returns table` — mesmo cuidado do achado de 0027).
+
+**Anti-contaminação**: `promover_provenance()` é o único jeito de mudar a proveniência de um registro depois de criado — admin-only (`security definer` + `is_admin()`), nunca automático por volume de uso, mesmo padrão de `revisar_conhecimento()` (Etapa D). Nenhuma das funções de leitura/gravação ficou acessível a `authenticated`/`anon` além dessa (grants conferidos depois de aplicar).
+
+**Backfill real**: as 3 linhas já existentes em produção (geradas nas Etapas B/D) foram reclassificadas — todas como `ai_generated`, corretamente, porque vieram da Anthropic sem fonte externa confirmada.
+
+**Testado**: migration validada em transação com rollback antes de aplicar. Nenhuma mudança de código TypeScript (a regra vive só no banco) — sem necessidade de redeploy do backend.
+
+**Status**: ✅ implementado, testado, publicado. Etapa J (Knowledge Entity) segue sem data, dependente de decisão de modelagem (`KNOWRA_AI.md` §11/§15).
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).

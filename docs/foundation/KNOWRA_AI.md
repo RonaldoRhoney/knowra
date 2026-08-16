@@ -183,7 +183,9 @@ O estado atual (§5) resolve bem "pergunta parecida com uma pergunta já respond
 
 **Reranking**: combinação de score vetorial + score textual + boost por sinais de qualidade já existentes (`confidence`, `times_helpful`) — não é um modelo de reranking separado (custo/complexidade desnecessários no estágio atual), é uma fórmula de combinação de scores já disponíveis no banco.
 
-## 10. Source Provenance — taxonomia de confiança (projetado, não implementado)
+## 10. Source Provenance — taxonomia de confiança (✅ implementado, Etapa I, 2026-08-16)
+
+> Implementado como Etapa I — coluna `provenance` em `knowledge_record` (migration `0034_source_provenance.sql`), computada automaticamente em `salvar_conhecimento()` a partir de `source`/`source_url`, promoção manual via `promover_provenance()` (admin-only). Ver `DECISIONS.md` 2026-08-16 "KNOWRA_AI Etapa I".
 
 Hoje `knowledge_record.source` mistura duas coisas diferentes: **origem** (de onde veio — `anthropic`/`wikimedia`/`wikidata`/`ibge`/`manual`) e, implicitamente, **confiabilidade** (a Constituição Federal via Wikidata não tem o mesmo peso epistêmico que uma resposta gerada pela IA sem checagem externa). A recomendação do Ronaldo de separar essas duas dimensões é adotada aqui como projeto:
 
@@ -253,7 +255,7 @@ Isso não é uma função nova de IA — é o mesmo `AIProvider.gerarDesafio()` 
 | F | ✅ Avaliação de Ollama em ambiente offline — resultado desfavorável, não adotado | Não |
 | G | Ollama como `AIProvider` adapter em runtime, servindo usuário real | **Sim — servidor/VPS dedicado** |
 | H | ✅ RAG Retrieval Engine híbrido (§9) — Full Text Search + Metadata Filter + Reranking, top-K em vez de top-1 | Não — Postgres nativo, mesmo banco |
-| I | Source Provenance (§10) — coluna de taxonomia de confiança em `knowledge_record`, regra de promoção manual | Não |
+| I | ✅ Source Provenance (§10) — coluna de taxonomia de confiança em `knowledge_record`, regra de promoção manual | Não |
 | J | Knowledge Entity (§11) — deduplicação conceitual via `knowledge_relation` populada | Não, mas exige decisão de modelagem antes de qualquer schema (ver §11) |
 
 Etapas H e I são extensões aditivas do schema já existente (§8) — mesmo perfil de risco/custo das Etapas A-E. Etapa J depende de uma decisão de modelagem que ainda não tem data (§11). Etapa G continua sendo a única que exige decisão de infraestrutura antes de qualquer código.
@@ -281,4 +283,4 @@ Ver `DECISIONS.md` 2026-08-15 — entradas "KNOWRA_AI: discovery aprovado, Fase 
 
 ## Status
 
-Documento de projeto. Etapas A-F e H implementadas e em produção. Etapas G, I, J são projeto/arquitetura aprovada para **documentação**, não para código — próximo passo depende de resposta às perguntas do §15 e aprovação explícita, etapa por etapa, antes de qualquer implementação.
+Documento de projeto. Etapas A-F, H e I implementadas e em produção. Etapa G (Ollama runtime) e J (Knowledge Entity) são projeto/arquitetura aprovada para **documentação**, não para código — próximo passo depende de resposta às perguntas do §15 e aprovação explícita, etapa por etapa, antes de qualquer implementação.
