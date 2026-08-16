@@ -479,6 +479,16 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 
 **Status**: ✅ implementado, testado, publicado em produção (migration 0036 + frontend). Pedido 2 (concursos reais) fica descartado, registrado aqui pra não ser proposto de novo sem uma opção de API realmente viável aparecer.
 
+## 2026-08-16 — Concursos Hub: discovery completo, nenhuma implementação ainda
+
+**Contexto**: depois de discordar da viabilidade de "concursos reais via API pública" (entrada anterior, mesmo dia), o Ronaldo trouxe uma proposta mais ampla e madura — em vez de uma API única nacional (que não existe), transformar `/concursos` numa Central de Preparação real (abertos/andamento/encerrados, disciplinas, simulados, videoaulas, desempenho), com cadastro manual como base e fontes externas só como enriquecimento auxiliar opcional, nunca dependência crítica. Pediu explicitamente análise e plano técnico antes de codar.
+
+**Decisão**: documento completo em [CONCURSOS_HUB.md](CONCURSOS_HUB.md) — target state, schema (aditivo, `concursos` estendida + `recursos_video` + `fontes_externas`), RPCs novas, impacto de segurança/performance/custo, roadmap em 7 etapas pequenas (7b.1-7b.5 sem dependência externa, 7c com token pessoal `dados.gov.br`, Etapa 8 especulativa pra RAG+extração de edital). Pesquisei `dados.gov.br` antes de aceitar a premissa: é uma API real (CKAN, documentada), mas exige token pessoal (mesma fricção da `YOUTUBE_API_KEY`) e os datasets de concurso encontrados são cadastros pontuais de órgãos específicos, não um feed vivo de status — por isso entra só como Etapa 7c, auxiliar, não crítica.
+
+**Reafirma decisão anterior**: nenhuma API comunitária de scraping (`concursos-api-deno`, `concursosPublicosAPI`) é usada — mesmo veredito de antes, agora com uma alternativa real no lugar (cadastro manual + enriquecimento opcional) em vez de simplesmente descartar a funcionalidade.
+
+**Status**: documento de projeto, nenhuma tabela/RPC/código criado. Próximo passo depende de aprovação da Etapa 7b.1 ou resposta às perguntas em aberto (`CONCURSOS_HUB.md` §18).
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).
