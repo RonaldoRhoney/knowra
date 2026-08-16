@@ -209,6 +209,7 @@
     "errou": "Você errou.",
     "respostaCorreta": "Resposta correta",
     "seuDominio": "Seu domínio neste concurso: {{pct}}%",
+    "seuDominioDisciplina": "Seu domínio nesta disciplina: {{pct}}%",
     "proximaQuestao": "Próxima questão",
     "fimQuestoes": "Fim das questões disponíveis por aqui. Você acertou {{acertos}} de {{total}}.",
     "gratisFim": "Essas foram as 10 questões grátis deste concurso.",

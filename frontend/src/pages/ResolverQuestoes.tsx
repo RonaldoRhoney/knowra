@@ -17,6 +17,7 @@ interface Questao {
   alternativas: Alternativa[];
   dificuldade: string;
   area_id: string;
+  area_nome: string | null;
 }
 
 interface Resultado {
@@ -25,6 +26,7 @@ interface Resultado {
   explicacao: string;
   valida_para_progresso: boolean;
   dominio_pct_concurso: number | null;
+  dominio_pct_disciplina: number | null;
 }
 
 export function ResolverQuestoes({ modo }: { modo: "concurso" | "area" }) {
@@ -129,6 +131,16 @@ export function ResolverQuestoes({ modo }: { modo: "concurso" | "area" }) {
               </span>
             </div>
 
+            {/* Disciplina da questão atual — relevante desde que a prática
+                livre pode misturar disciplinas quando a área pedida
+                esgotar (fallback cross-disciplina, ver DECISIONS.md). Sem
+                isso o usuário não saberia que a questão mudou de área. */}
+            {modo === "area" && questaoAtual.area_nome && questaoAtual.area_nome !== titulo && (
+              <span className="inline-block text-[10px] font-mono uppercase tracking-wide px-2 py-0.5 rounded-md text-knowra-accent bg-knowra-accent/10 mb-3">
+                {questaoAtual.area_nome}
+              </span>
+            )}
+
             <p className="text-sm mb-4">{questaoAtual.enunciado}</p>
 
             <div className="space-y-2">
@@ -171,6 +183,11 @@ export function ResolverQuestoes({ modo }: { modo: "concurso" | "area" }) {
                 {resultado.dominio_pct_concurso !== null && (
                   <p className="text-xs text-knowra-text/40 mt-3">
                     {t("questoes.seuDominio", { pct: resultado.dominio_pct_concurso })}
+                  </p>
+                )}
+                {resultado.dominio_pct_disciplina !== null && (
+                  <p className="text-xs text-knowra-text/40 mt-1">
+                    {t("questoes.seuDominioDisciplina", { pct: resultado.dominio_pct_disciplina })}
                   </p>
                 )}
 

@@ -209,6 +209,7 @@
     "errou": "Incorrect.",
     "respostaCorreta": "Correct answer",
     "seuDominio": "Your mastery in this exam: {{pct}}%",
+    "seuDominioDisciplina": "Your mastery in this subject: {{pct}}%",
     "proximaQuestao": "Next question",
     "fimQuestoes": "That's the end of the questions here. You got {{acertos}} out of {{total}} correct.",
     "gratisFim": "Those were the 10 free questions for this exam.",
