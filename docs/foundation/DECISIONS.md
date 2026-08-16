@@ -333,6 +333,20 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 
 **Status**: ✅ Etapa F concluída (avaliação, não implementação). Script de comparação existe em `backend/scripts/comparar_ollama_etapaF.ts`, não chamado por nenhum fluxo de produção. Etapa G segue sem justificativa pra avançar.
 
+## 2026-08-15 — Bug real em produção: "Não foi possível processar sua pergunta" (DATABASE_URL IPv6-only)
+
+**Contexto**: Ronaldo reportou que nenhuma pergunta em `knowra.rhoneyinc.com` completava — sempre voltava "Não foi possível processar sua pergunta agora. Tente novamente." (500 genérico de `/api/ask`, `backend/src/api/ask.ts`). Logs de produção (`vercel logs`) mostraram a causa real: `Error: getaddrinfo ENOTFOUND db.kgymvpxzbuojxxjpjmos.supabase.co` em toda chamada que passava por `dbAdmin()` (cache semântico, `registrar_pergunta()`, etc.).
+
+**Causa raiz**: `db.<project-ref>.supabase.co` (Direct Connection) hoje só tem registro DNS `AAAA` (IPv6) — confirmado via `getent hosts`, sem `A` record. Funções serverless da Vercel não têm saída IPv6 disponível, então toda conexão falhava na resolução de DNS, não só sob carga. `DATABASE_URL` de produção (`backend/.env`/Vercel env) ainda apontava pro host antigo, provavelmente configurado antes dessa mudança de infraestrutura do Supabase.
+
+**Correção**: trocada `DATABASE_URL` de produção (`vercel env`, projeto `knowra-api`) pro **Supavisor Connection Pooler** — `postgresql://postgres.kgymvpxzbuojxxjpjmos:<senha>@aws-0-us-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true` (IPv4, modo transaction). A região do pooler (`us-east-1`) teve que ser descoberta por tentativa — não existe forma direta de consultar a região do projeto sem acessar o dashboard; testei contra as regiões mais comuns até a autenticação do tenant funcionar. Validado com uma conexão `pg` real antes de aplicar (não só suposição). Redeploy de produção feito (`vercel --prod`) pra env var nova entrar em vigor.
+
+**Por que o pool/transação continua compatível**: `dbAdmin()` usa `pg.Pool` com `max: 3`, e `rpcComoUsuario()` abre uma conexão, roda `begin`/`set_config`/query/`commit` e libera — nenhum estado de sessão precisa sobreviver além de uma transação, então o modo transaction do pooler (porta 6543) não quebra esse padrão.
+
+**⚠️ Atenção pra outros produtos RhoneyInc**: qualquer produto usando `DATABASE_URL` com host `db.<ref>.supabase.co` direto (mesmo padrão usado no MeuPet, MontaMovel, VagaLume) está com o mesmo risco se rodar em ambiente sem IPv6 (Vercel serverless é o caso mais comum no ecossistema) — vale auditar os outros produtos que usam `DATABASE_URL` em runtime, não só localmente.
+
+**Status**: ✅ corrigido, testado (conexão real validada antes do redeploy), publicado em produção.
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).
