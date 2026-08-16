@@ -465,6 +465,20 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 
 **Status**: ✅ publicado em produção. i18n do KnowRa cobre agora toda a UI de chrome do produto — o que resta em português é conteúdo dinâmico (respostas da IA, nome de badge/nível, texto legal), não interface.
 
+## 2026-08-16 — Questões: pontuação por disciplina, sem repetir acerto, fallback cross-disciplina
+
+**Contexto**: Ronaldo pediu dois ajustes na tela de Concursos (print real, `/concursos`) e explicitamente pediu análise antes de implementar: (1) questão acertada devia somar pontuação e nunca mais aparecer, trazendo questão de qualquer disciplina em seguida; (2) popular Concursos com dados reais de concursos abertos/andamento/encerrados via API pública.
+
+**Pedido 2 — investigado e descartado por ora**: pesquisei o cenário real de APIs de concursos públicos brasileiros antes de aceitar a premissa. Não existe API oficial, gratuita e confiável cobrindo status de concurso em todo o Brasil. SIGEPE (`oportunidades.sigepe.gov.br`) é portal oficial mas só de cargos comissionados, sem API. As únicas opções encontradas (`concursos-api-deno`, `concursosPublicosAPI`) são scrapers não-oficiais de um site comercial de terceiro, com aviso explícito do próprio mantenedor de "não usar em produção". Ronaldo confirmou manter Concursos como está (questões de treino geradas por IA, já identificadas como tal na tela) em vez de arriscar uma integração frágil/juridicamente incerta.
+
+**Pedido 1 — implementado**. Achado real no código antes de mexer: prática de Questões por disciplina solta (sem `concurso_id`) nunca gravava pontuação nenhuma — só questão vinculada a concurso alimentava `progresso_concurso`. Decisão de modelagem (perguntada ao Ronaldo): pontuação por disciplina fica **separada** do XP do Core Loop, não misturada — nova tabela `progresso_disciplina_questoes`, mesmo padrão de `progresso_concurso`, mas por `area_id`. Deliberadamente **não** reaproveita `progresso_area` (que é alimentada por `avaliar_desafio()`, desafio aberto avaliado por IA) — misturar os dois instrumentos de avaliação (múltipla escolha determinística vs. resposta aberta avaliada) distorceria o "domínio por área".
+
+`listar_questoes()` (modo prática livre) passa a excluir questão que o usuário já acertou (qualquer tentativa correta, não só na área atual) e completa o limite pedido com questões de outras disciplinas quando a área escolhida esgota — nunca questão vinculada a concurso nesse fallback, pra não vazar conteúdo Pro-gated pelo caminho de prática livre (que é sempre sem teto). Frontend mostra a disciplina da questão quando ela vem do fallback (transparência) e o novo `dominio_pct_disciplina` no resultado.
+
+**Testado com dado real, não simulado**: usuário (Ronaldo) respondeu as 3 questões reais de "Matemática Básica" em produção — `listar_questoes()` passou a devolver 0 depois, `progresso_disciplina_questoes` ficou 3/3 100%. Fallback cross-disciplina validado na lógica (query testada), mas não demonstrável na prática ainda porque só existe 1 disciplina cadastrada no banco — vai aparecer sozinho assim que houver questão de uma segunda disciplina.
+
+**Status**: ✅ implementado, testado, publicado em produção (migration 0036 + frontend). Pedido 2 (concursos reais) fica descartado, registrado aqui pra não ser proposto de novo sem uma opção de API realmente viável aparecer.
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).
