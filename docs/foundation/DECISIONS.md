@@ -417,6 +417,16 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 
 **Status**: ✅ implementado, testado, publicado. **Roadmap completo do RAG concluído** (Etapas A-F, H, I, J) — só resta a Etapa G (Ollama em runtime), que segue travada numa decisão de infraestrutura (VPS) ainda não tomada.
 
+## 2026-08-16 — Feature "Fonte, vídeo e leitura em voz alta" concluída
+
+**Contexto**: fundação (migration 0032, Wikipedia sem key, YouTube com no-op) tinha sido publicada antes, aguardando `YOUTUBE_API_KEY` do Ronaldo e a exibição no frontend. Ambos concluídos nesta entrada.
+
+**YouTube API key**: Ronaldo criou via Google Cloud Console (projeto guarda-chuva `meupet-501512`) — na verdade já existia uma chave (`Chave de API 1`, criada 11/jul/2026, restrita a "YouTube Data API v3"), reaproveitada em vez de criar uma nova. Configurada em `backend/.env` local e via `vercel env add YOUTUBE_API_KEY production` — testada de ponta a ponta antes e depois do deploy (`buscarVideoCC("Fotossíntese")` retornou vídeo real). Backend redeployado.
+
+**Frontend**: `AskResponse` (frontend) ganhou os 4 campos que o backend já mandava desde a migration 0032 mas não eram consumidos ainda. Card de resposta na Home mostra link de fonte (quando existe) e card de vídeo relacionado (quando existe) — nunca um placeholder quando `null`. `BotaoLerResposta` novo, usa `speechSynthesis` nativo do navegador (Web Speech API) — zero custo, zero infraestrutura, idioma de fala sincronizado com o seletor PT/EN/ES já existente (`i18n`). Textos traduzidos nos 3 locales.
+
+**Status**: ✅ feature completa (fundação + YouTube + frontend), testada, publicada em produção (frontend e backend).
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).
