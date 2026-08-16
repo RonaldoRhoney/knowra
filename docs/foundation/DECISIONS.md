@@ -581,6 +581,18 @@ Total agora: 4 concursos reais em produção (Transpetro, TCE-MA, SESAU-AL, CAER
 
 **Status**: documento de projeto, nenhuma implementação autorizada.
 
+## 2026-08-16 — KNOWRA Scout revisado: descoberta não exige API paga (fontes verificadas de verdade)
+
+**Contexto**: Ronaldo rejeitou a conclusão da primeira versão de `KNOWRA_SCOUT.md` ("Scout v2 = API de busca paga") — propôs investigar fontes públicas estruturadas (REST, RSS, sitemap) antes de aceitar essa premissa, incluindo explicitamente pedir pra eu checar RSS/Atom/sitemap.
+
+**Verificação real feita antes de reescrever** (não suposição, `curl`/`WebFetch` de verdade): `dados.gov.br` — `package_search`/`package_list` devolvem **HTTP 401 com `www-authenticate: Bearer`** pra qualquer chamada, inclusive leitura simples — mais restrito do que a documentação geral de CKAN sugeria, exige token pessoal do Ronaldo pra tudo. Portal do Servidor (painel de concursos autorizados) — confirmado **só HTML com Power BI embutido em iframe**, sem JSON/CSV/endpoint, não automatizável sem raspagem frágil. YouTube Data API v3 — confirmado 10.000 unidades/dia, `search.list` = 100 unidades (~100 buscas grátis/dia). **Sitemap/RSS — testado contra a Cebraspe de verdade**: `robots.txt` aponta `sitemap_index.xml` real, funcionando, atualizado no dia anterior ao teste (WordPress/Yoast) — zero autenticação, zero quota, HTTP GET simples.
+
+**Decisão**: `KNOWRA_SCOUT.md` reescrito — conclusão corrigida de "automação exige API paga" pra "Scout orientado a fontes, via Source Registry" (§3), catalogando cada fonte com `access_method`/`priority`/`rate_limit`/`enabled`, consolidado dentro da mesma `fontes_externas` já projetada (não uma tabela nova). Checklist de 13 pontos pedido pelo Ronaldo respondido com dado real, não genérico (fontes automatizáveis agora = sitemap/RSS confirmado; dependem de credencial = `dados.gov.br`/YouTube; devem ficar manuais = Portal do Servidor). Regra de resiliência formalizada: indisponibilidade de fonte externa nunca derruba Concursos nem `KNOWRA_AI` — consequência natural de Scout ser camada de alimentação separada de RAG.
+
+**Roadmap atualizado**: Scout.3 (Ingestion Engine real via REST/sitemap) e Scout.4 (YouTube Discovery controlado, cache, sem busca a cada acesso de usuário) substituem o antigo "Scout v2 especulativo" — automação real, dentro do cost-zero, sem API de busca paga.
+
+**Status**: documento de projeto, nenhuma implementação autorizada.
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).
