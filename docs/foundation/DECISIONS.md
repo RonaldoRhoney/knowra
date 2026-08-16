@@ -489,6 +489,18 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 
 **Status**: documento de projeto, nenhuma tabela/RPC/código criado. Próximo passo depende de aprovação da Etapa 7b.1 ou resposta às perguntas em aberto (`CONCURSOS_HUB.md` §18).
 
+## 2026-08-16 — Concursos Hub Etapas 7c.1-7c.4 implementadas
+
+**Contexto**: seguindo direto do discovery (`CONCURSOS_HUB.md`, entrada anterior), Ronaldo escolheu "eu monto o formulário admin primeiro" pra popular o MVP (pergunta 1 do §18).
+
+**Decisão**: implementadas as 4 primeiras etapas do roadmap — migration `0037_concursos_hub.sql` (schema aditivo: `concursos` estendida com status/vagas/salário/inscrições/edital, `recursos_video`, `fontes_externas`; RPCs `listar_concursos`/`cadastrar_concurso`/`atualizar_status_concurso`/`cadastrar_recurso_video`/`listar_recursos_video`/`gerar_simulado`, todas seguindo o padrão de segurança já estabelecido: escrita admin-only via `security definer`+`is_admin()`, leitura liberada a `authenticated`). `catalogo_concursos()` mantida intocada (não removida, não substituída) — `listar_concursos()` é uma leitura nova e mais ampla (LEFT JOIN em vez de INNER JOIN com `questoes`, mostra concurso real mesmo sem questão de prática ainda).
+
+**Frontend**: `Concursos.tsx` reestruturado com busca, abas de status, disciplinas (mantido), Simulados (novo, rota `/simulado`), Videoaulas (lê `recursos_video`), Meu desempenho (agrega `progresso_concurso` + `progresso_disciplina_questoes`, ambos já existentes), e formulário de cadastro admin collapsible — sem precisar de SQL manual pra popular concursos. `ResolverQuestoes.tsx` ganhou modo `"simulado"` (chama `gerar_simulado()`, aceita `?area=`/`?dificuldade=` via query string).
+
+**Testado com dado real antes de aplicar**: cadastro de "Transpetro 2026" via `cadastrar_concurso()` em transação com rollback, `listar_concursos()` com filtro de status e busca textual confirmados, bloqueio de usuário não-admin tentando cadastrar confirmado.
+
+**Status**: ✅ 7c.1-7c.4 publicadas em produção. Pendente: 7c.5 (Ronaldo populando concursos reais pelo formulário que já está no ar), 7d (conector `dados.gov.br`, precisa do token pessoal dele) e 7e (RAG + extração de edital, sem data).
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).

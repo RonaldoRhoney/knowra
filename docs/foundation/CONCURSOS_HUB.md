@@ -155,11 +155,11 @@ Zero custo de infraestrutura nova no MVP — cadastro manual (admin) não depend
 
 | Etapa | O que é | Depende de infraestrutura/decisão nova? |
 |---|---|---|
-| 7c.1 | Schema: `concursos` estendida, `recursos_video`, `fontes_externas` (migration aditiva) | Não |
-| 7c.2 | RPCs de leitura/escrita admin (`listar_concursos`, `cadastrar_concurso`, `atualizar_status_concurso`, `cadastrar_recurso_video`, `listar_recursos_video`) | Não |
-| 7c.3 | `gerar_simulado()` (Simulado personalizado) | Não |
-| 7c.4 | Frontend: `Concursos.tsx` reestruturado (abas de status, Simulados, Videoaulas, Meu desempenho) + textos de proveniência por `origem` | Não |
-| 7c.5 | Popular MVP: 3-5 concursos reais cadastrados manualmente (ex: Transpetro, citado pelo Ronaldo) pra validar o pipeline ponta a ponta, não "milhares" de uma vez | Não — trabalho manual de cadastro, não integração |
+| 7c.1 | ✅ Schema: `concursos` estendida, `recursos_video`, `fontes_externas` (migration aditiva) | Não |
+| 7c.2 | ✅ RPCs de leitura/escrita admin (`listar_concursos`, `cadastrar_concurso`, `atualizar_status_concurso`, `cadastrar_recurso_video`, `listar_recursos_video`) | Não |
+| 7c.3 | ✅ `gerar_simulado()` (Simulado personalizado) | Não |
+| 7c.4 | ✅ Frontend: `Concursos.tsx` reestruturado (busca, abas de status, Simulados, Videoaulas, Meu desempenho, formulário admin de cadastro) | Não |
+| 7c.5 | Popular MVP: 3-5 concursos reais cadastrados manualmente (ex: Transpetro, citado pelo Ronaldo) pra validar o pipeline ponta a ponta, não "milhares" de uma vez — formulário admin já pronto em `/concursos`, falta só o Ronaldo popular | Não — trabalho manual de cadastro, não integração |
 | 7d | Conector `dados.gov.br` como fonte auxiliar opcional (enriquecimento, nunca crítico) | Sim — token pessoal do Ronaldo, mesmo fluxo manual já feito pro YouTube |
 | 7e (futuro) | RAG + extração de edital → geração de Questão a partir de conteúdo programático real (§10) | Sim — ferramenta de extração de PDF, decisão de custo separada |
 
@@ -179,4 +179,4 @@ Etapas 7c.1-7c.5 não dependem de nada externo — podem ser aprovadas e impleme
 
 ## 19. Status
 
-Documento de projeto. Nenhuma implementação autorizada ainda. Próximo passo: aprovação da Etapa 7d.1 (schema) pra começar, ou resposta às perguntas do §18 primeiro.
+Etapas 7c.1-7c.4 implementadas, testadas e publicadas em produção (2026-08-16) — pergunta 1 do §18 respondida (formulário admin construído primeiro). `/concursos` já é a Central de Preparação (busca, status, disciplinas, simulados, videoaulas, meu desempenho). Falta 7c.5 (você popular concursos reais pelo formulário) e as etapas 7d (dados.gov.br, token pessoal seu) e 7e (RAG + extração de edital, especulativa, sem data).
