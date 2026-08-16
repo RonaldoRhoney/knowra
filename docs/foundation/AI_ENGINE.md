@@ -57,9 +57,9 @@ Além das três funções do MVP (responder, desafiar, avaliar), a IA poderá fu
 
 **Regra**: a IA **não é fonte absoluta de verdade**, principalmente para legislação, concursos e assuntos técnicos. Toda Questão gerada por IA precisa de mecanismo de validação, versionamento e marcação clara de origem — nunca apresentada com a mesma autoridade de uma Questão oficial de banca sem essa marcação.
 
-## KNOWRA_AI — discovery de arquitetura cost-zero/local-first (2026-08-15)
+## KNOWRA_AI — Knowledge Memory + RAG (2026-08-15, Etapas A-F implementadas)
 
-> Ver [AI_COST_ZERO.md](AI_COST_ZERO.md) (auditoria completa de dependências externas) e [KNOWRA_AI.md](KNOWRA_AI.md) (projeto de Knowledge Memory + RAG interno + AI Engine local opcional via Ollama). Discovery aprovado, nenhuma implementação ainda — cada etapa do roadmap proposto exige aprovação separada. Não altera nada do que está descrito abaixo nesta seção até uma etapa específica ser aprovada.
+> Ver [AI_COST_ZERO.md](AI_COST_ZERO.md) (auditoria completa de dependências externas) e [KNOWRA_AI.md](KNOWRA_AI.md) (projeto completo — Knowledge Memory, RAG híbrido, Source Provenance, Knowledge Graph/Knowledge Entity, AI Engine local opcional via Ollama). **RAG é componente arquitetural oficial do KNOWRA_AI**, não um extra opcional — ver `KNOWRA_AI.md` §1/§3. Etapas A-F já implementadas e em produção (cache semântico, `AIProvider`, Confidence Engine, Knowledge Graph estrutural, avaliação de Ollama offline). Etapas G-J (Ollama runtime, RAG híbrido, Source Provenance, Knowledge Entity) são projeto/arquitetura aprovada só para documentação — cada uma exige aprovação separada antes de virar código.
 
 ## Provider Abstraction (implementado — KNOWRA_AI Etapa C, 2026-08-15)
 
