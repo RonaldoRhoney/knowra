@@ -70,6 +70,12 @@ Cada entrada carrega, no mínimo: origem, confiança, versão/data de atualizaç
 
 Essa frente **não depende** da decisão sobre Ollama — pode avançar de forma independente e já reduz chamada à Anthropic (mais cache = menos consulta externa) mesmo mantendo a Anthropic como provedor de IA.
 
+**Geração de embedding local, validada em produção (2026-08-15)** — decisão da pergunta 1 do §11, resolvida: `@huggingface/transformers` rodando `Xenova/all-MiniLM-L6-v2` (384 dimensões) via deploy real de teste (não só local) em Vercel Serverless Functions, com duas correções necessárias:
+1. `vercel.json` → `functions["api/index.ts"].excludeFiles` excluindo `libonnxruntime_providers_{cuda,tensorrt}.so` — sem isso, o pacote nativo (`onnxruntime-node`) inclui 513MB de binários (240MB só de provider CUDA, GPU que a função serverless nunca tem), passando do limite de tamanho de deploy da Vercel. Excluindo só os dois arquivos de GPU, o runtime real cai pra ~38MB.
+2. `env.cacheDir = "/tmp/..."` — o caminho padrão de cache do modelo é dentro de `node_modules/`, que é read-only em produção (`/var/task`); só `/tmp` é gravável (efêmero, reseta a cada cold start).
+
+Números reais medidos no deploy de teste: **cold start ~2.2s** (inclui baixar o modelo de 87MB da primeira vez no container), **chamada quente: 0ms de carregamento + ~20-30ms de inferência**. Concluído: viável tecnicamente, sem custo de infraestrutura nova (não precisa de VPS — roda dentro da própria função serverless que já existe). Dependência (`@huggingface/transformers`) e configuração (`vercel.json`) já estão no repositório, prontas — **ainda não integradas em nenhum fluxo real** (Etapa B, wiring em `askQuestion.ts`, continua exigindo aprovação separada).
+
 ## 7. AI Engine local (Ollama) — viabilidade
 
 **Baixa no formato de deploy atual, sem decisão de infraestrutura nova — este é o ponto central que trava a proposta de "Ollama obrigatório".**
@@ -126,6 +132,8 @@ Etapas A-F não dependem de infraestrutura nova e podem, cada uma, ser proposta 
 Ver [AI_COST_ZERO.md](AI_COST_ZERO.md) §6 — reproduzidos aqui os que afetam diretamente o desenho desta arquitetura: custo de infraestrutura substituindo custo de token sem medição prévia; qualidade de modelo local vs. Claude em tarefas abertas; escopo comparável a várias Fases somadas, exigindo aprovação por etapa.
 
 ## 11. Perguntas em aberto pro Product Owner
+
+**Resolvida (2026-08-15)**: qual provedor de embeddings pra Etapa B — local via `@huggingface/transformers` (`Xenova/all-MiniLM-L6-v2`), validado em deploy real de teste na Vercel (ver §6). Escolhido em vez de Voyage AI (pago) depois de confirmar viabilidade técnica de verdade, não só em teoria.
 
 1. A etapa F (Ollama offline, substituindo Opus em `gerar_questoes.ts`) é um bom primeiro experimento de baixo risco antes de cogitar a etapa G? Ou prefere validar Knowledge Memory (A-E) primeiro e só depois avaliar IA local?
 2. Existe apetite/orçamento pra um VPS dedicado (etapa G), ou a intenção é manter Ollama só como ambiente de desenvolvimento por enquanto?

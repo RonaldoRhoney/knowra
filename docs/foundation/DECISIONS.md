@@ -267,6 +267,22 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 
 **Status**: Etapa A concluída. Etapas B em diante (semantic cache em runtime, `AIProvider`, Confidence Engine, Knowledge Graph populado, avaliação de Ollama offline) continuam exigindo aprovação separada cada uma — nenhuma delas foi iniciada.
 
+## 2026-08-15 — KNOWRA_AI: embeddings locais validados em deploy real (Vercel)
+
+**Contexto**: "siga" do Ronaldo pra continuar depois da Etapa A. A Etapa B (cache semântico) precisava de uma escolha de provedor de embeddings, que não existia ainda — Anthropic não oferece embeddings. Perguntei antes de decidir sozinho; o Ronaldo escolheu local via `transformers.js`, mesmo com o próprio risco de cold-start já sinalizado na pergunta.
+
+**Processo de validação** (não só teórico — testado de verdade):
+1. Instalei `@xenova/transformers` (pacote original) → achado: descontinuado, 5 vulnerabilidades (1 crítica) em dependências transitivas. Troquei pro sucessor mantido, `@huggingface/transformers` → 0 vulnerabilidades diretas, mas 2 altas sem correção em deps transitivas (`adm-zip`, `sharp`) — superfície de ataque baixa pro nosso uso (só texto, nunca ZIP/imagem de usuário), Ronaldo aceitou.
+2. Rodei localmente: funcionou (384 dimensões, ~45ms de inferência), mas achei um problema sério de deploy: o build "node" da lib faz `require("onnxruntime-node")` incondicional — 513MB, sendo 240MB só de um provider CUDA que a Vercel nunca usa (sem GPU em serverless).
+3. Tentei o build "web" (mais leve, sem `onnxruntime-node`) — não roda em Node puro, só em navegador de verdade (tenta `fetch` relativo à página). Seria preciso simular ambiente de navegador — descartado por não ser engenharia sólida.
+4. Investiguei outra lib (`fastembed`) — mesmo problema raiz (`onnxruntime-node`), confirmando que não é bug de uma lib específica.
+5. **Achado que resolveu**: dentro do `onnxruntime-node`, 240MB dos 513MB totais é `libonnxruntime_providers_cuda.so` — sozinho, sem uso nenhum pra nós. Excluindo ele (+ o de TensorRT, GPU também) via `vercel.json` → `functions[...].excludeFiles`, o runtime real cai pra ~38MB. Total do pacote com modelo (87MB) fica ~130-150MB, dentro do limite da Vercel.
+6. Deploy de teste real (preview, rota temporária `_teste-embedding`, removida depois) confirmou: erro adicional de cache tentando gravar em `node_modules/` (read-only em produção) → corrigido com `env.cacheDir = "/tmp/..."`. Depois disso, funcionou de ponta a ponta: **cold start ~2.2s, chamada quente 0ms carregamento + ~20-30ms inferência**.
+
+**Decisão**: `@huggingface/transformers` (`Xenova/all-MiniLM-L6-v2`, 384 dim) é o provedor de embeddings pra Etapa B, validado tecnicamente em produção — não precisa de VPS, roda dentro da função serverless que já existe. Dependência e `vercel.json` já commitados no repositório; rota de teste removida. **Nenhum fluxo real foi alterado ainda** — Etapa B (wiring em `askQuestion.ts`) continua exigindo aprovação separada.
+
+**Lição pra próximas decisões de dependência nativa**: pacotes que envolvem binários nativos (ONNX, TensorFlow, etc.) frequentemente empacotam suporte a hardware que o ambiente de deploy nunca vai ter (GPU numa função serverless) — vale sempre inspecionar o tamanho real por arquivo antes de descartar uma opção como "grande demais", em vez de confiar só no tamanho total do pacote.
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).
