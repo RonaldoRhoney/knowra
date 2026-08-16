@@ -427,6 +427,18 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 
 **Status**: ✅ feature completa (fundação + YouTube + frontend), testada, publicada em produção (frontend e backend).
 
+## 2026-08-16 — Bug real: IA respondia com base na data de treinamento, não na atual
+
+**Contexto**: Ronaldo testou em produção — pergunta sobre "os 7 primeiros times do Campeonato Brasileiro 2026" foi respondida com "estamos em 2024/2025, esse campeonato ainda não aconteceu". Achado: o `system` prompt de `AnthropicProvider.responder()` nunca informava a data real de hoje — o modelo raciocinava a partir do corte de treinamento, negando a existência de eventos que já deveriam ter ocorrido segundo a data real.
+
+**Correção**: `dataAtualPorExtenso()` (timezone `America/Sao_Paulo`, calculada a cada chamada, nunca cacheada) injetada no system prompt, com instrução explícita: usar a data real como referência de "hoje", nunca assumir que um evento é futuro só por estar além do treinamento — se não souber o resultado, dizer que não tem informação atualizada, em vez de negar que o evento tenha acontecido. Escopo contido a `responder()` (onde o bug se manifestou) — `gerarDesafio()`/`avaliar()` não mudaram, não dependem de raciocínio temporal aberto do mesmo jeito.
+
+**Testado antes de publicar**: mesma pergunta chamada direto contra a API real (não simulado) — resposta nova reconhece "16 de agosto de 2026" e diz honestamente que não tem a classificação atualizada, em vez de negar o campeonato.
+
+**Cache antigo purgado**: a resposta errada já estava gravada nos dois caches (`respostas_canonicas` exato e `knowledge_record` semântico) — teria continuado sendo servida verbatim mesmo com o prompt corrigido, já que cache hit nunca chama a IA de novo. Linha de `respostas_canonicas` removida; linha de `knowledge_record` marcada `status='invalidado'` (nunca mais servida, mesma trava do Confidence Engine). Ação pontual sobre essas duas linhas específicas, não uma varredura geral — outras entradas de cache não têm o mesmo problema de fundo.
+
+**Status**: ✅ corrigido, testado, publicado em produção (backend redeployado). Cache da pergunta específica que expôs o bug já limpo.
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).
