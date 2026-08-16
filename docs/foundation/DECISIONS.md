@@ -293,6 +293,14 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 
 **Status**: ✅ implementado, testado, publicado em produção. Etapa C (AIProvider) em diante continua exigindo aprovação separada.
 
+## 2026-08-15 — KNOWRA_AI Etapa C: Provider Abstraction implementada
+
+**Decisão**: "pode seguir" do Ronaldo depois da Etapa B. Introduzida a interface `AIProvider` (`responder`/`gerarDesafio`/`avaliar`) já prevista em `AI_ENGINE.md` desde a Fase 2 — `askQuestion.ts`, `gerarDesafio.ts` e `avaliarDesafio.ts` passam a chamar essa abstração em vez da Anthropic diretamente. Único adapter hoje é `AnthropicProvider`, com os três prompts/tool schemas/modelo movidos **exatamente como estavam** — refatoração pura, sem nenhuma mudança de comportamento, prompt ou modelo.
+
+**Motivo**: abre a porta pra trocar/adicionar provedor (Ollama, outro) no futuro sem reescrever os três serviços de novo — só trocar o adapter. Não introduz seleção/roteamento entre múltiplos providers agora (over-engineering pro estágio atual, só 1 provider existe).
+
+**Status**: ✅ implementado, build limpo, publicado em produção. Etapa D (Confidence Engine) em diante continua exigindo aprovação separada.
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).

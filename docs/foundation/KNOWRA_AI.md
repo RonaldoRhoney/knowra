@@ -119,7 +119,7 @@ Valores acima são só uma proposta inicial — precisam ser calibrados com dado
 |---|---|---|
 | A | ✅ `pgvector` + `knowledge_record` (schema, sem popular ainda) | Não |
 | B | ✅ Cache semântico complementando o cache exato em `askQuestion.ts` | Não |
-| C | `AIProvider` — interface única (`responder`/`avaliar`/`gerarDesafio`) com adapter Anthropic (já existe, só reorganizado) | Não |
+| C | ✅ `AIProvider` — interface única (`responder`/`avaliar`/`gerarDesafio`) com adapter Anthropic (já existe, só reorganizado) | Não |
 | D | Confidence Engine + `requer_revalidacao` | Não |
 | E | Knowledge Graph (`knowledge_relation`) | Não |
 | F | Avaliação de Ollama em ambiente offline (trocar Opus por modelo local em `gerar_questoes.ts`) | Não — reaproveita infra existente do script |

@@ -61,15 +61,9 @@ Além das três funções do MVP (responder, desafiar, avaliar), a IA poderá fu
 
 > Ver [AI_COST_ZERO.md](AI_COST_ZERO.md) (auditoria completa de dependências externas) e [KNOWRA_AI.md](KNOWRA_AI.md) (projeto de Knowledge Memory + RAG interno + AI Engine local opcional via Ollama). Discovery aprovado, nenhuma implementação ainda — cada etapa do roadmap proposto exige aprovação separada. Não altera nada do que está descrito abaixo nesta seção até uma etapa específica ser aprovada.
 
-## Provider Abstraction (planejado)
+## Provider Abstraction (implementado — KNOWRA_AI Etapa C, 2026-08-15)
 
-Hoje o AI Engine chama a Anthropic diretamente (`backend/src/lib/anthropic.ts`) — aceitável para o MVP, mas a arquitetura de longo prazo não deve ficar acoplada a um único fornecedor:
-
-```text
-Usuário → Aplicação → AI Orchestrator → Provider Abstraction → Claude / OpenAI / outro provider
-```
-
-Quando isso importar de verdade (custo, disponibilidade, ou necessidade de um modelo diferente por tarefa), introduzir uma camada `AIProvider` com uma interface única (`responder`, `avaliar`, `gerarDesafio`) implementada por adapters por fornecedor — sem reescrever `askQuestion.ts` e futuros serviços, só trocar o adapter por trás. Não implementar essa abstração agora (over-engineering pro estágio atual), só não fechar a porta pra ela.
+`askQuestion.ts`/`gerarDesafio.ts`/`avaliarDesafio.ts` não chamam mais a Anthropic diretamente — dependem só da interface `AIProvider` (`backend/src/lib/aiProvider.ts`: `responder`, `gerarDesafio`, `avaliar`), implementada hoje por um único adapter (`AnthropicProvider`, `backend/src/lib/providers/anthropicProvider.ts`) com os mesmos prompts/tools/modelo de antes — refatoração pura, nenhuma mudança de comportamento. Trocar/adicionar provedor no futuro (Ollama, outro) vira trocar o adapter, sem reescrever os serviços de novo. Ver `KNOWRA_AI.md` §9.
 
 ## Custo de IA e sustentabilidade financeira
 
