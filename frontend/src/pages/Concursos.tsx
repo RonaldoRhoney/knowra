@@ -26,7 +26,15 @@ interface Concurso {
   pagina_oficial_url: string | null;
   total_questoes: number;
   questoes_gratis: number;
+  ultima_verificacao_em: string;
+  confiabilidade: "verificado" | "requer_atualizacao" | "desatualizado";
 }
+
+const CONFIABILIDADE_ICONE: Record<Concurso["confiabilidade"], string> = {
+  verificado: "🟢",
+  requer_atualizacao: "🟡",
+  desatualizado: "🔴",
+};
 
 interface Disciplina {
   area_id: string;
@@ -155,7 +163,15 @@ export function Concursos() {
                   {concursos.map((c) => (
                     <div key={c.id} className="bg-knowra-surface rounded-2xl p-4">
                       <div className="flex items-start justify-between gap-2">
-                        <p className="text-sm font-medium">{c.nome}</p>
+                        <p className="text-sm font-medium flex items-center gap-1.5">
+                          <span
+                            aria-hidden
+                            title={t(`concursos.confiabilidade.${c.confiabilidade}`)}
+                          >
+                            {CONFIABILIDADE_ICONE[c.confiabilidade]}
+                          </span>
+                          {c.nome}
+                        </p>
                         {c.vagas !== null && (
                           <span className="text-[10px] shrink-0 text-knowra-accent bg-knowra-accent/10 px-2 py-0.5 rounded-full">
                             {t("concursos.vagas", { count: c.vagas })}
@@ -211,6 +227,18 @@ export function Concursos() {
                           >
                             {t("concursos.paginaOficial")}
                           </a>
+                        )}
+                        {profile?.role === "admin" && c.confiabilidade !== "verificado" && (
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              await supabase.rpc("confirmar_concurso", { p_concurso_id: c.id });
+                              carregarConcursos();
+                            }}
+                            className="text-xs text-knowra-warning hover:underline"
+                          >
+                            {t("concursos.reverificar")}
+                          </button>
                         )}
                       </div>
                     </div>

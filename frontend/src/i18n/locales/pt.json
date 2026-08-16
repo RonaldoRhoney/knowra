@@ -204,6 +204,12 @@
     },
     "vagas_one": "{{count}} vaga",
     "vagas_other": "{{count}} vagas",
+    "confiabilidade": {
+      "verificado": "Verificado recentemente",
+      "requer_atualizacao": "Requer atualização — verificado há mais de 30 dias",
+      "desatualizado": "Desatualizado — verificado há mais de 90 dias"
+    },
+    "reverificar": "Reverificar",
     "inscricoes": "Inscrições",
     "edital": "Edital",
     "paginaOficial": "Página oficial",

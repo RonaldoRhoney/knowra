@@ -204,6 +204,12 @@
     },
     "vagas_one": "{{count}} opening",
     "vagas_other": "{{count}} openings",
+    "confiabilidade": {
+      "verificado": "Recently verified",
+      "requer_atualizacao": "Needs an update — verified over 30 days ago",
+      "desatualizado": "Outdated — verified over 90 days ago"
+    },
+    "reverificar": "Re-verify",
     "inscricoes": "Registration",
     "edital": "Notice",
     "paginaOficial": "Official page",

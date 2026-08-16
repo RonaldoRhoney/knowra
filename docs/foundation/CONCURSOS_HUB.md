@@ -16,6 +16,18 @@ Fora (por ora, conforme regra final do Ronaldo): remover/quebrar funcionalidade 
 
 **Não depender de uma única fonte externa pra funcionar.** Mesmo achado já registrado quando avaliei o pedido original de concursos reais (`DECISIONS.md` 2026-08-16, "concursos reais descartado"): não existe API oficial única, gratuita e confiável cobrindo status de concurso em todo o Brasil. Isso não mudou — o que muda aqui é a estratégia: em vez de esperar uma fonte perfeita, o hub funciona com **dado cadastrado manualmente pelo admin desde o dia 1** (mesmo padrão já usado em `gerar_questoes.ts`), com fontes externas entrando como **enriquecimento auxiliar opcional**, nunca como dependência crítica.
 
+**Cadastro admin é a segunda entrada, nunca a estratégia definitiva** (ajuste do Ronaldo, 2026-08-16, antes de autorizar a Etapa 7c.5). A arquitetura-alvo permanece:
+
+```text
+FONTES OFICIAIS/PÚBLICAS → INGESTION ENGINE → NORMALIZAÇÃO → VALIDAÇÃO → KNOWRA DATABASE
+                                                                              ↑
+                                                                        ADMIN MANUAL
+                                                                     (segunda entrada,
+                                                                      não a única)
+```
+
+O Ingestion Engine automatizado **não é implementado nesta etapa** (seria a Etapa 7d, que continua sem data — depende do token pessoal do Ronaldo em `dados.gov.br`, avaliado como fonte auxiliar em §4). O cadastro manual existe pra validar a experiência ponta a ponta com dado real (Etapa 7c.5) — o objetivo de longo prazo é reduzir, não formalizar, a dependência de cadastro manual conforme uma fonte de ingestão automatizada real for viabilizada.
+
 ## 4. Fontes externas avaliadas (antes de qualquer integração)
 
 | Fonte | O que é | Veredito |
@@ -91,6 +103,20 @@ fontes_externas (nova — auditoria de proveniência, exigida pela regra final d
 
 Nenhuma tabela existente (`questoes`, `tentativas_questao`, `progresso_concurso`, `progresso_disciplina_questoes`, `assinaturas`) muda de comportamento — só `concursos` ganha colunas novas, todas nullable/com default, migration puramente aditiva.
 
+## 6a. Modelo de confiabilidade do dado (✅ implementado, migration 0038, 2026-08-16)
+
+Exigência do Ronaldo antes de autorizar a Etapa 7c.5: sem rastro de "quando foi verificado por último", um concurso cadastrado hoje como `aberto` pode ficar desatualizado sem ninguém perceber. `concursos` ganhou `cadastrado_por` (quem inseriu) e `ultima_verificacao_em` (quando alguém confirmou que o dado ainda está correto — distinto de `fonte_atualizado_em`, que marca quando o dado mudou de verdade).
+
+**Confiabilidade é calculada, nunca armazenada** (mesmo princípio do Confidence Engine do `KNOWRA_AI.md`: sem expiração automática por tempo, projeto sem infraestrutura de cron):
+
+```text
+🟢 verificado           — ultima_verificacao_em nos últimos 30 dias
+🟡 requer_atualizacao   — entre 30 e 90 dias
+🔴 desatualizado        — mais de 90 dias
+```
+
+`listar_concursos()` calcula isso a cada chamada (`case` sobre a idade de `ultima_verificacao_em`). `confirmar_concurso()` (admin-only) marca "ainda está correto" sem mudar mais nada — reseta a idade sem precisar reeditar o concurso inteiro. Frontend mostra o ícone (🟢🟡🔴) no card e um botão "Reverificar" pro admin quando não está mais 🟢. Testado com dado real (simulação de 100 dias sem verificação → `desatualizado` → `confirmar_concurso()` → `verificado` de novo) antes de aplicar.
+
 ## 7. YouTube Resource Engine
 
 Mesma decisão de design do Ronaldo: nunca baixar vídeo, só guardar metadado (`video_id`, `title`, `channel`, `thumbnail`, `url`, `subject`, `topic`) e abrir no YouTube. Duas fontes de entrada, nenhuma delas obrigatória:
@@ -136,6 +162,17 @@ Todas seguem o padrão de segurança já estabelecido no projeto: escrita admin-
 
 `Concursos.tsx` reestruturado com abas (Abertos/Andamento/Encerrados) + seções novas (Simulados, Videoaulas, Meu desempenho) — mesmo componente `Navigation`/`Footer`, sem mudar o resto do app. Card de concurso ganha campos novos (vagas, salário, período de inscrição, dias restantes calculado no frontend a partir de `inscricoes_fim`). Nenhuma rota nova obrigatória no MVP — `/concursos/:id` (já existe) e `/praticar/:id` (já existe) continuam servindo.
 
+**"Concurso cadastrado" ≠ "Concurso preparado para estudo"** (distinção do Ronaldo, registrada, não implementada ainda) — hoje `/concursos/:id` já pula direto pra prática de questão. A visão de página de detalhe por concurso é mais rica:
+
+```text
+CONCURSO
+  ├── Sobre o concurso     ├── Edital     ├── Cargos
+  ├── Conteúdo programático├── Questões   ├── Simulado
+  └── Videoaulas           └── Meu desempenho (desse concurso específico)
+```
+
+**Não implementado nesta etapa** — fica registrado como próxima extensão natural de `/concursos/:id` (candidata a Etapa 7c.6 ou parte da população de dado real em 7c.5, a decidir quando houver concurso real cadastrado pra testar contra). O módulo **não deve ser considerado "pronto" só porque existem concursos cadastrados** — o objetivo real é o fluxo completo `Concurso → conteúdo → estudo → questões → simulado → desempenho → progressão` funcionando integrado ao resto da plataforma (XP/badges/ranking), não um catálogo estático.
+
 ## 13. Security impact
 
 - Nenhuma tabela nova exposta a `anon`. Escrita sempre admin-only (mesmo padrão de `revisar_questao()`/`revisar_conhecimento()`).
@@ -179,4 +216,4 @@ Etapas 7c.1-7c.5 não dependem de nada externo — podem ser aprovadas e impleme
 
 ## 19. Status
 
-Etapas 7c.1-7c.4 implementadas, testadas e publicadas em produção (2026-08-16) — pergunta 1 do §18 respondida (formulário admin construído primeiro). `/concursos` já é a Central de Preparação (busca, status, disciplinas, simulados, videoaulas, meu desempenho). Falta 7c.5 (você popular concursos reais pelo formulário) e as etapas 7d (dados.gov.br, token pessoal seu) e 7e (RAG + extração de edital, especulativa, sem data).
+Etapas 7c.1-7c.4 implementadas, testadas e publicadas em produção (2026-08-16) — pergunta 1 do §18 respondida (formulário admin construído primeiro). Modelo de confiabilidade do dado (§6a) implementado antes de autorizar a Etapa 7c.5, a pedido do Ronaldo. `/concursos` já é a Central de Preparação (busca, status, disciplinas, simulados, videoaulas, meu desempenho, badge 🟢🟡🔴 de confiabilidade). Falta 7c.5 (popular concursos reais pelo formulário — cadastro admin permanece segunda entrada, não estratégia definitiva, conforme §3), a página de detalhe por concurso (§12), e as etapas 7d (Ingestion Engine/dados.gov.br, token pessoal do Ronaldo) e 7e (RAG + extração de edital, prioridade arquitetural preservada, sem data).
