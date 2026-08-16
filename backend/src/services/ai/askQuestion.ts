@@ -26,6 +26,7 @@ interface ConhecimentoSemantico {
   id: string;
   answer: string;
   topic: string | null;
+  requer_verificacao: boolean;
 }
 
 async function buscarConhecimentoSemantico(texto: string): Promise<ConhecimentoSemantico | undefined> {
@@ -116,8 +117,14 @@ export async function askQuestion(supabase: SupabaseClient, texto: string, usuar
         resposta: semantico.answer,
         area_nome: semantico.topic,
         area_slug: semantico.topic,
-        requer_verificacao: false,
-        observacao_verificacao: null,
+        // Confidence Engine (KNOWRA_AI.md §8, Etapa D): a função já decide
+        // isso no banco (confidence < 0.90 ou status='requer_revalidacao')
+        // — aqui só repassa pro mesmo mecanismo de sinalização que já existe
+        // desde a Fase 4 (respostas geradas por IA também usam esse campo).
+        requer_verificacao: semantico.requer_verificacao,
+        observacao_verificacao: semantico.requer_verificacao
+          ? "Resposta vinda da memória interna do KnowRa — pode estar desatualizada, considere verificar numa fonte oficial."
+          : null,
       };
     } else {
       resultado = await responderComAnthropic(supabase, texto);

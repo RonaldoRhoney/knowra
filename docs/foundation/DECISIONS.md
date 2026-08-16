@@ -301,6 +301,18 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 
 **Status**: ✅ implementado, build limpo, publicado em produção. Etapa D (Confidence Engine) em diante continua exigindo aprovação separada.
 
+## 2026-08-15 — KNOWRA_AI Etapa D: Confidence Engine (parte estrutural)
+
+**Contexto**: "pode segui" depois da Etapa C. Sinalizei antes de implementar: calibrar os limiares de confiança (0.90/0.70) exige dado real de uso que ainda não existe (`knowledge_record` praticamente vazia em produção, Etapa B acabou de ir ao ar). O Ronaldo escolheu implementar só a parte estrutural com os números provisórios já documentados, sem inventar regra de expiração automática por tempo.
+
+**Decisão**: migration `0030_knowledge_memory_confidence_engine.sql` — `buscar_conhecimento_semantico()` passa a devolver `confidence` e `requer_verificacao` calculado (`confidence < 0.90 ou status = 'requer_revalidacao'`); entradas com `confidence < 0.70` nunca são servidas da memória, mesmo com similaridade alta. `revisar_conhecimento(id, status)` — admin-only, security definer, mesmo padrão de `revisar_questao()` (Concursos) — permite marcar uma entrada como `requer_revalidacao`/`invalidado` manualmente. `askQuestion.ts` repassa `requer_verificacao` pro mesmo mecanismo de sinalização já usado desde a Fase 4 (`observacao_verificacao`).
+
+**Escopo explicitamente fora**: nenhuma UI no Painel ADM pra usar `revisar_conhecimento()` ainda — só o backend/RPC existe. Nenhuma decadência automática de confiança por tempo (`last_verified_at` antigo não muda nada sozinho).
+
+**Testado**: em transação com rollback — entrada com confiança alta (0.95) não sinaliza verificação; a mesma entrada, depois de marcada `requer_revalidacao` via `revisar_conhecimento()`, passa a sinalizar `requer_verificacao: true` mesmo com a confiança inalterada.
+
+**Status**: ✅ implementado, testado, publicado em produção. Etapa E (Knowledge Graph) em diante continua exigindo aprovação separada.
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).
