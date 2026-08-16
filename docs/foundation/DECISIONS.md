@@ -257,6 +257,16 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 
 **Status**: Fases 1 e 2 concluídas e apresentadas. Próximo passo depende da resposta do Ronaldo às 3 perguntas em aberto (`KNOWRA_AI.md` §11) — nenhuma Fase 3+ (código/tabela/infraestrutura) autorizada ainda.
 
+## 2026-08-15 — KNOWRA_AI Etapa A: schema da Knowledge Memory aplicado
+
+**Decisão**: "pode seguir" do Ronaldo interpretado como aprovação pra iniciar a Etapa A do roadmap em `KNOWRA_AI.md` §9 (a única sem dependência de infraestrutura e sem exigir resposta prévia às 3 perguntas em aberto — nenhuma delas trava especificamente essa etapa). Migration `0028_knowledge_memory_schema.sql` aplicada: extensão `pgvector`, tabelas `knowledge_record`/`knowledge_relation`, RLS habilitado, **sem nenhum grant pra `anon`/`authenticated`** — schema puro, nenhum endpoint lê/escreve ainda.
+
+**Detalhe técnico**: coluna `embedding` criada como `vector` sem dimensão fixa, de propósito — a dimensão depende do provedor de embeddings, decisão ainda não tomada (pergunta 1 de `KNOWRA_AI.md` §11 continua em aberto). Índice de busca por similaridade (ivfflat/hnsw, que exige dimensão fixa) fica pra quando essa escolha existir.
+
+**Testado**: migration validada em transação com rollback antes de aplicar; confirmado via `psql` que `authenticated`/`anon` não têm nenhum privilégio (`select`/`insert`/`update`/`delete`) nas duas tabelas novas.
+
+**Status**: Etapa A concluída. Etapas B em diante (semantic cache em runtime, `AIProvider`, Confidence Engine, Knowledge Graph populado, avaliação de Ollama offline) continuam exigindo aprovação separada cada uma — nenhuma delas foi iniciada.
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).
