@@ -92,12 +92,18 @@ async function responderComAnthropic(supabase: SupabaseClient, texto: string): P
 
   // Fonte (Wikipedia) e vídeo (YouTube, licença CC) são resultado de busca
   // real, nunca da IA — se a busca não achar nada, ficam null (nunca link
-  // inventado). Tema de busca é a área classificada, não o texto livre da
-  // pergunta (mais preciso pra achar artigo/vídeo relacionado). Buscas em
-  // paralelo, cada uma já protegida contra timeout/erro dentro do próprio
-  // cliente — nunca podem derrubar a resposta principal.
-  const tema = respostaIA.area_nome ?? texto;
-  const [fonte, video] = await Promise.all([buscarFonteWikipedia(tema), buscarVideoCC(tema)]);
+  // inventado). Termos de busca diferentes por motivo testado ao vivo, não
+  // suposição: a Wikipedia (opensearch, casamento por título) funciona bem
+  // com um termo limpo tipo a área classificada ("Fotossíntese"), mas o
+  // YouTube funciona melhor com a pergunta inteira em linguagem natural —
+  // usar a área pra vídeo gerou um achado real em produção (pergunta "que
+  // dia é hoje?" classificada como área genérica "Informações Gerais"
+  // trouxe vídeo aleatório sobre deputados de Minas Gerais, só por
+  // coincidência de palavra). Ver DECISIONS.md. Buscas em paralelo, cada
+  // uma já protegida contra timeout/erro dentro do próprio cliente — nunca
+  // podem derrubar a resposta principal.
+  const temaFonte = respostaIA.area_nome ?? texto;
+  const [fonte, video] = await Promise.all([buscarFonteWikipedia(temaFonte), buscarVideoCC(texto)]);
 
   const resultado: RespostaEstruturada = {
     ...respostaIA,
