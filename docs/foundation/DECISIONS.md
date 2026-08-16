@@ -401,6 +401,22 @@ Registro de decisões arquiteturais e de produto — atualizado a cada decisão 
 
 **Status**: ✅ implementado, testado, publicado. Etapa J (Knowledge Entity) segue sem data, dependente de decisão de modelagem (`KNOWRA_AI.md` §11/§15).
 
+## 2026-08-16 — KNOWRA_AI Etapa J: Knowledge Entity implementado (roadmap do RAG concluído)
+
+**Contexto**: Ronaldo confirmou querer seguir pra Etapa J. Pergunta em aberto (`KNOWRA_AI.md` §15.4, granularidade de entidade) respondida: **por tema/conceito**.
+
+**Decisão**: em vez de criar uma tabela nova de "Knowledge Entity", reaproveitado `areas` — a árvore de conhecimento da Fase 2 já é exatamente esse conceito (dedup por `slug`, "reaproveita área existente" desde `KNOWLEDGE_MODEL.md`). `knowledge_record` ganhou `area_id` (FK pra `areas`), resolvida por uma função nova `upsert_area()` extraída da lógica que já vivia inline em `registrar_pergunta()` — agora reutilizada por `salvar_conhecimento()` também, garantindo que os dois caminhos (a pergunta do usuário E o conhecimento gravado na memória RAG) resolvem pra **exatamente a mesma linha** de `areas` quando a classificação da IA é a mesma. Isso é a deduplicação real que o Ronaldo descreveu na proposta original — perguntas diferentes sobre "Constituição Federal" convergem pro mesmo `area_id`, em vez de ficarem só soltas em `knowledge_record.topic` (texto livre, sem garantia de dedup).
+
+**Mudança de assinatura**: `salvar_conhecimento()` ganhou parâmetro `p_area_slug` (drop+create, mesmo cuidado de sempre). `askQuestion.ts` passa `resultado.area_slug` (já calculado pela classificação da IA) nessa chamada.
+
+**Escopo deliberadamente contido**: `buscar_contexto_rag()` passou a expor `area_id` no resultado, mas **não foi conectado** a nenhum filtro/boost de retrieval ainda — a área da pergunta atual só é conhecida depois da IA responder, não antes de buscar contexto (mesma ordem de execução já existente). Fica pronto pra um consumidor futuro (ex: página de área mostrando todo conhecimento relacionado), sem forçar wiring precoce.
+
+**Backfill real**: as 3 linhas de `knowledge_record` já em produção foram casadas com sua área real (correspondência por nome, mesma classificação que a IA já tinha feito originalmente).
+
+**Testado**: migration validada em transação com rollback antes de aplicar. `tsc --noEmit` limpo. Grants confirmados vazios pra `anon`/`authenticated` depois de aplicar. Backend redeployado em produção.
+
+**Status**: ✅ implementado, testado, publicado. **Roadmap completo do RAG concluído** (Etapas A-F, H, I, J) — só resta a Etapa G (Ollama em runtime), que segue travada numa decisão de infraestrutura (VPS) ainda não tomada.
+
 ## Como registrar novas decisões
 
 Formato: data, decisão, motivo, impacto, status. Toda mudança de framework, banco, arquitetura, estrutura de pastas, estratégia de integração, autenticação ou infraestrutura passa por aqui antes de virar código — decisão final é sempre do Ronaldo, o Claude Code propõe e justifica, nunca decide e aplica silenciosamente (ver `CLAUDE.md` §2).

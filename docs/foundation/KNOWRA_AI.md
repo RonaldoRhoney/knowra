@@ -204,7 +204,9 @@ OUTDATED       — já foi válido, `last_verified_at` antigo demais ou marcado
 
 **Regra de anti-contaminação associada**: uma entrada `AI_GENERATED`/`UNVERIFIED` nunca deve ser promovida a `VERIFIED` automaticamente por volume de uso (`times_used` alto não é evidência de correção, só de popularidade) — promoção de proveniência é sempre uma ação explícita (revisão admin, ou confirmação por fonte externa real, ex: achou artigo correspondente na Wikipedia). Mesmo princípio já usado em Questões de Concursos: `review_status` só avança por ação humana (`revisar_questao()`), nunca automaticamente.
 
-## 11. Knowledge Entity — evolução conceitual de deduplicação (projetado, não implementado, sem data)
+## 11. Knowledge Entity — evolução conceitual de deduplicação (✅ implementado, Etapa J, 2026-08-16)
+
+> Granularidade decidida pelo Ronaldo: **tema/conceito**. Implementado reaproveitando `areas` (árvore de conhecimento da Fase 2, já com dedup por slug) como a Knowledge Entity — `knowledge_record.area_id` (FK), resolvida via `upsert_area()` (extraída da lógica que já existia em `registrar_pergunta()`, agora reutilizada por `salvar_conhecimento()` também). Não foi criada tabela nova. Ver `DECISIONS.md` 2026-08-16 "KNOWRA_AI Etapa J".
 
 **Problema identificado pelo Ronaldo, real**: o modelo atual (`knowledge_record` por pergunta) tende a criar registros redundantes — "O que é a Constituição Federal?" e "Qual é a função da Constituição do Brasil?" são semanticamente próximas o bastante pra bater no cache semântico (Etapa B), mas perguntas um pouco mais distantes sobre o mesmo conceito (ex: "Quando a Constituição de 88 foi promulgada?") criam um registro novo em vez de se conectar ao conhecimento já existente sobre "Constituição Federal".
 
@@ -256,7 +258,7 @@ Isso não é uma função nova de IA — é o mesmo `AIProvider.gerarDesafio()` 
 | G | Ollama como `AIProvider` adapter em runtime, servindo usuário real | **Sim — servidor/VPS dedicado** |
 | H | ✅ RAG Retrieval Engine híbrido (§9) — Full Text Search + Metadata Filter + Reranking, top-K em vez de top-1 | Não — Postgres nativo, mesmo banco |
 | I | ✅ Source Provenance (§10) — coluna de taxonomia de confiança em `knowledge_record`, regra de promoção manual | Não |
-| J | Knowledge Entity (§11) — deduplicação conceitual via `knowledge_relation` populada | Não, mas exige decisão de modelagem antes de qualquer schema (ver §11) |
+| J | ✅ Knowledge Entity (§11) — deduplicação conceitual via `areas`/`area_id`, granularidade tema/conceito | Não |
 
 Etapas H e I são extensões aditivas do schema já existente (§8) — mesmo perfil de risco/custo das Etapas A-E. Etapa J depende de uma decisão de modelagem que ainda não tem data (§11). Etapa G continua sendo a única que exige decisão de infraestrutura antes de qualquer código.
 
@@ -283,4 +285,4 @@ Ver `DECISIONS.md` 2026-08-15 — entradas "KNOWRA_AI: discovery aprovado, Fase 
 
 ## Status
 
-Documento de projeto. Etapas A-F, H e I implementadas e em produção. Etapa G (Ollama runtime) e J (Knowledge Entity) são projeto/arquitetura aprovada para **documentação**, não para código — próximo passo depende de resposta às perguntas do §15 e aprovação explícita, etapa por etapa, antes de qualquer implementação.
+Documento de projeto. Etapas A-F, H, I e J implementadas e em produção — todo o roadmap do RAG concluído. Só resta a Etapa G (Ollama runtime), que continua sendo projeto/arquitetura aprovada para **documentação**, não para código — depende de decisão de infraestrutura (VPS dedicado) antes de qualquer linha.
